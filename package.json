@@ -1,18 +1,23 @@
 {
   "private": true,
   "scripts": {
+    "format": "npx prettier --write .",
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "^14.2.1",
     "nextra": "^2.13.4",
     "nextra-theme-docs": "^2.13.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "sharp": "^0.33.3"
   },
   "devDependencies": {
+    "gray-matter": "^4.0.3",
+    "husky": "^9.0.11",
     "prettier": "3.2.5"
   }
 }

@@ -1,5 +1,6 @@
+import TagDots from "@/components/TagDots";
+import { iceland } from "@/utils/fonts";
 import { useConfig } from "nextra-theme-docs";
-import { iceland } from "./fonts";
 
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -59,10 +60,13 @@ export default {
     ),
   },
   sidebar: {
-    /* titleComponent: (a, b) => {
-      console.log({ a, b });
-      return <p></p>;
-    }, */
+    titleComponent: ({ title, route }) => {
+      return (
+        <div className>
+          <span>{title}</span> <TagDots route={route} />
+        </div>
+      );
+    },
   },
   useNextSeoProps() {
     const { frontMatter } = useConfig();
@@ -105,7 +109,7 @@ export default {
       ],
       description: frontMatter.description || "CosmWasm Docs",
       openGraph: {
-        images: frontMatter.image ? [{ url: frontMatter.image }] : undefined,
+        images: frontMatter.image ? [{ url: frontMatter.image }] : undefined, // TODO: Fall back to CW branding
       },
       titleTemplate: "%s – Docs",
     };

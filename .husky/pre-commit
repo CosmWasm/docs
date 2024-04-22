@@ -1,1 +1,4 @@
-npm run format
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx git-format-staged -f 'prettier --ignore-unknown --stdin-filepath "{}"' './*'

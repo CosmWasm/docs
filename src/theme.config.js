@@ -50,13 +50,20 @@ export default {
   editLink: { text: "Edit this page on GitHub" },
   footer: {
     text: (
-      <span>
-        MIT {new Date().getFullYear()} ©{" "}
-        <a href="https://nextra.site" target="_blank">
-          Nextra
-        </a>
-        .
-      </span>
+      <div>
+        <p>CosmWasm is proudly created and maintained by Confio.</p>
+        <p style={{ marginTop: "8px" }}>
+          This deployment is hosted by Confio GmbH (
+          <a
+            href="https://confio.gmbh/impressum"
+            target="_blank"
+            style={{ textDecoration: "underline" }}
+          >
+            Legal Information
+          </a>
+          ).
+        </p>
+      </div>
     ),
   },
   sidebar: {

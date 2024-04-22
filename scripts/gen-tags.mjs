@@ -1,17 +1,9 @@
 import { promises as fs } from "fs";
 import matter from "gray-matter";
-import process from "node:process";
-
-const repoRoot = "docs";
-
-if (!process.cwd().endsWith(repoRoot)) {
-  console.info("Tags should be generated from the repo's root directory");
-  process.exit(1);
-}
-
-console.info("Generating tags…");
 
 (async function genTags() {
+  console.info("Generating tags…");
+
   const pagesDir = "src/pages";
   const wholeDir = await fs.readdir(pagesDir, { recursive: true });
 

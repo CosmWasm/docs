@@ -1,14 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "format": "npx prettier --write .",
-    "dev": "next",
-    "build": "next build",
-    "start": "next start",
-    "prepare": "husky"
+    "prepare": "husky && husky install",
+    "gen-tags": "node scripts/gen-tags.mjs",
+    "dev": "npm run gen-tags && next",
+    "build": "npm run gen-tags && next build",
+    "start": "next start"
   },
   "dependencies": {
-    "next": "^14.2.1",
+    "next": "^14.2.2",
     "nextra": "^2.13.4",
     "nextra-theme-docs": "^2.13.4",
     "react": "^18.2.0",
@@ -16,6 +16,7 @@
     "sharp": "^0.33.3"
   },
   "devDependencies": {
+    "git-format-staged": "^3.1.1",
     "gray-matter": "^4.0.3",
     "husky": "^9.0.11",
     "prettier": "3.2.5"

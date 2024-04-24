@@ -1,0 +1,15 @@
+---
+tags: []
+---
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+# Prepare contract wrapper
+
+```rust
+pub fn contract() -> Box<dyn Contract<Empty>> {
+    Box::new(ContractWrapper::new(execute, instantiate, query))
+}
+```

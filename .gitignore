@@ -63,3 +63,6 @@ next-env.d.ts
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
+
+# Ignore JetBrains tools
+.idea

@@ -1,6 +1,7 @@
 import TagDots from "@/components/TagDots";
 import { iceland } from "@/utils/fonts";
 import { useConfig } from "nextra-theme-docs";
+import { useEffect, useState } from "react";
 
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -68,8 +69,18 @@ export default {
   },
   sidebar: {
     titleComponent: ({ title, route }) => {
+      const [isDocRoute, setIsDocRoute] = useState(false);
+
+      useEffect(() => {
+        setIsDocRoute(window.location.pathname.startsWith("/how-to-doc"));
+      }, []);
+
       return (
-        <div className>
+        <div
+          className={
+            !isDocRoute && title === "How to doc" ? "how-to-doc-dir" : ""
+          }
+        >
           <span>{title}</span> <TagDots route={route} />
         </div>
       );

@@ -31,11 +31,11 @@ export default {
             y2="653.676"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#FCECB2" />
-            <stop offset=".26" stop-color="#FF8B89" />
-            <stop offset=".521" stop-color="#FC8ADC" />
-            <stop offset=".755" stop-color="#7954FF" />
-            <stop offset="1" stop-color="#70BCFF" />
+            <stop stopColor="#FCECB2" />
+            <stop offset=".26" stopColor="#FF8B89" />
+            <stop offset=".521" stopColor="#FC8ADC" />
+            <stop offset=".755" stopColor="#7954FF" />
+            <stop offset="1" stopColor="#70BCFF" />
           </linearGradient>
         </defs>
       </svg>

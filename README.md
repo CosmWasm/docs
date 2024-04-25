@@ -31,7 +31,7 @@ npm run start
 ```
 
 You will now be able visit the locally served website at
-[localhost:3000](localhost:3000)
+[http://localhost:3000](http://localhost:3000)
 
 ## How can I contribute?
 
@@ -43,12 +43,12 @@ npm install
 npm run dev
 ```
 
-The website will be available at [localhost:3000](localhost:3000) and the
-changes you make to the project will be reflected there instantaneously.
+The website will be available at [http://localhost:3000](http://localhost:3000)
+and the changes you make to the project will be reflected there instantaneously.
 
 There's a hidden "How to doc" section that'll teach you how to write new
 entries. You can make this section visible by visiting
-[localhost:3000/how-to-doc](localhost:3000/how-to-doc) or with the
+[http://localhost:3000/how-to-doc](http://localhost:3000/how-to-doc) or with the
 <kbd>CTRL</kbd> + <kbd>.</kbd> (control plus period) keyboard shortcut.
 
 After committing your changes to a new branch, push it to this repo and open a

@@ -1,0 +1,42 @@
+---
+tags: []
+---
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+import { Tabs } from "nextra/components";
+
+# Create smart contract
+
+<Tabs items={['Rust', 'Sylvia']}>
+  <Tabs.Tab>
+    ```rs
+    fn instantiate(deps: DepsMut, env: Env, info: MessageInfo, msg: Empty) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rs
+    fn instantiate(deps: DepsMut, env: Env, info: MessageInfo, msg: Empty) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+> DDE notes:
+>
+> - create contract
+> - prepare a wrapper
+> - store contract code
+> - instantiate contract
+> - execute message
+> - query the contract
+> - handle reply
+> - call sudo
+> - migrate contract

@@ -1,0 +1,34 @@
+---
+tags: ["ibc", "ibc-msg", "transfer", "ics20"]
+---
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+# Using Existing Protocols
+
+The easiest way to use IBC is to use an already existing protocol. These
+protocols can either be implemented by the chain itself or by another contract.
+
+One example for the former is the `IbcMsg::Transfer` message, which causes an
+ICS 20 transfer. This message is included in the CosmWasm standard library and
+causes the chain's IBC Transfer module to send tokens to another chain.
+
+An example for the latter is the Nois protocol. It provides a proxy contract
+that handles all the IBC logic for you. For more information on Nois, check the
+[Nois documentation](https://docs.nois.network/dapp_devs/use_nois_randomness.html).
+
+## Example: `IbcMsg::Transfer`
+
+TODO
+
+- add example code
+
+## ADR-8: IBC Callbacks
+
+TODO
+
+- needs to be supported by the chain
+- two new entrypoints
+- needs to be enabled for each message (show example transfer)

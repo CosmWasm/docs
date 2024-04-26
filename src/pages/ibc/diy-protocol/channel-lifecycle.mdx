@@ -1,0 +1,39 @@
+---
+tags: ["ibc"]
+---
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+# Channel lifecycle
+
+A channel is a connection between two IBC ports that allows them to send packets
+to each other. In this section, we will cover how to establish a channel and how
+to close it. Since a channel is a connection between two ports, it can connect
+two chain modules, two contracts, or a module and a contract.
+
+## Establishing a channel
+
+In order to send packets between two chains, you need to establish a channel
+between them. This process involves two calls per chain. They are described
+below. Once the channel is established, you can start sending packets through
+it, which we will cover in the next section.
+
+### Channel open
+
+{/* `ibc_channel_open` called on both chains, explain differences */}
+
+### Channel connect
+
+{/* `ibc_channel_connect` called on both chains, explain differences */}
+
+## Closing a channel
+
+---
+
+Notes:
+
+- reference basic concepts
+- relayer initiates this
+- explain ibc_channel_open & ibc_channel_connect

@@ -9,7 +9,12 @@ export default function App({ Component, pageProps }) {
     }
   }, []);
 
-useEffect(() => { window.addEventListener("keyup", goToDocs); return () => {
-window.removeEventListener("keyup", goToDocs); }; }, [goToDocs]);
+  useEffect(() => {
+    window.addEventListener("keyup", goToDocs);
+    return () => {
+      window.removeEventListener("keyup", goToDocs);
+    };
+  }, [goToDocs]);
 
-return <Component {...pageProps} />; }
+  return <Component {...pageProps} />;
+}

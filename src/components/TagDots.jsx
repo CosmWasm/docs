@@ -4,7 +4,7 @@ export default function TagDots({ route }) {
   const tags = tagsObj.routes?.[route];
 
   return tags?.length ? (
-    <div className="nx-inline-flex nx-gap-1 tag-dots">
+    <div className="nx-inline-flex nx-gap-1">
       {tags.map((tag) => (
         <span
           key={tag}

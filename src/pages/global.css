@@ -1,5 +1,3 @@
-/* Hide TagDots for directories on the sidebar */
-button .tag-dots,
 /* Hide How to Doc directory on the sidebar */
 li:has(button > .how-to-doc-dir),
 /* Hide links to How to Doc index, except the prevLink on the page after that */

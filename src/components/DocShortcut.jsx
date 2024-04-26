@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from "react";
-import "./global.css";
 
-export default function App({ Component, pageProps }) {
+export default function DocShortcut() {
   const goToDocs = useCallback((event) => {
     if (event.ctrlKey && event.key === ".") {
       window.location.href = "/how-to-doc";
@@ -16,5 +15,5 @@ export default function App({ Component, pageProps }) {
     };
   }, [goToDocs]);
 
-  return <Component {...pageProps} />;
+  return null;
 }

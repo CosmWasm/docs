@@ -1,0 +1,11 @@
+import DocShortcut from "@/components/DocShortcut";
+import "./global.css";
+
+export default function App({ Component, pageProps }) {
+  return (
+    <>
+      <DocShortcut />
+      <Component {...pageProps} />
+    </>
+  );
+}

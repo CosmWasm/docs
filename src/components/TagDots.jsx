@@ -5,11 +5,12 @@ export default function TagDots({ route }) {
 
   return tags?.length ? (
     <div className="nx-inline-flex nx-gap-1 tag-dots">
-      {tags.map((t) => (
+      {tags.map((tag) => (
         <span
+          key={tag}
           className="nx-rounded-full"
           style={{
-            backgroundColor: tagsObj.colors[t],
+            backgroundColor: tagsObj.colors[tag],
             width: "8px",
             height: "8px",
           }}

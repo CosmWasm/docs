@@ -25,6 +25,14 @@ platform.
   Rust version and to install compiler targets.
 </Callout>
 
+<Callout>
+  For production builds you probably also want to install
+  [Docker](https://www.docker.com/), too.
+  <br /> This is because we offer the [CosmWasm Optimizing Compiler](https://github.com/CosmWasm/optimizer),
+  which uses a Docker image to build the smallest contract possible in a deterministic
+  fashion.
+</Callout>
+
 After installing Rust, you need to add the WebAssembly target. This is needed so
 Rust knows how to build your code to WebAssembly.
 
@@ -38,7 +46,8 @@ Perfect!
 Now that we set up the foundation we just need two more tools:
 
 1. `cargo-generate`
-2. `cargo-run-script`
+2. `cargo-run-script` (this is required to later optimize your contract for
+   production)
 
 To install those, run the following commands:
 

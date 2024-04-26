@@ -68,6 +68,8 @@ export default {
     ),
   },
   sidebar: {
+    autoCollapse: true,
+    defaultMenuCollapseLevel: 1,
     titleComponent: ({ title, route }) => {
       const [isDocRoute, setIsDocRoute] = useState(false);
 

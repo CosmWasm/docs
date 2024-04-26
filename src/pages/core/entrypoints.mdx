@@ -26,6 +26,14 @@ CosmWasm defines the handy `#[entry_point]` attribute macro. You simply annotate
 a function with it, and it automatically generates code that communicates to the
 VM: "Hey! This is an entrypoint, please use it when needed!"
 
+<Callout>
+  When defining an entrypoint, it is important to use the correct types for the
+  parameters and return type. Incorrect types will cause errors when trying to
+  call the contract.
+  <br /> In the following sections we will take a look at all possible entrypoints,
+  including the correct function signature.
+</Callout>
+
 ```rust
 #[entry_point]
 pub fn instantiate(

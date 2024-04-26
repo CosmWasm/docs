@@ -1,0 +1,48 @@
+---
+tags: ["tutorial", "component"]
+---
+
+# Tags
+
+A [front matter](https://github.com/jxson/front-matter) attribute allows us to
+define tags per file and a custom React component shows them as pills on the
+website.
+
+## Example
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+## Usage
+
+```mdx filename="tags.mdx"
+---
+tags: ["tutorial", "component"]
+---
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+# My new article
+
+This is an example article with tags.
+```
+
+Please use array syntax for the front matter tags even if it's only a single
+tag:
+
+```mdx filename="single-tag.mdx"
+---
+tags: ["my-tag"]
+---
+
+import Tags from "@/components/Tags";
+
+<Tags />
+
+# My newest article
+
+This is an example article with a single tag.
+```

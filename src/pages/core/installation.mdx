@@ -1,0 +1,68 @@
+---
+tags: ["core"]
+---
+
+import { Callout } from "nextra/components";
+import Tags from "@/components/Tags";
+
+<Tags />
+
+# Installation
+
+## Setting up the environment
+
+Before diving right into writing code, you need to install some tooling in order
+to compile your contract.
+
+CosmWasm is luckily rather self-contained and therefore needs little external
+tooling to compile.  
+Our only external dependency is Rust, which you need to install for your
+platform.
+
+<Callout>
+  We recommend installing Rust using the official [rustup
+  installer](https://rustup.rs). This makes it easy to stay on the most recent
+  Rust version and to install compiler targets.
+</Callout>
+
+After installing Rust, you need to add the WebAssembly target. This is needed so
+Rust knows how to build your code to WebAssembly.
+
+To install the target using `rustup`, run the following command:
+
+```sh
+rustup target add wasm32-unknown-unknown
+```
+
+Perfect!  
+Now that we set up the foundation we just need two more tools:
+
+1. `cargo-generate`
+2. `cargo-run-script`
+
+To install those, run the following commands:
+
+```sh
+cargo install cargo-generate --features vendored-openssl
+cargo install cargo-run-script
+```
+
+## Setting up the contract
+
+Now that the environment is all done, let's create the project!
+
+Luckily you don't need to start from scratch, we already took care of the most
+tedious parts of setting up a new project in form of a template!
+
+In order to generate a fresh project, run this command and off we go:
+
+<Callout>
+  Make sure to change `PROJECT_NAME` to the name of your contract!
+</Callout>
+
+```sh
+cargo generate --git https://github.com/CosmWasm/cw-template.git --name PROJECT_NAME
+```
+
+Now you should have a ready contract project in a new folder called
+`PROJECT_NAME` (or whatever you changed it to).

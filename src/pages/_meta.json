@@ -2,5 +2,6 @@
   "index": "Welcome",
   "sylvia": "Sylvia",
   "cw-multi-test": "MultiTest",
+  "core": "CosmWasm Core",
   "how-to-doc": "How to doc"
 }

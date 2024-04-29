@@ -1,11 +1,3 @@
----
-tags: []
----
-
-import Tags from "@/components/Tags";
-
-<Tags />
-
 # Introduction
 
 Testing tools for multi-contract interactions.

@@ -1,11 +1,3 @@
----
-tags: []
----
-
-import Tags from "@/components/Tags";
-
-<Tags />
-
 # Getting started
 
 ---

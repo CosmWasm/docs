@@ -1,4 +1,5 @@
 import TagDots from "@/components/TagDots";
+import Tags from "@/components/Tags";
 import { iceland } from "@/utils/fonts";
 import { useConfig } from "nextra-theme-docs";
 import { useEffect, useState } from "react";
@@ -67,6 +68,12 @@ export default {
       </div>
     ),
   },
+  main: ({ children }) => (
+    <>
+      <Tags />
+      {children}
+    </>
+  ),
   sidebar: {
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,

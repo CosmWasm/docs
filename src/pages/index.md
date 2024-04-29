@@ -2,10 +2,6 @@
 tags: ["intro"]
 ---
 
-import Tags from "@/components/Tags";
-
-<Tags />
-
 # Welcome
 
 CosmWasm is a smart contract platform focusing on security, performance, and

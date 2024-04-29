@@ -5,3 +5,25 @@ tags: ["core", "entrypoints"]
 import { Callout } from "nextra/components";
 
 # Execute
+
+Execute pretty much does what it says on the tin: It executes some routine in
+your contract after a remote (either another contract or some client) sent a
+message.  
+What sets it apart from other functions is that the contract has mutable access
+to the underlying storage.  
+This allows you to, for example, increment a counter or add a user to a lottery.
+
+## Definition
+
+```rust filename="contract.rs"
+#[entry_point]
+pub fn execute(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    msg: ExecuteMsg,
+) -> StdResult<Response> {
+  // Increment some counter, register a user, spread liberty for super earth!
+  Ok(Response::new())
+}
+```

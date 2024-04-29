@@ -5,3 +5,23 @@ tags: ["core", "entrypoints"]
 import { Callout } from "nextra/components";
 
 # Query
+
+In the previous section we talked about the
+[`execute` endpoint](./execute.mdx).  
+The `query` endpoint is actually pretty similar to execute with one key
+difference: The storage is only accessible immutably.
+
+This means you can only _read_ from the storage but not _write_ to it.
+
+## Definition
+
+```rust filename="contract.rs"
+#[entry_point]
+pub fn query(
+    _deps: Deps,
+    _env: Env,
+    _msg: QueryMsg,
+) -> StdResult<QueryResponse> {
+  Ok(QueryResponse::default())
+}
+```

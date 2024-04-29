@@ -1,5 +1,6 @@
 {
   "index": "Welcome",
+  "core": "CosmWasm Core",
   "sylvia": "Sylvia",
   "cw-multi-test": "MultiTest",
   "how-to-doc": "How to doc"

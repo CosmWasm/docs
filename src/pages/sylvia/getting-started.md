@@ -1,7 +1,3 @@
----
-tags: []
----
-
 # Getting started
 
 To work with CosmWasm smart contract, you will need Rust installed on your
@@ -13,8 +9,8 @@ We assume you are working with a stable Rust channel in this book.
 Additionally, you will need the **Wasm** Rust compiler backend installed to
 build Wasm binaries. To install it, run the following:
 
-```shell,ignore
-rustup target add wasm32-unknown-unknown
+```shell
+$ rustup target add wasm32-unknown-unknown
 ```
 
 ## Check contract utility

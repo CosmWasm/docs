@@ -1,5 +1,5 @@
 ---
-tags: ["ibc", "ibc-msg", "transfer", "ics20"]
+tags: ["ibc", "ics20"]
 ---
 
 import Tags from "@/components/Tags";
@@ -12,7 +12,7 @@ The easiest way to use IBC is to use an already existing protocol. These
 protocols can either be implemented by the chain itself or by another contract.
 
 One example for the former is the `IbcMsg::Transfer` message, which causes an
-ICS 20 transfer. This message is included in the CosmWasm standard library and
+ICS20 transfer. This message is included in the CosmWasm standard library and
 causes the chain's IBC Transfer module to send tokens to another chain.
 
 An example for the latter is the Nois protocol. It provides a proxy contract
@@ -21,9 +21,35 @@ that handles all the IBC logic for you. For more information on Nois, check the
 
 ## Example: `IbcMsg::Transfer`
 
-TODO
+To initiate an ICS20 transfer, you need to attach an `IbcMsg::Transfer` message
+to your contract response like this:
 
-- add example code
+```rust
+// construct the transfer message
+let msg = IbcMsg::Transfer {
+    channel_id,
+    to_address,
+    amount: Coin::new(123u128, "ucosm"),
+    timeout: env.block.time.plus_seconds(PACKET_LIFETIME).into(),
+    memo: None,
+};
+
+// attach the message and return the response
+Response::new().add_message(msg)
+```
+
+The `channel_id` is the identifier of the channel you want to use for the
+transfer. Which channel that should be depends on the source and destination
+chain. You can find out the correct channel ID using a
+[block explorer](https://www.mintscan.io/cosmos/relayers). The `to_address` is
+the address on the destination chain that should receive the tokens. The
+`amount` is the number of tokens to send. The `timeout` can either be a
+timestamp or a block height. The `memo` is an optional field that can be used to
+attach a message to the transfer. It is often used for additional functionality
+like [packet-forward-middleware] or IBC Callbacks.
+
+[packet-forward-middleware]:
+  https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware
 
 ## ADR-8: IBC Callbacks
 

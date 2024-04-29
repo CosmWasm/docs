@@ -1,0 +1,87 @@
+import { Callout } from "nextra/components";
+
+# Testing onion
+
+## Test placement
+
+### Unit tests placed directly in source files under `src` directory
+
+<Callout emoji="🎯" type="info">
+  **Purpose**: Testing private functionality of the smart contract.
+</Callout>
+
+Non-trivial smart contracts implement all required (public) entry points, as
+well as multiple functions that are used internally within these entry points.
+Internally-used functions like these are typically defined as private within the
+smart contract's source file, which means there is no direct way to test them
+from outside of this file. Such unit tests are usually placed in a separate
+submodule or directly as a test function.
+
+**Examples**:
+
+```rust
+// example of a test defined directly as a function
+```
+
+```rust
+// example of a test function placed in submodule
+```
+
+### Tests placed in separate module under `src` directory
+
+<Callout emoji="🎯" type="info">
+  Testing the public functionality of the module used by smart contract.
+</Callout>
+
+Testing public functionality of the module but private functionality of the
+whole library. Private functionality of the source file is not visible for these
+tests.
+
+```rust
+// example of test functions placed in a separate module under `src` directory
+```
+
+**Examples**:
+
+### Tests placed in dedicated `tests` directory
+
+<Callout emoji="🎯" type="info">
+  Testing the public functionality (entry points) of a single smart contract.
+</Callout>
+
+- test public functionality of the library (library integration tests)
+- private functionality of the library is not visible for these tests
+
+**Examples**:
+
+```rust
+// example of such tests
+```
+
+### Tests placed in a dedicated crate inside workspace
+
+<Callout emoji="🎯" type="info">
+  Testing interactions among multiple smart contracts running on the same
+  blockchain.
+</Callout>
+
+**Examples**:
+
+```rust
+// example of such crate
+```
+
+### Tests placed in a separated project (???)
+
+<Callout emoji="🎯" type="info">
+  Testing interactions among multiple smart contracts running on different
+  blockchains.
+</Callout>
+
+IBC case.
+
+**Examples**:
+
+```rust
+// example of such crate
+```

@@ -66,3 +66,6 @@ next-env.d.ts
 
 # Ignore JetBrains tools
 .idea
+
+# Ignore Rust target directory
+target

@@ -2,10 +2,6 @@
 tags: ["intro", "tutorial"]
 ---
 
-import Tags from "@/components/Tags";
-
-<Tags />
-
 # How to doc
 
 The next articles will teach you the basics for writing documentation using
@@ -17,9 +13,6 @@ The next articles will teach you the basics for writing documentation using
   attracting attention.
 - [Tabs](/how-to-doc/tabs): a Tabs component for switching between related
   content.
-
-Please use the `.mdx` extension for the documentation files, so that tags can be
-properly generated and you can use React components inside.
 
 You can also check out Nextra's [official docs](https://nextra.site/docs) for
 more information.

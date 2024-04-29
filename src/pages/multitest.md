@@ -2,10 +2,6 @@
 tags: []
 ---
 
-import Tags from "@/components/Tags";
-
-<Tags />
-
 # Introduction
 
 [**CosmWasm MultiTest**](https://github.com/CosmWasm/cw-multi-test) is a suite

@@ -1,11 +1,3 @@
----
-tags: []
----
-
-import Tags from "@/components/Tags";
-
-<Tags />
-
 # Introduction to Sylvia
 
 Sylvia is a framework for building CosmWasm smart contracts with a high level of

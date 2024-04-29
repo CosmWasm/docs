@@ -13,9 +13,10 @@ concepts:
 
 - **Port**: An identifier that corresponds to a single module on a chain. One
   module can have multiple ports. Each contract has its own unique port.
-- **Channel**: A connection between two blockchains that allows them to send
-  messages to each other. Each port can have multiple channels.
-- **Relayer**: A service that is responsible for relaying messages between
+- **Channel**: A connection between two ports on different blockchains that
+  allows them to send packets to each other. Each port can have multiple
+  channels.
+- **Relayer**: A service that is responsible for relaying packets between
   blockchains. Anyone can run a relayer.
 - **Packet**: A piece of binary data that is sent through a channel. It can time
   out if it is not delivered within a certain time frame.

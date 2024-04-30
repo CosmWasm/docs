@@ -48,7 +48,7 @@ debugging smart contracts in various scenarios.
 Topics to cover:
 
 - ✅ [Installation](multitest/installation) (1)
-- [ ] Getting started (2)
+- 🚧 [Getting started](multitest/getting-started) (2)
 - [ ] ? (3)
 - [ ] ? (4)
 - [ ] ? (5)

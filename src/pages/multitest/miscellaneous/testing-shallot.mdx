@@ -1,36 +1,39 @@
 import { Callout } from "nextra/components";
 
-# Testing onion
+# Testing shallot
+
+![shallot](./shallot.jpg)
+
+<Callout emoji="🥁" type="warning">
+  Elaborate more about this idea, especially in the context of testing smart
+  contracts.
+</Callout>
 
 ## Test placement
 
-### Unit tests placed directly in source files under `src` directory
+### Unit tests placed directly in a smart contract source file
 
 <Callout emoji="🎯" type="info">
-  **Purpose**: Testing private functionality of the smart contract.
+  **Testing the private functionality of the smart contract.**
 </Callout>
 
-Non-trivial smart contracts implement all required (public) entry points, as
-well as multiple functions that are used internally within these entry points.
-Internally-used functions like these are typically defined as private within the
-smart contract's source file, which means there is no direct way to test them
-from outside of this file. Such unit tests are usually placed in a separate
-submodule or directly as a test function.
+Non-trivial smart contracts implement required _public_ entry points, as well as
+multiple functions that are used internally within these entry points. Internal
+functions like these are typically defined as _private_ within the smart
+contract's source file, which means there is no direct way to test them from
+outside of this file. By convention, such unit tests are placed in a separate
+submodule named **tests** within the smart contract's source file.
 
 **Examples**:
 
 ```rust
-// example of a test defined directly as a function
+// Example of tests placed in submodule
 ```
 
-```rust
-// example of a test function placed in submodule
-```
-
-### Tests placed in separate module under `src` directory
+### Unit tests placed in a separate module outside smart contract source file
 
 <Callout emoji="🎯" type="info">
-  Testing the public functionality of the module used by smart contract.
+  Testing the functionality of module used by smart contract.
 </Callout>
 
 Testing public functionality of the module but private functionality of the

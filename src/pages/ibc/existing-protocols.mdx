@@ -4,18 +4,19 @@ tags: ["ibc", "ics20"]
 
 import { Callout } from "nextra/components";
 
-# Using Existing Protocols
+# Using existing protocols
 
 The easiest way to use IBC is to use an already existing protocol. These
 protocols can either be implemented by the chain itself or by another contract.
 
 One example for the former is the `IbcMsg::Transfer` message, which causes an
 ICS20 transfer. This message is included in the CosmWasm standard library and
-causes the chain's IBC Transfer module to send tokens to another chain.
+causes the chain's IBC transfer module to send tokens to another chain.
 
 An example for the latter is the Nois protocol. It provides a proxy contract
 that handles all the IBC logic for you. For more information on Nois, check the
 [Nois documentation](https://docs.nois.network/dapp_devs/use_nois_randomness.html).
+We will later cover how to implement your own IBC protocol.
 
 ## Example: `IbcMsg::Transfer`
 
@@ -27,7 +28,7 @@ to your contract response like this:
 let msg = IbcMsg::Transfer {
     channel_id,
     to_address,
-    amount: Coin::new(123u128, "ucosm"),
+    amount: Coin::new(123u128, "ucoin"),
     timeout: env.block.time.plus_seconds(PACKET_LIFETIME).into(),
     memo: None,
 };
@@ -39,20 +40,97 @@ Response::new().add_message(msg)
 The `channel_id` is the identifier of the channel you want to use for the
 transfer. Which channel that should be depends on the source and destination
 chain. You can find out the correct channel ID using a
-[block explorer](https://www.mintscan.io/cosmos/relayers). The `to_address` is
-the address on the destination chain that should receive the tokens. The
-`amount` is the number of tokens to send. The `timeout` can either be a
-timestamp or a block height. The `memo` is an optional field that can be used to
-attach a message to the transfer. It is often used for additional functionality
-like [packet-forward-middleware] or IBC Callbacks.
+[block explorer](https://www.mintscan.io/cosmos/relayers).
+
+The `to_address` is the address on the _destination chain_ that should receive
+the tokens.
+
+The `amount` is the number and denomination of tokens to send. On the
+destination chain, the same amount will be received, but the denomination will
+be of the form `ibc/HASH`, where `HASH` is a SHA256 hash uniquely identifying
+the channel and the source chain denomination. To learn more about this, take a
+look at the [Cosmos Developer Portal].
+
+The `timeout` can either be a timestamp or a block height, as measured on the
+destination chain. It is used to prevent the transfer from being stuck in limbo
+if the destination chain does not receive the packet.
+
+The `memo` is an optional field that can be used to attach a message to the
+transfer. It is often used for additional functionality like
+[packet-forward-middleware] or IBC Callbacks.
 
 [packet-forward-middleware]:
   https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware
+[Cosmos Developer Portal]:
+  https://tutorials.cosmos.network/tutorials/6-ibc-dev/#understand-ibc-denoms
 
 ## ADR-8: IBC Callbacks
 
+When you send an ICS20 transfer as described above, you do not get any feedback
+on whether the transfer was successful or not and the destination does not get
+informed of its newfound wealth. To solve this problem, the ADR-8 specification
+was created. On the source chain, it provides callbacks when an IBC packet was
+acknowledged or timed out. On the destination chain, it triggers callbacks when
+a packet is received.
+
+<Callout>
+  To receive callbacks, the chain needs to support IBC Callbacks for the message
+  type.
+</Callout>
+
+### Enabling IBC Callbacks for a message
+
+You need to explicitly opt-in to IBC Callbacks for each message. In order to do
+this, you need to add some metadata to the message, including who should receive
+the callbacks.
+
+<Callout>
+  The exact data format and how to add it to the message can vary, but for the
+  `IbcMsg::Transfer` message, this data is in JSON format and needs to be added
+  to the `memo` field.
+</Callout>
+
+To make this as easy as possible, we provide a helper type `IbcCallbackRequest`
+that you can use to generate the JSON:
+
+```rust
+let _ = IbcMsg::Transfer {
+    to_address,
+    channel_id,
+    amount: Coin::new(10u32, "ucoin"),
+    timeout: Timestamp::from_seconds(12345).into(),
+    memo: Some(to_json_string(&IbcCallbackRequest::both(IbcSrcCallback {
+        address: env.contract.address,
+        gas_limit: None,
+    }, IbcDstCallback {
+        address: to_address.clone(),
+        gas_limit: None,
+    })).unwrap()),
+};
+```
+
+As you can see, you can request callbacks for both the source and destination
+chain. However, you can also request callbacks for only one of them. For this,
+you need to provide the address that should receive the callback and you can
+optionally set a gas limit for the callback execution. Please take a look at the
+`IbcCallbackRequest` docs for more information.
+
+<Callout>
+  The `address` of the source callback always needs to be the contract address
+  that sends the message (`env.contract.address`). Otherwise, the callback will
+  error and the contract will not be called.
+</Callout>
+
+### Entrypoints
+
 TODO
 
-- needs to be supported by the chain
 - two new entrypoints
-- needs to be enabled for each message (show example transfer)
+  - `ibc_source_chain_callback`
+  - `ibc_destination_chain_callback`
+
+---
+
+Notes:
+
+- add link to IbcCallbackRequest docs when merged and deployed

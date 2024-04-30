@@ -42,3 +42,23 @@ testing complex interactions where multiple smart contracts interact with each
 other. By the end of these chapters, you will have a comprehensive understanding
 of using [MultiTest](https://github.com/CosmWasm/cw-multi-test) for testing and
 debugging smart contracts in various scenarios.
+
+---
+
+Topics to cover:
+
+- ✅ Installation (1)
+- [ ] Getting started (2)
+- [ ] ? (3)
+- [ ] ? (4)
+- [ ] ? (5)
+- [ ] ? (6)
+- [ ] ? (7)
+- [ ] ? (8)
+- [ ] ? (9)
+- [ ] ? (10)
+- [ ] ? (11)
+- [ ] ? (12)
+- [ ] ? (13)
+- [ ] ? (14)
+- [ ] ? (15)

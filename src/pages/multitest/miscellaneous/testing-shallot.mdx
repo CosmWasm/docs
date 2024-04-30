@@ -36,24 +36,17 @@ submodule named **tests** within the smart contract's source file.
   Testing the functionality of module used by smart contract.
 </Callout>
 
-Testing public functionality of the module but private functionality of the
-whole library. Private functionality of the source file is not visible for these
-tests.
+**Examples**:
 
 ```rust
 // example of test functions placed in a separate module under `src` directory
 ```
 
-**Examples**:
-
-### Tests placed in dedicated `tests` directory
+### Integration tests placed in dedicated `tests` directory
 
 <Callout emoji="🎯" type="info">
   Testing the public functionality (entry points) of a single smart contract.
 </Callout>
-
-- test public functionality of the library (library integration tests)
-- private functionality of the library is not visible for these tests
 
 **Examples**:
 
@@ -61,7 +54,7 @@ tests.
 // example of such tests
 ```
 
-### Tests placed in a dedicated crate inside workspace
+### Interaction tests placed in a dedicated crate inside a workspace
 
 <Callout emoji="🎯" type="info">
   Testing interactions among multiple smart contracts running on the same
@@ -74,14 +67,12 @@ tests.
 // example of such crate
 ```
 
-### Tests placed in a separated project (???)
+### Interoperability (communication) tests placed in ... ?
 
 <Callout emoji="🎯" type="info">
-  Testing interactions among multiple smart contracts running on different
+  Testing interactions among multiple smart contracts running on multiple
   blockchains.
 </Callout>
-
-IBC case.
 
 **Examples**:
 

@@ -1,1 +1,14 @@
+import { Callout } from "nextra/components";
+
 # Testing KPIs
+
+- Percentage of code coverage - **should be absolutely maximized** - until
+  reaching 100%.
+- Number of tests - **should be relatively minimized** - relatively, because the
+  goal is not to have 1 test file with thousands lines of code, somewhat
+  practical rule is TEST_LOC ≈ 2 \* SRC_LOC.
+
+<Callout emoji="☠️" type="warning">
+  Having 100% code coverage does not mean there are no logical errors in the
+  code.
+</Callout>

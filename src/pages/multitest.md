@@ -47,7 +47,7 @@ debugging smart contracts in various scenarios.
 
 Topics to cover:
 
-- ✅ Installation (1)
+- ✅ [Installation](multitest/installation) (1)
 - [ ] Getting started (2)
 - [ ] ? (3)
 - [ ] ? (4)
@@ -59,6 +59,6 @@ Topics to cover:
 - [ ] ? (10)
 - [ ] ? (11)
 - [ ] ? (12)
-- [ ] ? (13)
-- [ ] ? (14)
-- [ ] ? (15)
+- 🚧 [Testing KPIs](/multitest/miscellaneous/testing-kpis) (13)
+- 🚧 [Black-box testing](/multitest/miscellaneous/black-box-testing) (14)
+- 🚧 [Testing shallot](/multitest/miscellaneous/testing-shallot) (15)

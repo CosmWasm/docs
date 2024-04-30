@@ -93,3 +93,23 @@ You can also use `cargo expand` tool from CLI, like this:
 ```shell
 sylvia/examples/contracts/cw1-whitelist $ cargo expand --lib
 ```
+
+## Generate contract from template
+
+To make `Sylvia` contract easier to setup we created the
+[`sylvia template`](https://github.com/CosmWasm/sylvia-template).
+
+To use it install [`cargo-generate`](https://crates.io/crates/cargo-generate)
+
+```shell
+$ cargo install cargo-generate
+```
+
+then run
+
+```shell
+$ cargo generate CosmWasm/sylvia-template
+```
+
+You will be prompted to provide project name. Once you choose it you are ready
+to go.

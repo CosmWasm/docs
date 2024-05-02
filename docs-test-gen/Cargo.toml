@@ -12,5 +12,5 @@ pulldown-cmark = { version = "0.10.3", default-features = false }
 strum = { version = "0.26.2", features = ["derive"] }
 
 [dev-dependencies]
-cosmwasm-schema = "2.0.2"
-cosmwasm-std = "2.0.2"
+cosmwasm-schema = "*"
+cosmwasm-std = "*"

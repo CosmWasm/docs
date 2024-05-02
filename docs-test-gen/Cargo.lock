@@ -246,7 +246,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "docs-testing"
+name = "docs-test-gen"
 version = "0.1.0"
 dependencies = [
  "anyhow",

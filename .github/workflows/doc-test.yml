@@ -26,6 +26,10 @@ jobs:
           cargo update -p cosmwasm-schema-derive
           cargo update -p cosmwasm-schema
           cargo update -p cosmwasm-std
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            docs-test-gen
       - name: Extract all the tests
         working-directory: ./docs-test-gen
         run: cargo run

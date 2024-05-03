@@ -2,6 +2,8 @@
 tags: ["ibc"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Channel lifecycle
 
 A channel is a connection between two IBC ports that allows them to send packets
@@ -9,20 +11,117 @@ to each other. In this section, we will cover how to establish a channel and how
 to close it. Since a channel is a connection between two ports, it can connect
 two chain modules, two contracts, or a module and a contract.
 
+<Callout>
+  For readability, we will assume that both ends of the channel are contracts in
+  the following explanation.
+</Callout>
+
+Each channel also has an order that can be either `Ordered` or `Unordered`. This
+is encoded in the [`IbcOrder`] enum. In an ordered channel, packets have to be
+processed by the receiving chain in the order they were sent. In an unordered
+channel, packets are processed in the order of arrival.
+
+[`IbcOrder`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcOrder.html
+
 ## Establishing a channel
 
 In order to send packets between two chains, you need to establish a channel
 between them. This process involves two calls per chain. They are described
 below. Once the channel is established, you can start sending packets through
-it, which we will cover in the next section.
+it, which we will cover in the next section. To initiate the channel creation,
+you can use a relayer binary like [hermes] to execute the handshake between the
+two endpoints.
+
+<Callout>
+  Below we will refer to the two chains we want to connect as chain A and B. The
+  handshake process starts on chain A.
+</Callout>
+
+[hermes]:
+  https://hermes.informal.systems/tutorials/local-chains/add-a-new-relay-path.html#3-channel-identifiers
 
 ### Channel open
 
-{/* `ibc_channel_open` called on both chains, explain differences */}
+When the channel creation is started by the relayer, the first call is made to
+the contract on chain A. This call is made to the `ibc_channel_open` entrypoint
+with the `IbcChannelOpenMsg::OpenInit` variant. After that, the same entrypoint
+is called on chain B with the `IbcChannelOpenMsg::OpenTry` variant. Take a look
+at the following example and the [`IbcChannelOpenMsg` documentation].
+
+<Callout>
+  Note that returning an error from one of the endpoints will cause the channel
+  handshake to fail.
+</Callout>
+
+```rust template="core"
+/// enforces ordering and versioning constraints
+#[entry_point]
+pub fn ibc_channel_open(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelOpenMsg
+) -> StdResult<IbcChannelOpenResponse> {
+    let channel = msg.channel();
+
+    // here we should check if the channel is what we expect (e.g. the order)
+    if channel.order != IbcOrder::Ordered {
+        return Err(StdError::generic_err("only ordered channels are supported"));
+    }
+    // the OpenTry variant (on chain B) also has the counterparty version
+    // we should check if it is what we expect
+    if let Some(counter_version) = msg.counterparty_version() {
+        if counter_version != IBC_APP_VERSION {
+            return Err(StdError::generic_err(format!(
+                "Counterparty version must be `{IBC_APP_VERSION}`"
+            )));
+        }
+    }
+
+    // return the channel version we support
+    Ok(Some(Ibc3ChannelOpenResponse {
+        version: IBC_APP_VERSION.to_string(),
+    }))
+}
+
+const IBC_APP_VERSION: &str = "my-protocol-v1";
+```
+
+In the example above, we return the same version we expect from the
+counterparty, but you can return a different version if the counterparty accepts
+it. The version is used to ensure that both chains are running the protocol that
+the other one expects. You can also return `None` if you just want to accept the
+counterparty version.
+
+[`IbcChannelOpenMsg` documentation]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
 
 ### Channel connect
 
-{/* `ibc_channel_connect` called on both chains, explain differences */}
+After the `OpenTry` variant is called on chain B, the relayer calls the
+`ibc_channel_connect` entrypoint, first with the `IbcChannelConnectMsg::OpenAck`
+variant on chain A, then the `IbcChannelConnectMsg::OpenConfirm` variant on
+chain B. The full data this entrypoint receives can be seen in the
+[`IbcChannelConnectMsg`] documentation. Here is more example code:
+
+```rust template="core"
+pub fn ibc_channel_connect(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelConnectMsg,
+) -> StdResult<IbcBasicResponse> {
+    let channel = msg.channel();
+
+    // you probably want to save the `channel.endpoint.channel_id` to storage,
+    // so you can use it when sending packets
+    // TODO: add storage code above using storey?
+
+    Ok(IbcBasicResponse::new())
+}
+```
+
+[`IbcChannelConnectMsg`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelConnectMsg.html
 
 ## Closing a channel
 

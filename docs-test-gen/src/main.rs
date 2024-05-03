@@ -108,17 +108,18 @@ fn process_file(path: &Path) -> Result<()> {
     }
 
     for (idx, block) in blocks.iter().enumerate() {
-        let mdx_filename = path.file_name().unwrap().to_str().ok_or_else(|| {
+        let mdx_path = path.to_str().ok_or_else(|| {
             anyhow!(
                 "filename of path \"{}\" isn't valid utf-8. (really?! in the 21st century?)",
                 path.display()
             )
-        })?;
+        })?
+        .replace("../", "")
+        .replace('/', "_");
 
         let filename = format!(
-            "{}_{}_{}.{}",
-            mdx_filename.replace('.', "_"),
-            block.template,
+            "{}_{}.{}",
+            mdx_path.replace('.', "_"),
             idx,
             block.language.file_ext(),
         );

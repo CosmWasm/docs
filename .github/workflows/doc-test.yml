@@ -1,0 +1,38 @@
+name: Automated doc tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  extract-and-run:
+    name: "Extract and run tests"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Update crates we care about
+        working-directory: ./docs-test-gen
+        run: |
+          #cargo update -p cosmwasm-core
+          cargo update -p cosmwasm-crypto
+          cargo update -p cosmwasm-derive
+          cargo update -p cosmwasm-schema-derive
+          cargo update -p cosmwasm-schema
+          cargo update -p cosmwasm-std
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            docs-test-gen
+      - name: Extract all the tests
+        working-directory: ./docs-test-gen
+        run: cargo run
+      - name: Run all the generated tests
+        working-directory: ./docs-test-gen
+        run: cargo test

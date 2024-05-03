@@ -6,7 +6,17 @@ struct ExecuteMsg {}
 
 #[entry_point]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> StdResult<Response> {
-    {{code}}
+    // this weird construction allows us to return a StdResult<Response> or () in the code
+    // it tricks the compiler into infering the correct generics
+    trait ValidReturn {}
+    impl ValidReturn for StdResult<Response<Empty>> {}
+    impl ValidReturn for () {}
+    fn assert_valid_return(_: &impl ValidReturn) {}
+
+    let ret = { {{code}} };
+    assert_valid_return(&ret);
+
+    Ok(Response::default())
 }
 
 #[test]

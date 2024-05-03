@@ -1,0 +1,81 @@
+import { Callout } from "nextra/components";
+
+# Testing shallot
+
+![shallot](./shallot.jpg)
+
+<Callout emoji="🥁" type="warning">
+  Elaborate more about this idea, especially in the context of testing smart
+  contracts.
+</Callout>
+
+## Test placement
+
+### Unit tests placed directly in a smart contract source file
+
+<Callout emoji="🎯" type="info">
+  **Testing the private functionality of the smart contract.**
+</Callout>
+
+Non-trivial smart contracts implement required _public_ entry points, as well as
+multiple functions that are used internally within these entry points. Internal
+functions like these are typically defined as _private_ within the smart
+contract's source file, which means there is no direct way to test them from
+outside of this file. By convention, such unit tests are placed in a separate
+submodule named **tests** within the smart contract's source file.
+
+**Examples**:
+
+```rust
+// Example of tests placed in submodule
+```
+
+### Unit tests placed in a separate module outside smart contract source file
+
+<Callout emoji="🎯" type="info">
+  Testing the functionality of module used by smart contract.
+</Callout>
+
+**Examples**:
+
+```rust
+// example of test functions placed in a separate module under `src` directory
+```
+
+### Integration tests placed in dedicated `tests` directory
+
+<Callout emoji="🎯" type="info">
+  Testing the public functionality (entry points) of a single smart contract.
+</Callout>
+
+**Examples**:
+
+```rust
+// example of such tests
+```
+
+### Interaction tests placed in a dedicated crate inside a workspace
+
+<Callout emoji="🎯" type="info">
+  Testing interactions among multiple smart contracts running on the same
+  blockchain.
+</Callout>
+
+**Examples**:
+
+```rust
+// example of such crate
+```
+
+### Interoperability (communication) tests placed in ... ?
+
+<Callout emoji="🎯" type="info">
+  Testing interactions among multiple smart contracts running on multiple
+  blockchains.
+</Callout>
+
+**Examples**:
+
+```rust
+// example of such crate
+```

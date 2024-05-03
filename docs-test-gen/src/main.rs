@@ -1,20 +1,19 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use glob::glob;
 use phf::phf_map;
 use pulldown_cmark::{CodeBlockKind, Event, Tag, TagEnd};
-use std::fs;
-use strum::{EnumIter, IntoEnumIterator};
+use std::{fs, path::Path};
+use strum::{AsRefStr, EnumIter, IntoEnumIterator};
 
 static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "core" => include_str!("../templates/core.tpl"),
 };
 
-fn is_goey(fence: &str) -> bool {
-    fence.split_whitespace().any(|item| item.trim() == "go")
-}
-
-fn is_rusty(fence: &str) -> bool {
-    fence.split_whitespace().any(|item| item.trim() == "rust")
+#[inline]
+fn find_language(fence: &str) -> Option<Language> {
+    fence.split_whitespace().find_map(|item| {
+        Language::iter().find(|language| language.as_ref().eq_ignore_ascii_case(item))
+    })
 }
 
 fn get_template_name(fence: &str) -> Option<&str> {
@@ -32,7 +31,8 @@ fn get_template_name(fence: &str) -> Option<&str> {
     None
 }
 
-#[derive(Clone, Copy, Debug, EnumIter)]
+#[derive(AsRefStr, Clone, Copy, Debug, EnumIter)]
+#[strum(serialize_all = "lowercase")]
 enum Language {
     Go,
     Rust,
@@ -61,8 +61,83 @@ struct CodeBlock {
     code: String,
 }
 
+fn process_file(path: &Path) -> Result<()> {
+    let src = fs::read_to_string(path)?;
+    let parser = pulldown_cmark::Parser::new(&src);
+
+    let mut is_aggregating = false;
+
+    let mut language = Language::Rust;
+    let mut template = String::new();
+    let mut code = String::new();
+    let mut blocks = Vec::new();
+
+    for event in parser {
+        if is_aggregating {
+            if let Event::Text(ref text) = event {
+                code.push_str(text);
+            }
+        }
+
+        match event {
+            Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(fence))) => {
+                language = match find_language(&fence) {
+                    Some(found_lang) => found_lang,
+                    None => continue,
+                };
+
+                if let Some(template_name) = get_template_name(&fence) {
+                    is_aggregating = true;
+                    template = template_name.to_string();
+                }
+            }
+            Event::End(TagEnd::CodeBlock) if is_aggregating => {
+                is_aggregating = false;
+
+                blocks.push(CodeBlock {
+                    template: template.clone(),
+                    code: code.clone(),
+                    language,
+                });
+
+                template.clear();
+                code.clear();
+            }
+            _ => (),
+        }
+    }
+
+    for (idx, block) in blocks.iter().enumerate() {
+        let mdx_path = path.to_str().ok_or_else(|| {
+            anyhow!(
+                "filename of path \"{}\" isn't valid utf-8. (really?! in the 21st century?)",
+                path.display()
+            )
+        })?
+        .replace("../", "")
+        .replace('/', "_");
+
+        let filename = format!(
+            "{}_{}.{}",
+            mdx_path.replace('.', "_"),
+            idx,
+            block.language.file_ext(),
+        );
+        let path = format!("{}/{filename}", block.language.test_dir());
+
+        let template = TEMPLATES
+            .get(&block.template)
+            .ok_or_else(|| anyhow!("template \"{}\" not found", block.template))?;
+        let code = template.replace("{{code}}", &block.code);
+
+        fs::write(path, code)?;
+    }
+
+    Ok(())
+}
+
 fn main() -> Result<()> {
-    let mdx_files = glob("../src/**/*.mdx").unwrap();
+    let mdx_files = glob("../src/**/*.mdx")?;
 
     for language in Language::iter() {
         fs::create_dir_all(language.test_dir())?;
@@ -70,77 +145,7 @@ fn main() -> Result<()> {
 
     for path in mdx_files {
         let path = path?;
-
-        let src = fs::read_to_string(&path)?;
-        let parser = pulldown_cmark::Parser::new(&src);
-
-        let mut is_aggregating = false;
-
-        let mut language = Language::Rust;
-        let mut template = String::new();
-        let mut agg = String::new();
-        let mut blocks = Vec::new();
-
-        for event in parser {
-            if is_aggregating {
-                if let Event::Text(ref text) = event {
-                    agg.push_str(&text);
-                }
-            }
-
-            match event {
-                Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(fence))) => {
-                    if is_rusty(&fence) {
-                        language = Language::Rust;
-                    } else if is_goey(&fence) {
-                        language = Language::Go;
-                    } else {
-                        continue;
-                    }
-
-                    if let Some(template_name) = get_template_name(&fence) {
-                        is_aggregating = true;
-                        template = template_name.to_string();
-                    }
-                }
-                Event::End(TagEnd::CodeBlock) if is_aggregating => {
-                    is_aggregating = false;
-
-                    blocks.push(CodeBlock {
-                        template: template.clone(),
-                        code: agg.clone(),
-                        language,
-                    });
-
-                    template.clear();
-                    agg.clear();
-                }
-                _ => (),
-            }
-        }
-
-        if blocks.is_empty() {
-            continue;
-        }
-
-        for (idx, block) in blocks.iter().enumerate() {
-            // Actually write the tests into files or smth. Please kill me.
-
-            let mdx_filename = path.file_name().unwrap().to_str().unwrap();
-            let filename = format!(
-                "{}_{}_{}.{}",
-                mdx_filename.replace(".", "_"),
-                block.template,
-                idx,
-                block.language.file_ext(),
-            );
-            let path = format!("{}/{filename}", block.language.test_dir());
-
-            let template = TEMPLATES.get(&block.template).unwrap();
-            let code = template.replace("{{code}}", &block.code);
-
-            fs::write(path, code)?;
-        }
+        process_file(&path)?;
     }
 
     Ok(())

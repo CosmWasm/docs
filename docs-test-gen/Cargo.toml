@@ -13,4 +13,4 @@ strum = { version = "0.26.2", features = ["derive"] }
 
 [dev-dependencies]
 cosmwasm-schema = "*"
-cosmwasm-std = "*"
+cosmwasm-std = { version = "*", features = ["stargate", "staking", "cosmwasm_2_0"] }

@@ -7,6 +7,7 @@ use strum::{EnumIter, IntoEnumIterator};
 
 static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "core" => include_str!("../templates/core.tpl"),
+    "execute" => include_str!("../templates/execute.tpl"),
 };
 
 fn is_goey(fence: &str) -> bool {

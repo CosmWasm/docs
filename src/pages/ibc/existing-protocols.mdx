@@ -23,18 +23,18 @@ We will later cover how to implement your own IBC protocol.
 To initiate an ICS20 transfer, you need to attach an `IbcMsg::Transfer` message
 to your contract response like this:
 
-```rust
+```rust template="execute"
 // construct the transfer message
 let msg = IbcMsg::Transfer {
-    channel_id,
-    to_address,
+    channel_id: "channel-0".to_string(),
+    to_address: "cosmos1exampleaddress".to_string(),
     amount: Coin::new(123u128, "ucoin"),
-    timeout: env.block.time.plus_seconds(PACKET_LIFETIME).into(),
+    timeout: env.block.time.plus_seconds(60).into(),
     memo: None,
 };
 
 // attach the message and return the response
-Response::new().add_message(msg)
+Ok(Response::new().add_message(msg))
 ```
 
 The `channel_id` is the identifier of the channel you want to use for the
@@ -93,10 +93,12 @@ the callbacks.
 To make this as easy as possible, we provide a helper type `IbcCallbackRequest`
 that you can use to generate the JSON:
 
+{/* TODO: add `template="execute"` once IBC Callbacks are merged */}
+
 ```rust
 let _ = IbcMsg::Transfer {
-    to_address,
-    channel_id,
+    to_address: "cosmos1exampleaddress".to_string(),
+    channel_id: "channel-0".to_string(),
     amount: Coin::new(10u32, "ucoin"),
     timeout: Timestamp::from_seconds(12345).into(),
     memo: Some(to_json_string(&IbcCallbackRequest::both(IbcSrcCallback {

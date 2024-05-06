@@ -1,8 +1,9 @@
 import TagDots from "@/components/TagDots";
-import Tags from "@/components/Tags";
+import TagPills from "@/components/TagPills";
 import { iceland } from "@/utils/fonts";
 import { useConfig } from "nextra-theme-docs";
 import { useEffect, useState } from "react";
+import { cn } from "./lib/utils";
 
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -70,7 +71,7 @@ export default {
   },
   main: ({ children }) => (
     <>
-      <Tags />
+      <TagPills />
       {children}
     </>
   ),
@@ -86,9 +87,10 @@ export default {
 
       return (
         <div
-          className={
-            !isDocRoute && title === "How to doc" ? "how-to-doc-dir" : ""
-          }
+          className={cn(
+            "group",
+            !isDocRoute && title === "How to doc" ? "how-to-doc-dir" : "",
+          )}
         >
           <span>{title}</span> <TagDots route={route} />
         </div>

@@ -13,6 +13,9 @@ struct ExecuteMsg {}
 #[cw_serde]
 struct MigrateMsg {}
 
+#[cw_serde]
+struct SudoMsg {}
+
 #[test]
 fn doctest() {
   {{code}}

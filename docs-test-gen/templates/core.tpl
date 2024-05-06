@@ -10,6 +10,9 @@ struct QueryMsg {}
 #[cw_serde]
 struct ExecuteMsg {}
 
+#[cw_serde]
+struct MigrateMsg {}
+
 #[test]
 fn doctest() {
   {{code}}

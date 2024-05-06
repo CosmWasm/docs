@@ -5,3 +5,51 @@ tags: ["core", "entrypoints"]
 import { Callout } from "nextra/components";
 
 # Migrate
+
+This is another special endpoint. It is, just like `instantiate` not called
+frequently.
+
+`migrate` is pretty much only called once you upload a new version to the chain
+and lets you run all the required changes to the storage.
+
+Let's say your storage has the following layout, expressed as JSON for
+simplicitys sake:
+
+```json filename="structure.json"
+{
+  "user_count": 205,
+  "call_count": 543,
+  "balance": 43
+}
+```
+
+But then you notice "Hey! Why don't I nest all the counts into an own object?
+That way I don't have that redundant postfix, making the keys smaller".
+
+So you go ahead and rework your logic to query the data from the following
+structure:
+
+```json filename="structure.json"
+{
+  "count": {
+    "user": 205,
+    "call": 543
+  },
+  "balance": 43
+}
+```
+
+But your storage on-chain still stores the old format. You need to somehow
+transform it.
+
+That's what you do in the `migrate` entrypoint. You transform the structure of
+the storage in there.
+
+## Definition
+
+```rust filename="contract.rs" template="core"
+#[entry_point]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
+    Ok(Response::default())
+}
+```

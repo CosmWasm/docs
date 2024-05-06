@@ -5,3 +5,23 @@ tags: ["core", "entrypoints"]
 import { Callout } from "nextra/components";
 
 # Reply
+
+The `reply` endpoint is another special one.
+
+It relates to CosmWasm's actor model which dictates how you call other contracts
+and interact with them.
+
+<Callout>TODO: Link to the actor model section once we have one</Callout>
+
+This endpoint gets invoked when the execution of an external contract you called
+finished. The reply parameter then lets you inspect and work with the response
+the contract produced.
+
+## Definition
+
+```rust filename="contract.rs" template="core"
+#[entry_point]
+pub fn reply(deps: DepsMut, env: Env, msg: cosmwasm_std::Reply) -> StdResult<Response> {
+    Ok(Response::default())
+}
+```

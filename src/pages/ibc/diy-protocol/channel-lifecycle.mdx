@@ -1,5 +1,5 @@
 ---
-tags: ["ibc"]
+tags: ["ibc", "ics4"]
 ---
 
 import { Callout } from "nextra/components";
@@ -12,49 +12,57 @@ to close it. Since a channel is a connection between two ports, it can connect
 two chain modules, two contracts, or a module and a contract.
 
 <Callout>
-  For readability, we will assume that both ends of the channel are contracts in
-  the following explanation.
+  For the sake of readability, we will assume that both ends of the channel are
+  contracts in the following explanation. For more general information about the
+  channel lifecycle, see the [ICS 004 specification] or [IBC channel docs].
 </Callout>
 
 Each channel also has an order that can be either `Ordered` or `Unordered`. This
-is encoded in the [`IbcOrder`] enum. In an ordered channel, packets have to be
-processed by the receiving chain in the order they were sent. In an unordered
-channel, packets are processed in the order of arrival.
+is encoded in the [`IbcOrder`] enum. In an ordered channel, packets must be
+processed by the receiving chain in the order in which they were sent. In an
+unordered channel, packets are processed in the they arrive.
 
 [`IbcOrder`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcOrder.html
+[ICS 004 specification]:
+  https://github.com/cosmos/ibc/tree/main/spec/core/ics-004-channel-and-packet-semantics#channel-lifecycle-management
+[IBC channel docs]: https://ibc.cosmos.network/main/ibc/overview#channels
 
 ## Establishing a channel
 
-In order to send packets between two chains, you need to establish a channel
-between them. This process involves two calls per chain. They are described
-below. Once the channel is established, you can start sending packets through
-it, which we will cover in the next section. To initiate the channel creation,
-you can use a relayer binary like [hermes] to execute the handshake between the
-two endpoints.
+To send packets between two chains, you need to establish a channel between
+them. This process involves two calls per chain. These are described below. Once
+the channel is established, you can start sending packets through it, which we
+will cover in the next section. To initiate the channel creation, you can use a
+relayer binary such as [hermes] to perform the handshake between the two
+endpoints. Returning an error from one of the calls will cause the channel
+handshake to fail.
 
 <Callout>
-  Below we will refer to the two chains we want to connect as chain A and B. The
-  handshake process starts on chain A.
+  In the following, we will refer to the two chains we want to connect as chain
+  A and B. The handshake starts on chain A.
 </Callout>
+
+We will take a closer look at the handshake process, but here is a brief summary
+of the steps:
+
+1. `ibc_channel_open` on chain A with `IbcChannelOpenMsg::OpenInit`
+2. `ibc_channel_open` on chain B with `IbcChannelOpenMsg::OpenTry`
+3. `ibc_channel_connect` on chain A with `IbcChannelConnectMsg::OpenAck`
+4. `ibc_channel_connect` on chain B with `IbcChannelConnectMsg::OpenConfirm`
 
 [hermes]:
   https://hermes.informal.systems/tutorials/local-chains/add-a-new-relay-path.html#3-channel-identifiers
 
 ### Channel open
 
-When the channel creation is started by the relayer, the first call is made to
-the contract on chain A. This call is made to the `ibc_channel_open` entrypoint
-with the `IbcChannelOpenMsg::OpenInit` variant. After that, the same entrypoint
-is called on chain B with the `IbcChannelOpenMsg::OpenTry` variant. Take a look
-at the following example and the [`IbcChannelOpenMsg` documentation].
+When the channel creation is started by the relayer, the first call to the
+contract is made on chain A. This call is made to the `ibc_channel_open`
+entrypoint with the `IbcChannelOpenMsg::OpenInit` variant. Then the same
+entrypoint is called on chain B with the `IbcChannelOpenMsg::OpenTry` variant.
+See the following example and the [`IbcChannelOpenMsg` documentation].
 
-<Callout>
-  Note that returning an error from one of the endpoints will cause the channel
-  handshake to fail.
-</Callout>
-
-```rust template="core"
+```rust filename="ibc.rs" template="core"
 /// enforces ordering and versioning constraints
 #[entry_point]
 pub fn ibc_channel_open(
@@ -104,7 +112,7 @@ variant on chain A, then the `IbcChannelConnectMsg::OpenConfirm` variant on
 chain B. The full data this entrypoint receives can be seen in the
 [`IbcChannelConnectMsg`] documentation. Here is more example code:
 
-```rust template="core"
+```rust filename="ibc.rs" template="core"
 pub fn ibc_channel_connect(
     deps: DepsMut,
     env: Env,
@@ -125,10 +133,27 @@ pub fn ibc_channel_connect(
 
 ## Closing a channel
 
----
+Similarly to opening a channel, closing a channel involves a handshake process.
+However, this time the process only involves one call per chain. The relayer
+initiates the process by calling the `ibc_channel_close` entrypoint with the
+`IbcChannelCloseMsg::CloseInit` variant on chain A, followed by the same
+entrypoint with the `IbcChannelCloseMsg::CloseConfirm` on chain B. The full data
+can be seen in the [`IbcChannelCloseMsg`] documentation. Here is an example:
 
-Notes:
+```rust filename="ibc.rs" template="core"
+#[entry_point]
+pub fn ibc_channel_close(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelCloseMsg,
+) -> StdResult<IbcBasicResponse> {
+    Err(StdError::generic_err("closing not allowed"))
+}
+```
 
-- reference basic concepts
-- relayer initiates this
-- explain ibc_channel_open & ibc_channel_connect
+In this entrypoint, you can handle the closing process as you see fit. This can
+involve cleaning up any storage related to the channel or simply returning an
+error to prevent the channel from closing.
+
+[`IbcChannelCloseMsg`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelCloseMsg.html

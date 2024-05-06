@@ -8,10 +8,11 @@ import { Callout } from "nextra/components";
 
 Execute pretty much does what it says on the tin: It executes some routine in
 your contract after a remote (either another contract or some client) sent a
-message.  
-What sets it apart from other functions is that the contract has mutable access
-to the underlying storage.  
-This allows you to, for example, increment a counter or add a user to a lottery.
+message.
+
+This function is called when some wants you to, for example, increment a counter
+or add a user to a lottery. Anything that might modify the state of the
+contract.
 
 ## Definition
 

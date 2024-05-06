@@ -4,7 +4,7 @@
     "prepare": "husky",
     "gen-tags": "node scripts/gen-tags.mjs",
     "dev": "npm run gen-tags && next",
-    "build": "npm run gen-tags && rm -r .next && next build",
+    "build": "npm run gen-tags && rm -r .next 2> /dev/null || next build",
     "start": "next start"
   },
   "dependencies": {

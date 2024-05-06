@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "husky && husky install",
+    "prepare": "husky",
     "gen-tags": "node scripts/gen-tags.mjs",
     "dev": "npm run gen-tags && next",
     "build": "npm run gen-tags && rm -r .next && next build",

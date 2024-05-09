@@ -1,0 +1,8 @@
+{
+  "basics": "Basics",
+  "containers": "Containers",
+  "key-collisions": "Key collisions",
+  "iteration": "Iteration",
+  "snapshots": "Snapshots",
+  "multi-indexes": "Multi index collections"
+}

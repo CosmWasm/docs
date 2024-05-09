@@ -2,6 +2,7 @@
   "index": "Welcome",
   "core": "CosmWasm Core",
   "sylvia": "Sylvia",
+  "cw-storage-plus": "cw-storage-plus",
   "cw-multi-test": "MultiTest",
   "how-to-doc": "How to doc",
   "tags": {

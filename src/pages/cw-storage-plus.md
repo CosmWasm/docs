@@ -23,15 +23,15 @@ scope of this document.
 Trying to minimize bloat is always good practice when it comes to on-chain
 storage.
 
-## What `cw-storage-plus` builds on
+## What _cw-storage-plus_ builds on
 
-The smart contract framework itself (`cosmwasm-std`) provides a simple API for
+The smart contract framework itself (_cosmwasm-std_) provides a simple API for
 storing and retrieving data. If you're curious, you can check it out right
 [here](https://docs.rs/cosmwasm-std/2.0.3/cosmwasm_std/trait.Storage.html).
 
 This API is raw in that it exposes the **binary** key-value store. While you're
 free to use it directly, you're likely to find that finicky and error-prone.
-`cw-storage-plus` is a library that builds on top of this API to
+_cw-storage-plus_ is a library that builds on top of this API to
 
 - eliminate the need to manually serialize and deserialize data,
 - provide a type-safe interface for storing and retrieving data,

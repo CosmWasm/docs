@@ -8,6 +8,7 @@ use strum::{AsRefStr, EnumIter, IntoEnumIterator};
 static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "core" => include_str!("../templates/core.tpl"),
     "execute" => include_str!("../templates/execute.tpl"),
+    "storage" => include_str!("../templates/storage.tpl"),
 };
 
 #[inline]
@@ -109,14 +110,16 @@ fn process_file(path: &Path) -> Result<()> {
     }
 
     for (idx, block) in blocks.iter().enumerate() {
-        let mdx_path = path.to_str().ok_or_else(|| {
-            anyhow!(
-                "filename of path \"{}\" isn't valid utf-8. (really?! in the 21st century?)",
-                path.display()
-            )
-        })?
-        .replace("../", "")
-        .replace('/', "_");
+        let mdx_path = path
+            .to_str()
+            .ok_or_else(|| {
+                anyhow!(
+                    "filename of path \"{}\" isn't valid utf-8. (really?! in the 21st century?)",
+                    path.display()
+                )
+            })?
+            .replace("../", "")
+            .replace('/', "_");
 
         let filename = format!(
             "{}_{}.{}",

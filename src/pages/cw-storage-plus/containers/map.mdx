@@ -1,10 +1,152 @@
+import { Callout } from "nextra/components";
+
 # `Map`
+
+A `Map` is a key-value store. Unlike the raw storage backend, the keys and
+values of a map are typed.
+
+## Keys
+
+The key type has to implement the
+[`PrimaryKey`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.PrimaryKey.html)
+trait. Most commonly, the key is simply a `String` or
+[`Addr`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Addr.html).
+Other types include binary strings (`Vec<u8>`, `[u8; N]`, `&[u8]`), numerical
+types, or even tuples, which can be used to create composite keys.
+
+## Values
+
+The values, as usual, are serialized as JSON and must implement the
+[`Serialize`](https://docs.serde.rs/serde/trait.Serialize.html) and
+[`Deserialize`](https://docs.serde.rs/serde/trait.Deserialize.html) traits.
+
+## Operations
+
+Similar to an [`Item`](./item), a `Map` defines methods like `load`, `save`, and
+`may_load`. The difference is that `Map`'s methods take a key as an argument.
+
+Most _CosmWasm_-enabled chains will enable iteration. If they do, it is possible
+to iterate over the entries in a map using methods like
+[`keys`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.keys)
+or
+[`range`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.range).
 
 More information can be found in the
 [API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html).
 
-## Overview
-
-## Examples
+## Usage examples
 
 ### Keeping users' balances
+
+#### Checking a user's balance
+
+```rust template="storage"
+use cw_storage_plus::Map;
+
+let balances: Map<String, u128> = Map::new("balances");
+
+let alice_balance = balances
+    .may_load(&storage, "alice".to_string())
+    .unwrap()
+    .unwrap_or(0); // if the entry does not exist yet, assume the balance is 0
+
+assert_eq!(alice_balance, 0);
+```
+
+#### Updating a user's balance
+
+```rust template="storage"
+use cw_storage_plus::Map;
+
+let balances: Map<String, u128> = Map::new("balances");
+
+let mut alice_balance = balances
+    .may_load(&storage, "alice".to_string())
+    .unwrap()
+    .unwrap_or(0); // if the entry does not exist yet, assume the balance is 0
+
+alice_balance += 100;
+
+balances.save(&mut storage, "alice".to_string(), &alice_balance).unwrap();
+assert_eq!(balances.load(&storage, "alice".to_string()).unwrap(), 100);
+```
+
+### Keeping users' balances with a composite key
+
+#### Basic use
+
+```rust template="storage"
+use cw_storage_plus::Map;
+
+// The first string is the user's address, the second is the denomination
+let balances: Map<(String, String), u128> = Map::new("balances");
+
+let mut alice_balance = balances
+    .may_load(&storage, ("alice".to_string(), "uusd".to_string()))
+    .unwrap()
+    .unwrap_or(0); // if the entry does not exist yet, assume the balance is 0
+
+alice_balance += 100;
+
+balances
+    .save(&mut storage, ("alice".to_string(), "uusd".to_string()), &alice_balance)
+    .unwrap();
+
+assert_eq!(
+    balances
+        .load(&storage, ("alice".to_string(), "uusd".to_string()))
+        .unwrap(),
+    100
+);
+```
+
+#### Iterating over composite keys
+
+```rust template="storage"
+use cw_storage_plus::Map;
+
+let balances: Map<(String, String), u128> = Map::new("balances");
+
+balances.save(&mut storage, ("alice".to_string(), "uusd".to_string()), &100).unwrap();
+balances.save(&mut storage, ("alice".to_string(), "osmo".to_string()), &200).unwrap();
+balances.save(&mut storage, ("bob".to_string(), "uusd".to_string()), &300).unwrap();
+
+let all_balances: Vec<_> = balances
+    .range(&storage, None, None, Order::Ascending)
+    .collect::<Result<_, _>>()
+    .unwrap();
+
+assert_eq!(
+    all_balances,
+    vec![
+        (("bob".to_string(), "uusd".to_string()), 300),
+        (("alice".to_string(), "osmo".to_string()), 200),
+        (("alice".to_string(), "uusd".to_string()), 100),
+    ]
+);
+
+let alices_balances: Vec<_> = balances
+    .prefix("alice".to_string())
+    .range(&storage, None, None, Order::Ascending)
+    .collect::<Result<_, _>>()
+    .unwrap();
+
+assert_eq!(alices_balances, vec![("osmo".to_string(), 200), ("uusd".to_string(), 100)]);
+```
+
+<Callout type="warning">
+
+As seen here, the order of keys isn't always lexicographic. If you need things
+ordered, the safe thing to do is to collect them in a vector and `sort` it.
+
+If you'd rather avoid that, here's how things work: under the hood, every
+component of a composite key is length-prefixed except for the last one. If
+you're only iterating over the last component, you can expect things to be
+ordered lexicographically. For non-final components, shorter strings will always
+come before longer ones.
+
+In the example, note how "bob" (a non-last component) comes before `"alice"`.
+Also note how once we lock the first component to `"alice"`, entries are ordered
+lexicographically by the second component.
+
+</Callout>

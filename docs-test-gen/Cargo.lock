@@ -416,6 +416,7 @@ dependencies = [
  "cw2",
  "glob",
  "phf",
+ "serde",
  "sha2 0.10.8",
  "strum",
 ]

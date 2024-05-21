@@ -17,6 +17,43 @@ This endpoint gets invoked when you receive a response to a message you sent out
 over the chain. The reply parameter then allows you to inspect and work with the
 response that was produced.
 
+## Request a reply
+
+To request a reply, you need to use the `reply_on` field in the message you send
+and set it to one of the following values:
+
+- `ReplyOn::Always`
+- `ReplyOn::Error`
+- `ReplyOn::Success`
+
+```rust filename="contract.rs" template="core"
+const CONTRACT_ADDR: &str = "other_contract";
+const SUBMSG_ID: u64 = 1;
+
+#[entry_point]
+pub fn reply(deps: DepsMut, env: Env, msg: cosmwasm_std::Reply) -> StdResult<Response> {
+    if msg.id != SUBMSG_ID {
+        return Err(StdError::generic_err("Invalid submsg id"));
+    }
+
+    // We received a message! From the contract we invoked earlier.
+
+    Ok(Response::default())
+}
+
+#[entry_point]
+pub fn execute(deps: DepsMut, env: Env, msg: ExecuteMsg) -> StdResult<Response> {
+    let msg = WasmMsg::Execute {
+        contract_addr: CONTRACT_ADDR.into(),
+        msg: to_json_binary(&OtherContractMsg::DoSomething {}).unwrap(),
+        funds: vec![],
+    };
+
+    let submsg = SubMsg::reply_always(msg, SUBMSG_ID);
+    Ok(Response::new().add_submessage(submsg))
+}
+```
+
 ## Definition
 
 ```rust filename="contract.rs" template="core"

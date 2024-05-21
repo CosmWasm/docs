@@ -16,8 +16,8 @@ While the term "actor model" sounds fancy, it is actually quite simple. Each
 contract is an "actor" and _plays_ a role in the system (pun intended).
 
 Each actor has its own state and can only be interacted with via messages. This
-means that when a contract is called, it can only call other contracts via
-messages and cannot directly call their code.
+means a contract can only interact with the outside world via messages and only
+manipulate its own state.
 
 Picture two people living in two houses, each house has a mailbox. If person A
 wants to talk to person B, they write a letter and put it in person B's mailbox.

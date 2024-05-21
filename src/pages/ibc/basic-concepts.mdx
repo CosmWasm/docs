@@ -1,0 +1,26 @@
+---
+tags: ["ibc"]
+---
+
+## Basic Concepts
+
+In order to understand how IBC works, it is important to understand some basic
+concepts:
+
+- **Port**: An identifier that corresponds to a single module on a chain. One
+  module can have multiple ports. Each contract has its own unique port.
+- **Channel**: A connection between two ports on different blockchains that
+  allows them to send packets to each other. Each port can have multiple
+  channels.
+- **Relayer**: A service that is responsible for relaying packets between
+  blockchains. Anyone can run a relayer.
+- **Packet**: A piece of binary data that is sent through a channel. It can time
+  out if it is not delivered within a certain time frame.
+
+We will go into more detail on how these concepts are related to CosmWasm in the
+later sections, but this should give you some basic terminology to start with.
+If you want to learn more about IBC, you can read the [IBC specification] or
+check out the [IBC documentation].
+
+[IBC specification]: https://github.com/cosmos/ibc
+[IBC documentation]: https://ibc.cosmos.network/main

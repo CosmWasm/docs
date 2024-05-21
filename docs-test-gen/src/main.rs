@@ -7,6 +7,7 @@ use strum::{AsRefStr, EnumIter, IntoEnumIterator};
 
 static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "core" => include_str!("../templates/core.tpl"),
+    "core-migrate" => include_str!("../templates/core-migrate.tpl"),
     "execute" => include_str!("../templates/execute.tpl"),
 };
 

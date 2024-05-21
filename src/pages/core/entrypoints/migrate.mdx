@@ -9,8 +9,8 @@ import { Callout } from "nextra/components";
 This is another special endpoint. It is, just like `instantiate`, not called
 frequently.
 
-`migrate` is only called once you upload a new version to the chain
-and lets you run all the required changes to the storage.
+`migrate` is only called once you upload a new version to the chain and lets you
+run all the required changes to the storage.
 
 Let's say your storage has the following layout, expressed as JSON for
 simplicity's sake:
@@ -44,6 +44,42 @@ transform it.
 
 That's what you do in the `migrate` entrypoint. You transform the structure of
 the storage in there.
+
+## Example
+
+```rust filename="contract.rs" template="core-migrate"
+const STATE_VERSION: u64 = 1;
+
+#[entry_point]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
+    // Check if the state version is olden than the current one
+    let Some(current_state_version) = deps.storage.get(b"state") else {
+        return Err(StdError::generic_err("State not found"));
+    };
+    let current_state_version: u64 = from_slice(&current_state_version)?;
+
+    if current_state_version < STATE_VERSION {
+        return Ok(Response::default());
+    }
+
+    // Load the old data
+    let Some(old_data) = deps.storage.get(b"persisted_data") else {
+      return Err(StdError::generic_err("Data not found"));
+    };
+    // Deserialize it from the old format
+    let old_data: OldData = from_slice(&old_data)?;
+
+    // Transform it
+    let new_data = transform(old_data);
+
+    // Serialize the new data
+    let new_data = to_vec(&new_data)?;
+    // Store the new data
+    deps.storage.set(b"persisted_data", &new_data);
+
+    Ok(Response::default())
+}
+```
 
 ## Definition
 

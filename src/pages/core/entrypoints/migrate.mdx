@@ -52,7 +52,7 @@ const STATE_VERSION: u64 = 1;
 
 #[entry_point]
 pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
-    // Check if the state version is olden than the current one
+    // Check if the state version is older than the current one
     let Some(current_state_version) = deps.storage.get(b"state") else {
         return Err(StdError::generic_err("State not found"));
     };

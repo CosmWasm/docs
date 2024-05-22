@@ -13,6 +13,13 @@ struct InstantiateMsg {}
 struct QueryMsg {}
 
 #[cw_serde]
+struct Ed25519VerifyMsg {
+  public_key: Binary,
+  message: Binary,
+  signature: Binary,
+}
+
+#[cw_serde]
 struct ExecuteMsg {}
 
 #[cw_serde]

@@ -31,6 +31,10 @@ to iterate over the entries in a map using methods like
 or
 [`range`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.range).
 
+<Callout>
+  Bounded iteration is always bounded inclusively below and exclusively above - a lot like [`start..end`](https://doc.rust-lang.org/std/ops/struct.Range.html) in Rust.
+</Callout>
+
 More information can be found in the
 [API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html).
 
@@ -145,7 +149,7 @@ you're only iterating over the last component, you can expect things to be
 ordered lexicographically. For non-final components, shorter strings will always
 come before longer ones.
 
-In the example, note how "bob" (a non-last component) comes before `"alice"`.
+In the example, note how `"bob"` (a non-last component) comes before `"alice"`.
 Also note how once we lock the first component to `"alice"`, entries are ordered
 lexicographically by the second component.
 

@@ -1,7 +1,17 @@
 ---
-tags: ["core"]
+tags: ["core", "cryptography"]
 ---
 
 import { Callout } from "nextra/components";
 
 # Cryptography
+
+CosmWasm offers cryptographic primitives that are implemented as VM intrinsics.
+This means that they are more efficient than implementations in contract code
+could be, saving you gas. In some cases they are also _impossible_ to implement
+in contract code, since some of them require a random intermediate value and
+randomness is generally not exposed to contracts to ensure deterministic
+execution.
+
+In the sidebar, you can find all the supported algorithms/curves along with
+documentation about them.

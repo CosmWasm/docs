@@ -1,0 +1,23 @@
+---
+tags: ["core", "cryptography"]
+---
+
+import { Callout } from "nextra/components";
+
+# BLS12-381
+
+BLS12-381 is a bit of a special curve. It is a pairing-friendly curve, allowing
+for fun things such as aggregated signatures. At the moment, CosmWasm only
+supports signature verifications. In the future we might add support for
+zero-knowledge proofs on this curve.
+
+Common examples where this curve is used are Ethereum block-headers and drand
+randomness beacons.
+
+## Signature verification
+
+CosmWasm offers a byte-oriented API for signature verification. This API also
+doesn't care whether the public key is part of the G1 or G2 group (same for the
+other components). They just have to somehow fit together.
+
+<Callout>TODO: Add example as soon as BLS12-381 is properly released</Callout>

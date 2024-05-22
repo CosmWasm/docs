@@ -48,32 +48,26 @@ the storage in there.
 ## Example
 
 ```rust filename="contract.rs" template="core"
-const STATE_VERSION: u64 = 1;
+const CONTRACT_NAME: &str = "my_contract";
+const STATE_VERSION: &str = "v2";
 
 #[entry_point]
 pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
     // Check if the state version is older than the current one
-    let Some(current_state_version) = deps.storage.get(b"state") else {
-        return Err(StdError::generic_err("State not found"));
-    };
-    let current_state_version: u64 = from_slice(&current_state_version)?;
-
-    if current_state_version < STATE_VERSION {
-        return Ok(Response::default());
-    }
+    cw2::ensure_from_older_version(deps.storage, CONTRACT_NAME, STATE_VERSION)?;
 
     // Load the old data
     let Some(old_data) = deps.storage.get(b"persisted_data") else {
       return Err(StdError::generic_err("Data not found"));
     };
     // Deserialize it from the old format
-    let old_data: OldData = from_slice(&old_data)?;
+    let old_data: OldData = cosmwasm_std::from_json(&old_data)?;
 
     // Transform it
     let new_data = transform(old_data);
 
     // Serialize the new data
-    let new_data = to_vec(&new_data)?;
+    let new_data = cosmwasm_std::to_json_vec(&new_data)?;
     // Store the new data
     deps.storage.set(b"persisted_data", &new_data);
 

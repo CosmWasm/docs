@@ -53,7 +53,7 @@ const STATE_VERSION: &str = "v2";
 
 #[entry_point]
 pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
-    // Check if the state version is older than the current one
+    // Check if the state version is older than the current one and update it
     cw2::ensure_from_older_version(deps.storage, CONTRACT_NAME, STATE_VERSION)?;
 
     // Load the old data

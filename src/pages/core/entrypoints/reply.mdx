@@ -28,7 +28,7 @@ and set it to one of the following values:
 
 ```rust filename="contract.rs" template="core"
 const CONTRACT_ADDR: &str = "other_contract";
-const SUBMSG_ID: u64 = 1;
+const SUBMSG_ID: u64 = 1; // This is a unique identifier so we can associate a reply with a specific submessage. It can be any numeric value.
 
 #[entry_point]
 pub fn reply(deps: DepsMut, env: Env, msg: cosmwasm_std::Reply) -> StdResult<Response> {

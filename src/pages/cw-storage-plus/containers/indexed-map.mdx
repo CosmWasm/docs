@@ -1,0 +1,57 @@
+import { Callout } from "nextra/components";
+
+# `IndexedMap`
+
+An
+[`IndexedMap`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html)
+is a map that, outside of the normal map key (`K`) has some secondary indexes
+(`I`) that can be used to look up values.
+
+<Callout>
+There's no limit to how many indexes you can have, but be careful. Using many indexes can increase the complexity of
+storage writes - with every write, the list of indexes is iterated over since
+they might need to be updated.
+</Callout>
+
+## Examples
+
+Imagine you need to store loans indexed by the creditor, but you'd also like to
+allow looking up loans by the debtor. You can use an `IndexedMap` to achieve
+this:
+
+```rust template="storage"
+use cw_storage_plus::{index_list, IndexedMap, KeyDeserialize as _, MultiIndex};
+
+#[index_list(u32)]
+struct MyIndexes<'a> {
+    debtor_lender: MultiIndex<'a, (Addr, Addr), u32, (Addr, Addr)>,
+}
+
+let loans = IndexedMap::<(Addr, Addr), u32, MyIndexes>::new("l", MyIndexes {
+    debtor_lender: MultiIndex::new(|pk, __| {let (lender, debtor) = <(Addr, Addr)>::from_slice(pk).unwrap(); (debtor, lender)},
+    "l", "l__d"),
+});
+
+let alice = Addr::unchecked("alice");
+let bob = Addr::unchecked("bob");
+let charlie = Addr::unchecked("charlie");
+let dave = Addr::unchecked("dave");
+
+loans.save(&mut storage, (alice.clone(), bob.clone()), &1).unwrap();
+loans.save(&mut storage, (alice.clone(), charlie.clone()), &2).unwrap();
+loans.save(&mut storage, (bob.clone(), charlie.clone()), &3).unwrap();
+loans.save(&mut storage, (bob.clone(), dave.clone()), &4).unwrap();
+
+let alice_lended = loans.prefix(alice.clone())
+    .range(&storage, None, None, Order::Ascending)
+    .collect::<Result<Vec<_>, _>>()
+    .unwrap();
+assert_eq!(alice_lended, vec![(bob.clone(), 1), (charlie.clone(), 2)]);
+
+let charlie_loaned = loans.idx.debtor_lender
+    .sub_prefix(charlie.clone())
+    .range(&storage, None, None, Order::Ascending)
+    .collect::<Result<Vec<_>, _>>()
+    .unwrap();
+assert_eq!(charlie_loaned, vec![((bob.clone(), charlie.clone()), 3), ((alice.clone(), charlie.clone()), 2)]);
+```

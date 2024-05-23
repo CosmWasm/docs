@@ -2,6 +2,5 @@
   "basics": "Basics",
   "containers": "Containers",
   "key-collisions": "Key collisions",
-  "snapshots": "Snapshots",
-  "multi-indexes": "Multi index collections"
+  "snapshots": "Snapshots"
 }

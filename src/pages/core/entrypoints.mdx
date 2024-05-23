@@ -14,7 +14,7 @@ these entrypoints, each one different from the last.
 In this section we want to give you a quick overview over all the entrypoints
 and when they are called.
 
-## Define entrypoints
+## Defining entrypoints
 
 While you will learn all about entrypoints in the next sections, we want to give
 you an idea on how to define an entrypoint in the first place.
@@ -31,6 +31,14 @@ VM: "Hey! This is an entrypoint, please use it when needed!"
   including the correct function signature.
 </Callout>
 
+<Callout>
+  Even though the sections will show you to use `#[entry_point]`, it is
+  recommended to define your endpoints as `#[cfg_attr(not(feature = "library"),
+  entry_point)]`.
+  <br /> The reason behind that is that it allows you to reuse your contract as a
+  library.
+</Callout>
+
 ```rust template="core"
 #[entry_point]
 pub fn instantiate(
@@ -38,7 +46,7 @@ pub fn instantiate(
     env: Env,
     info: MessageInfo,
     msg: InstantiateMsg,
-) -> Result<Response, StdError> {
+) -> StdResult<Response> {
     // Do some logic here
     Ok(Response::default())
 }

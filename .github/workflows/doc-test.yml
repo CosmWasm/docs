@@ -26,6 +26,7 @@ jobs:
           cargo update -p cosmwasm-schema-derive
           cargo update -p cosmwasm-schema
           cargo update -p cosmwasm-std
+          cargo update -p cw2
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |

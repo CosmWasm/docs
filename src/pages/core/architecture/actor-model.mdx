@@ -9,8 +9,10 @@ import { Callout } from "nextra/components";
 
 CosmWasm, at its core, is built around the actor model. This prevents some
 common pitfalls which, for example, Ethereum smart contracts had to fix over the
-years. The issues mostly revolved around [reentrancy issues](https://ethereum.org/en/developers/docs/smart-contracts/security/#reentrancy) where we could, for
-example, call out to another contract before finishing the current execution.
+years. The issues mostly revolved around
+[reentrancy issues](https://ethereum.org/en/developers/docs/smart-contracts/security/#reentrancy)
+where we could, for example, call out to another contract before finishing the
+current execution.
 
 <Callout>
   If you are already familiar with the actor model through, for example,
@@ -51,5 +53,6 @@ the end of a contract execution as part of the response. This ensures you have
 already written everything to the state, meaning your state is in a consistent
 state.
 
-CosmWasm effectively forces you to follow the CEI pattern (Checks, Effects,
-Interactions) while other similar systems only have this as a "best practice".
+CosmWasm effectively forces you to follow the
+[CEI pattern (Checks, Effects, Interactions)](https://fravoll.github.io/solidity-patterns/checks_effects_interactions.html)
+while other similar systems only have this as a "best practice".

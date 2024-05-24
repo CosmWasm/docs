@@ -1,7 +1,15 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1692.142857142857 526.4285714285713" width="1692.142857142857" height="526.4285714285713" filter="invert(93%) hue-rotate(180deg)">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1692.142857142857 526.4285714285713" width="1692.142857142857" height="526.4285714285713" filter="hue-rotate(180deg)">
   <!-- svg-source:excalidraw -->
   
   <defs>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        svg {
+          filter: invert(93%);
+        }
+      }
+    </style>
+
     <style class="style-fonts">
       @font-face {
         font-family: "Virgil";

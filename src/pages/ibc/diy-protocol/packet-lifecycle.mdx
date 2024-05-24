@@ -2,15 +2,144 @@
 tags: ["ibc", "ics4"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Packet lifecycle
+
+In this section, we will cover the lifecycle of a packet in the IBC protocol.
+Sending and receiving packets is the core functionality of IBC, and it is
+important to understand how packets are processed and what implications this has
+for your protocol.
+
+There are two flows that a packet can take during its lifecycle. Both start with
+a packet being sent on chain A. The first flow is the successful delivery of the
+packet to chain B:
+
+1. **Sending a packet**: A packet is sent from chain A through a channel.
+2. **Receiving a packet**: The packet is received and acknowledged by chain B.
+3. **Receiving a packet acknowledgement**: Chain A receives the acknowledgement.
+
+The second flow is when the packet is not relayed to chain B within the
+specified time frame:
+
+1. **Sending a packet**: A packet is sent from chain A through a channel.
+2. **Receiving a packet timeout**: The packet is not received within the
+   specified time frame.
+
+A visual representation of these flows can be found in the
+[IBC specification](https://github.com/cosmos/ibc/tree/main/spec/core/ics-004-channel-and-packet-semantics#packet-flow--handling).
 
 ## Sending a packet
 
+In order to send a packet, you need to send the `IbcMsg::SendPacket` message. It
+looks like this:
+
+```rust template="execute"
+// TODO: load channel id from state?
+// construct the transfer message
+let msg = IbcMsg::SendPacket {
+    channel_id: "channel-0".to_string(),
+    data: br#"{"hello":{"text":"Hello, chain B!"}}"#.into(),
+    timeout: IbcTimeout::with_block(IbcTimeoutBlock {
+        revision: 4,
+        height: 1000,
+    }),
+};
+
+// attach the message and return the response
+Ok(Response::new().add_message(msg))
+```
+
+The `channel_id` is the identifier of the channel you want to use for the
+packet. This must be a channel that was previously established, as described in
+the [previous section], so you probably want to load this from contract state.
+
+The `data` field is of type `Binary` and contains the actual packet data. This
+is the information that you want to send to chain B.
+
+The `timeout` field can either be a timestamp or a block height, as measured on
+the destination chain. It is used to prevent the packet from being stuck in
+limbo if the destination chain does not receive it.
+
+[previous section]: ./channel-lifecycle
+
 ## Receiving a packet
+
+To receive a packet, you need to implement the `ibc_packet_receive` entrypoint:
+
+```rust filename="ibc.rs" template="core"
+#[entry_point]
+pub fn ibc_packet_receive(
+    deps: DepsMut,
+    _env: Env,
+    msg: IbcPacketReceiveMsg,
+) -> StdResult<IbcReceiveResponse> {
+    let msg: PacketMsg = from_json(msg.packet.data)?;
+    match msg {
+        PacketMsg::Hello { text } => {
+            // here you would do something with the received data
+            deps.api.debug(&text);
+            Ok(IbcReceiveResponse::new(StdAck::success(b"Hello, chain A!")))
+        },
+    }
+}
+
+#[cw_serde]
+enum PacketMsg {
+    Hello { text: String },
+}
+```
+
+As you can see, this looks quite similar to the [`execute` entrypoint]. The main
+difference is that you need to parse the packet data yourself, because it is not
+necessarily in JSON format. What is also different, is the return type. Instead
+of returning a `Response`, you need to return an [`IbcReceiveResponse`] with an
+optional acknowledgement (see [next section](#async-acknowledgement) for more
+details about not providing an acknowledgement).
+
+In this example, we used the [`StdAck` type] for our acknowledgement. It encodes
+the acknowledgement as a JSON object which can either be
+`{"result":"BASE64 OF DATA"}` in the success case, or `{"error":"error string"}`
+in the error case. This is the same format that is used in some existing IBC
+protocols, like e.g. ICS-20. However, using this format is not a requirement.
+You can use any type you like, as long as it can be converted to `Binary`.
+
+This comes with a caveat, though: The error handling for `ibc_packet_receive`
+works differently than for other entrypoints. If you return an error from
+`ibc_packet_receive`, it will revert your contract state changes, but will not
+fail the transaction. Instead, it will cause an `StdAck::error` acknowledgement
+to be written. So, if you want to return errors in `ibc_packet_receive`, you
+might want to also use the [`StdAck` type] for your successful acknowledgements
+to keep the format consistent for the sender.
+
+Alternatively, you can also handle all errors within the `ibc_packet_receive`
+entrypoint, always returning an `Ok(...)` result. In that case, **state changes
+will be committed**, the transaction will succeed and you can use whatever
+acknowledgement format you prefer.
+
+[`IbcReceiveResponse`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html
+[`execute` entrypoint]: ../../core/entrypoints/execute
+[`StdAck` type]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdAck.html
 
 ### Async acknowledgement
 
-if implemented until then
+<Callout type="warning">
+  This feature is currently under development and will be available in a future
+  version of CosmWasm.
+</Callout>
+
+In some cases, you might want to acknowledge a packet asynchronously. This means
+that you receive the packet, but you don't immediately return an
+acknowledgement. One case where this is useful is if you need to perform some
+other action that requires more than one transaction to complete before you can
+acknowledge. To do that, you can return a `IbcReceiveResponse::without_ack()`
+response, save the destination channel ID and packet sequence in contract state,
+and then acknowledge the packet later using the `IbcMsg::WriteAcknowledgement`
+message.
+
+{/* TODO: full code example here */}
 
 ## Receiving a packet acknowledgement
 

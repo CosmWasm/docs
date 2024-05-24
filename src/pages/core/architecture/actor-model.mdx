@@ -27,9 +27,13 @@ means a contract can only interact with the outside world via messages and only
 manipulate its own state.
 
 Picture two people living in two houses, each house has a mailbox. If person A
-wants to talk to person B, they write a letter and put it in person B's mailbox.
-Person B will read the letter and write a response, putting it in person A's
-mailbox.
+wants to talk to person B, they write a letter, address to to person B, and send
+it off. The mailman (or in this case, the chain) will put the letter in person
+B's mailbox.
+
+Person B will then read the letter and can choose to write a response, address
+it to person A with a note indicating that this is a reply, and send it off once
+again.
 
 No direct interaction is happening here, nobody visits each other's house which
 would allow them to rummage around in their belongings (state). They simply

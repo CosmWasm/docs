@@ -101,6 +101,14 @@ it. The version is used to ensure that both chains are running the protocol that
 the other one expects. You can also return `None` if you just want to accept the
 counterparty version.
 
+<Callout>
+  Opening a channel is generally a permissionless process, so make sure to keep
+  that in mind when implementing the entrypoints. You can add additional checks
+  to ensure that the channel is connecting to the correct counterparty or have a
+  state item containing a `bool` that is checked here to explicitly disable new
+  channels.
+</Callout>
+
 [`IbcChannelOpenMsg` documentation]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
 

@@ -8,17 +8,17 @@ import { Callout } from "nextra/components";
 
 CosmWasm offers cryptographic primitives that are implemented as VM intrinsics.
 This means that they are more efficient than implementations in contract code
-could be, saving you gas and code size. In some cases they are also _impossible_ to implement
-in contract code, since some of them require a random intermediate value and
-randomness is generally not exposed to contracts to ensure deterministic
-execution.
+could be, saving you gas and code size. In some cases they are also _impossible_
+to implement in contract code, since some of them require a random intermediate
+value and randomness is generally not exposed to contracts to ensure
+deterministic execution.
 
 In the sidebar, you can find all the supported algorithms/curves along with
 documentation about them.
 
 If you are looking for a list of gas costs for these operations, you can find
 them in the
-[source code](https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L63-L92).
+[source code](https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L62-L101).
 
 ## Note on hash functions
 

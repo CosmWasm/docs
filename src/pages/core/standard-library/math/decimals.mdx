@@ -1,0 +1,24 @@
+---
+tags: ["core", "math"]
+---
+
+import { Callout } from "nextra/components";
+
+# Decimals
+
+CosmWasm offers decimal types for handling fractional numbers.
+
+In contrast to floating point numbers, these datatypes do not suffer from the
+same precision issues. This means that these decimal types are safe for use in
+financial calculations.
+
+Instead of storing numbers in the floating point format, which gives it a
+_floating_ amount of decimal places, these decimal types have a fixed precision
+of 18 decimal places.
+
+These decimal types come in two variants:
+
+- `Decimal`: 128-bit
+- `Decimal256`: 256-bit
+
+Choose one of the types according to your needs and off you go!

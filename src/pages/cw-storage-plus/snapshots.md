@@ -1,0 +1,3 @@
+# Snapshots
+
+TODO: bonus section, maybe flesh out, maybe remove

@@ -16,7 +16,7 @@ store, with records stored on-chain.
 While developing smart contracts, it's important to remember on-chain storage
 is, as always, pricey. Conventionally, developers often draw the line at a
 "small logo image" (think a few KBs). If you need to store bigger things, it's
-likely time to consider off-chain storage (like IPFS or centralized storage).
+likely time to consider off-chain storage (like IPFS or some centralized storage).
 Techniques for securely and reliably storing large data off-chain are beyond the
 scope of this document.
 

@@ -4,8 +4,8 @@ import { Callout } from "nextra/components";
 
 ## Containers
 
-_cw-storage-plus_ provides a number of storage containers that can be used to
-store data on the blockchain. The fundamental ones are:
+`cw-storage-plus`` provides several storage containers that can be used to store
+data on the blockchain. The fundamental ones are:
 
 - [`Item`](containers/item)
 - [`Map`](containers/map)
@@ -25,11 +25,11 @@ use
 [`new_dyn`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html#method.new_dyn)).
 This usually means you'll be providing a string literal or some constant.
 
-In the case of an [`Item`](containers/item), the provided key is the exact key
-(a standard UTF-8 string) under which the value will be saved. In the case of
-collections, the provided key is really a prefix; the collection will use this
-prefix to generate keys (by appending to it) for the individual values it
-stores.
+In the case of an [`Item`](containers/item), the provided string is the exact
+key (a standard UTF-8 string) under which the value will be saved. In the case
+of collections, the provided string is a prefix (sometimes called `namespace` in
+the code); the collection will use this prefix to generate keys (by appending to
+it) for the individual values it stores.
 
 As a contract dev, it is your responsibility to ensure that the keys you provide
 are unique and do not conflict with keys used by other parts of the contract.

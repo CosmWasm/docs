@@ -1,0 +1,56 @@
+import { Callout } from "nextra/components";
+
+# Prerequisites
+
+To use `Sylvia` follow the
+[`installation`](https://cosmwasm-docs.vercel.app/core/installation) process for
+the `CosmWasm core`.
+
+## Verifying the installation
+
+To guarantee you are ready to build your smart contracts, you must ensure you
+can build examples. Checkout the [sylvia](https://github.com/CosmWasm/sylvia)
+repository and run the testing command in its folder:
+
+```shell
+$ git clone https://github.com/CosmWasm/sylvia.git
+$ cd sylvia
+sylvia $ cargo test
+```
+
+You should see that everything in the repository gets compiled and all tests
+pass.
+
+Sylvia framework contains some examples of contracts. To find them go to
+`examples/contracts` directory. These contracts are maintained by CosmWasm
+creators, so contracts in there should follow good practices.
+
+## Macro expansion
+
+Sylvia generates a lot of code for us, which is not visible right away. To see
+the generated code, go to `examples/contracts/cw1-whitelist/src/contract.rs`.
+
+In VSCode you can click on `#[contract]`, do `shift+p` and then type:
+`rust analyzer: Expand macro recursively`. This will open a window with a fully
+expanded macro, which you can browse.
+
+In Vim you can consider installing the
+[rustaceanvim](https://github.com/mrcjkb/rustaceanvim) plugin.
+
+You can also use `cargo expand` tool from CLI, like this:
+
+```shell
+sylvia/examples/contracts/cw1-whitelist $ cargo expand --lib
+```
+
+## Generate contract from template
+
+To make `Sylvia` contract easier to setup we created the
+[`sylvia template`](https://github.com/CosmWasm/sylvia-template).
+
+```shell
+$ cargo generate CosmWasm/sylvia-template
+```
+
+You will be prompted to provide project name. Once you choose it you are ready
+to go.

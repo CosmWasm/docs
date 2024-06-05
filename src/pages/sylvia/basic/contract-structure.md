@@ -1,0 +1,107 @@
+# Contract structure
+
+Sylvia contracts are designed using the actor model. The actor is a contract
+`struct`, which can store a state, and on which we implement a behavior.
+
+```rust
+use sylvia::cw_storage_plus::Item;
+
+pub struct CounterContract {
+    pub count: Item<u64>,
+}
+```
+
+Item is an accessor that allows to read a state stored on the blockchain via the
+key. It doesn't hold any state by itself.
+
+Let's take a look at the behavior implementation.
+
+```rust
+#[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self {
+            count: Item::new("count"),
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        self.count.save(ctx.deps.storage, &0)?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn increment(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u64> {
+                Ok(count + 1)
+            })?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn count(&self, ctx: QueryCtx) -> StdResult<CountResponse> {
+        let count = self.count.load(ctx.deps.storage)?;
+        Ok(CountResponse { count })
+    }
+}
+```
+
+In the first two lines, we see the usage of two macros:
+
+- [`entry_points`](https://docs.rs/sylvia/latest/sylvia/attr.entry_points.html) -
+  Generates entry points of the contract. By default it will generate
+  `instantiate`, `execute` and `query` entry points. `Migrate`, `reply`, and
+  `sudo` are generated if a behavior related to them is defined in the `impl`
+  block.
+
+  This macro is wrapped in `cfg_attr` statement to be compiled only if `library`
+  feature flag is not enabled. This way, other users who might want to use this
+  contract in theirs won't get an entry point collision.
+
+- [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) - Parses
+  every method inside the `impl` block marked with the `[sv::msg(...)]`
+  attribute and create proper messages and utilities like `multitest helpers`
+  for them.
+
+This simple example also has the `sv::msg(...)` attributes. `Sylvia` macros
+distinguish the if message should be generated from the marked method and of
+what type.
+
+`Sylvia` contract requires the `instantiate` message, and it is mandatory to
+specify it for the `contract` macro. We have to provide it with the proper
+context type:
+[`InstantiateCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.InstantiateCtx.html).
+Another mandatory method is the `new`, as contract fields are out of scope for
+the `contract` macro, and otherwise we wouldn't be able to create the contract
+object in message dispatching.
+
+Context gives us access to the blockchain state, information about our contract,
+and the sender of the message. We return the
+[`StdResult`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/type.StdResult.html)
+which uses standard `CosmWasm` error
+[`StdError`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdError.html).
+It's generic over
+[`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html).
+
+The template contract also contains a `query` and an `exec` messages. Each type
+of message in `CosmWasm` supports different contexts. F.e. the
+[`QueryCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.QueryCtx.html)
+exposes to the user an immutable
+[`Deps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html) as
+by design, queries should never mutate the state. This is not the case for the
+[`ExecCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecCtx.html) and
+`InstantiateCtx` which exposes the
+[`DepsMut`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.DepsMut.html).
+
+I recommend expanding the macro now and seeing what `Sylvia` generates. It might
+be overwhelming, as there will be a lot of things generated that seem not
+relevant to our code, so for the bare minimum, check the `InstantiateMsg` and
+its `impl` block.
+
+`Sylvia` doesn't generate anything magical, but regular `CosmWasm` contract
+types customized based on the provided methods and attributes. This means that
+the `Sylvia` contract is fully interoperational with the standard `CosmWasm`
+contract.

@@ -13,6 +13,27 @@ struct InstantiateMsg {}
 struct QueryMsg {}
 
 #[cw_serde]
+struct EcdsaRecoverMsg {
+  message_hash: Binary,
+  signature: Binary,
+  recovery_id: u8,
+}
+
+#[cw_serde]
+struct EcdsaVerifyMsg {
+  message_hash: Binary,
+  signature: Binary,
+  public_key: Binary,
+}
+
+#[cw_serde]
+struct Ed25519VerifyMsg {
+  public_key: Binary,
+  message: Binary,
+  signature: Binary,
+}
+
+#[cw_serde]
 struct ExecuteMsg {}
 
 #[cw_serde]

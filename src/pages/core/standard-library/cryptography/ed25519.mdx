@@ -1,0 +1,38 @@
+---
+tags: ["core", "cryptography"]
+---
+
+import { Callout } from "nextra/components";
+
+# Ed25519
+
+CosmWasm offers an API to verify and batch verify Ed25519 signatures. This is
+powerful, especially since batch verifications require a random component which
+is impossible to implement in contract code.
+
+Ed25519 is known to
+[have issues with inconsistent validation criteria](https://hdevalence.ca/blog/2020-10-04-its-25519am),
+the API we offer follows [ZIP215](https://zips.z.cash/zip-0215). This means you
+will have no issues with signatures being valid in one place and invalid in
+another.
+
+## Example
+
+```rust filename="contract.rs" template="core"
+#[entry_point]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: Ed25519VerifyMsg,
+) -> StdResult<QueryResponse> {
+    let public_key = msg.public_key;
+    let signature = msg.signature;
+    let message = msg.message;
+
+    // Verify the signature. On chain!
+    let is_valid = deps.api.ed25519_verify(&message, &signature, &public_key)?;
+    let response = format!("{{ \"is_valid\": {is_valid} }}");
+
+    Ok(QueryResponse::new(response.into_bytes()))
+}
+```

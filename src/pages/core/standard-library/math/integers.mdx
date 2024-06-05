@@ -12,7 +12,7 @@ CosmWasm offers integer types starting at 64 bit precision, all the way up to
 Reasoning behind wrapping the native 64 bit type is the interaction with
 JavaScript. A `u64` would normally serialize into a regular integer field in
 JSON. The issue here is that, due to representing integers in form of double
-precision floats, JavaScript can only handle up to ~48 bit numbers without
+precision floats, JavaScript can only handle up to ~53 bit numbers without
 potentially losing information.
 
 Our wrapper fixes this by serializing numbers as strings, letting JavaScript

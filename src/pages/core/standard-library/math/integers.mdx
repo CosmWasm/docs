@@ -39,8 +39,16 @@ Integers come in the following variants:
                     .map(item => (
                         <tr key={item}>
                             <td>{item} bit</td>
-                            <td><code>Uint{item}</code></td>
-                            <td><code>Int{item}</code></td>
+                            <td>
+                                <a href={`https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Uint${item}.html`}>
+                                    <code>Uint{item}</code>
+                                </a>
+                            </td>
+                            <td>
+                                <a href={`https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Int${item}.html`}>
+                                    <code>Int{item}</code>
+                                </a>
+                            </td>
                         </tr>
                     ))
             }

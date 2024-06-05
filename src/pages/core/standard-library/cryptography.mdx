@@ -16,8 +16,49 @@ deterministic execution.
 In the sidebar, you can find all the supported algorithms/curves along with
 documentation about them.
 
-If you are looking for a list of gas costs for these operations, you can find
-them in the
+## Gas costs
+
+<Callout>
+  Note that these values are in CosmWasm Gas (which is very much different from
+  Cosmos SDK Gas). For more info on gas, [check this
+  document](https://github.com/CosmWasm/cosmwasm/blob/main/docs/GAS.md).
+</Callout>
+
+### secp256k1
+
+- Verify: 96_000_000 gas
+- Recover public key: 194_000_000 gas
+
+### secp256r1
+
+- Verify: 279_000_000 gas
+- Recover public key: 592_000_000 gas
+
+### ed25519
+
+- Verify: 35_000_000 gas
+- Batch verify (multiple signatures; multiple keys):
+  - Base: 24_000_000 gas
+  - Per signature/key pair: 21_000_000 gas
+- Batch verify (multiple signatures; one key):
+  - Base: 36_000_000 gas
+  - Per signature: 10_000_000 gas
+
+### BLS12-381
+
+- Aggregate points to G1:
+  - Base: 68_000_000 gas
+  - Per point: 12_000_000 gas
+- Aggregate points to G2:
+  - Base: 103_500_000 gas
+  - Per point: 24_500_000 gas
+- Hash to G1: 563_000_000 gas
+- Hash to G2: 871_000_000 gas
+- Pairing equality:
+  - Base: 2_112_000_000 gas
+  - Per item: 163_000_000 gas
+
+You can also check these numbers in the
 [source code](https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L62-L101).
 
 ## Note on hash functions

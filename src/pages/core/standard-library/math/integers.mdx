@@ -16,6 +16,12 @@ regular integer field in JSON. The issue here is that, due to representing
 integers in form of double precision floats, JavaScript can only handle up to
 ~53 bit numbers without potentially losing information.
 
+<Callout>
+  There is nothing wrong with using the native 64- and 128-bit types in your
+  contract for calculations. The issues mentioned here can only happen when you
+  de-/serialize these values.
+</Callout>
+
 Our wrapper fixes this by serializing numbers as strings, letting JavaScript
 clients deserialize these numbers into their respective BigInteger types.
 

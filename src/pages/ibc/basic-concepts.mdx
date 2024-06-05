@@ -12,8 +12,10 @@ concepts:
 - **Channel**: A connection between two ports on different blockchains that
   allows them to send packets to each other. Each port can have multiple
   channels.
-- **Relayer**: A service that is responsible for relaying packets between
-  blockchains. Anyone can run a relayer.
+- **Relayer**: A service that is responsible for passing packets between
+  blockchains. The relayer watches for new packet commitments on one chain and
+  submits them to the other chain. This is the way in which your packets
+  actually reach the other chain. Anyone can run a relayer.
 - **Packet**: A piece of binary data that is sent through a channel. It can time
   out if it is not delivered within a certain time frame.
 

@@ -9,7 +9,7 @@ import { Callout } from "nextra/components";
 CosmWasm offers integer types starting at 64 bit precision, all the way up to
 512 bits.
 
-Reasoning behind wrapping the native 64 bit type is the interaction with, for
+Reasoning behind wrapping the primitive 64 bit type is the interaction with, for
 example, JavaScript (same goes for parsers like `jq` or any parser that parses
 numbers into double precision floats). A `u64` would normally serialize into a
 regular integer field in JSON. The issue here is that, due to representing
@@ -17,7 +17,7 @@ integers in form of double precision floats, JavaScript can only handle up to
 ~53 bit numbers without potentially losing information.
 
 <Callout>
-  There is nothing wrong with using the native 64- and 128-bit types in your
+  There is nothing wrong with using the primitive 64- and 128-bit types in your
   contract for calculations. The issues mentioned here can only happen when you
   de-/serialize these values.
 </Callout>

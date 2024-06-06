@@ -39,7 +39,7 @@ assert_eq!(admin.load(&storage).unwrap(), "some_address");
 use cw_storage_plus::Item;
 use serde::{Serialize, Deserialize};
 
-#[derive(PartialEq, Debug, Serialize, Deserialize)]
+#[cw_serde]
 struct Config {
     admin: String,
     interest_rate: Decimal,

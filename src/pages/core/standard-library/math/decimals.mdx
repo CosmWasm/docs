@@ -1,0 +1,67 @@
+---
+tags: ["core", "math"]
+---
+
+import { Callout } from "nextra/components";
+
+# Decimals
+
+CosmWasm offers decimal types for handling fractional numbers.
+
+In contrast to floating point numbers, these datatypes do not suffer from the
+same precision issues. This means that these decimal types are safe for use in
+financial calculations.
+
+Instead of storing numbers in the floating point format, which gives it a
+_floating_ amount of decimal places, these decimal types have a fixed precision
+of 18 decimal places.
+
+<Callout>
+    Note that, due to how the decimal types are structured, the value ranges can seem a little weird.
+    
+    For example, 1.0 is represented by `Decimal(1_000_000_000_000_000_000)` and the maximal value of the 128 bit variant is `340282366920938463463.374607431768211455` (which is `(2^128 - 1) / 10^18`)
+
+    In practice, you don't really have to think about it, but it's something you should be aware of.
+
+</Callout>
+
+Decimal types come in the following variants:
+
+import { prepareName, prepareLink } from "@/lib/_decimals";
+
+{ // Beware: Overengineering ahead!
+
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Unsigned</th>
+                <th>Signed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {
+
+                [ '128', '256' ]
+                    .map(item => (
+                        <tr key={item}>
+                            <td>{item} bit</td>
+                            <td>
+                                <a href={prepareLink(false, item)}>
+                                    <code>{prepareName(false, item)}</code>
+                                </a>
+                            </td>
+                            <td>
+                                <a href={prepareLink(true, item)}>
+                                    <code>{prepareName(true, item)}</code>
+                                </a>
+                            </td>
+                        </tr>
+                    ))
+            }
+        </tbody>
+    </table>
+
+}
+
+Choose one of the types according to your needs and off you go!

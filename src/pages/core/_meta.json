@@ -3,5 +3,6 @@
   "entrypoints": "Entrypoints",
   "architecture": "Architecture",
   "standard-library": "Standard Library",
+  "advanced": "Advanced",
   "specification": "Specification"
 }

@@ -2,7 +2,7 @@
 tags: ["ibc", "ics4"]
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
 
 # Channel lifecycle
 
@@ -13,8 +13,8 @@ two chain modules, two contracts, or a module and a contract.
 
 <Callout>
   For the sake of readability, we will assume that both ends of the channel are
-  contracts in the following explanation. For more general information about the
-  channel lifecycle, see the [ICS 004 specification] or [IBC channel docs].
+  *contracts* in the following explanation. For more general information about
+  the channel lifecycle, see the [ICS 004 specification] or [IBC channel docs].
 </Callout>
 
 Each channel also has an order that can be either `Ordered` or `Unordered`. This
@@ -101,16 +101,164 @@ it. The version is used to ensure that both chains are running the protocol that
 the other one expects. You can also return `None` if you just want to accept the
 counterparty version.
 
-<Callout>
-  Opening a channel is generally a permissionless process, so make sure to keep
-  that in mind when implementing the entrypoints. You can add additional checks
-  to ensure that the channel is connecting to the correct counterparty or have a
-  state item containing a `bool` that is checked here to explicitly disable new
-  channels.
-</Callout>
-
 [`IbcChannelOpenMsg` documentation]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
+
+#### Permissions
+
+Opening a channel is generally a permissionless process, so make sure to keep
+that in mind when implementing the entrypoints. You can add additional checks to
+ensure that the channel is connecting to the correct counterparty or have a
+state item containing a `bool` that is checked here to explicitly disable new
+channels.
+
+You can also be more restrictive and only allow the contract itself to initiate
+the channel creation handshake. This can be done by adding a state item to the
+contract that is only set to true before the contract sends the message to
+initiate the handshake and immediately set to false in the `ibc_channel_open`
+entrypoint:
+
+<Callout>
+  The following example requires the `cosmos-sdk-proto` crate that provides
+  protobuf types for Cosmos SDK messages.
+</Callout>
+
+```rust filename="ibc.rs" template="core"
+use cosmos_sdk_proto::ibc::core::channel::v1::{
+    Channel, Counterparty, MsgChannelOpenInit, Order, State,
+};
+use cw_storage_plus::Item;
+
+/// Creates a new Cosmos SDK message that initiates the channel handshake
+pub fn new_msg_channel_open_init(
+    deps: Deps,
+    env: &Env,
+    connection_id: String,
+    counterparty_port_id: String,
+) -> StdResult<MsgChannelOpenInit> {
+    // retrieve the contract's IBC port
+    let port_id = deps
+        .querier
+        .query_wasm_contract_info(&env.contract.address)?
+        .ibc_port
+        .unwrap(); // this is never `None` for contracts with all IBC entrypoints
+
+    // prepare the channel open message
+    Ok(MsgChannelOpenInit {
+        port_id,
+        channel: Some(Channel {
+            state: State::Init.into(),
+            ordering: Order::Ordered.into(),
+            counterparty: Some(Counterparty {
+                port_id: counterparty_port_id,
+                channel_id: String::new(),
+            }),
+            connection_hops: vec![connection_id],
+            version: IBC_APP_VERSION.to_string(),
+        }),
+        signer: env.contract.address.to_string(),
+    })
+}
+
+#[entry_point]
+pub fn ibc_channel_open(
+    deps: DepsMut,
+    _env: Env,
+    msg: IbcChannelOpenMsg,
+) -> StdResult<IbcChannelOpenResponse> {
+    match msg {
+        IbcChannelOpenMsg::OpenInit { channel } => {
+            // check if channel opening is allowed
+            ensure!(
+                ALLOW_CHANNEL_OPENING.load(deps.storage)?,
+                StdError::generic_err("channel opening is disabled")
+            );
+            // disable channel opening again
+            ALLOW_CHANNEL_OPENING.save(deps.storage, &false)?;
+
+            // ...
+        }
+        IbcChannelOpenMsg::OpenTry { .. } => { /* ... */ }
+    }
+
+    Ok(None)
+}
+
+pub const ALLOW_CHANNEL_OPENING: Item<bool> = Item::new("allow_opening");
+const IBC_APP_VERSION: &str = "my-protocol-v1";
+```
+
+<Tabs items={['CosmWasm 2.0+ chains', 'CosmWasm 1.x chains']}>
+  <Tabs.Tab>
+
+```rust filename="contract.rs" template="ibc-channel"
+use cosmos_sdk_proto::traits::Message;
+
+#[entry_point]
+pub fn execute(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    msg: ExecuteMsg,
+) -> Result<Response, ContractError> {
+    // ...
+
+    // prepare the channel open message
+    let channel_open_init = ibc::new_msg_channel_open_init(
+        deps.as_ref(),
+        &env,
+        msg.connection_id,
+        msg.counterparty_port_id,
+    )?;
+
+    // enable channel opening
+    ibc::ALLOW_CHANNEL_OPENING.save(deps.storage, &true)?;
+
+    // send an any message to initiate the channel opening
+    Ok(Response::new().add_message(AnyMsg {
+        type_url: "/ibc.core.channel.v1.MsgChannelOpenInit".into(),
+        value: channel_open_init.encode_to_vec().into(),
+    }))
+}
+```
+
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+
+```rust filename="contract.rs" template="ibc-channel"
+use cosmos_sdk_proto::traits::Message;
+
+#[entry_point]
+pub fn execute(
+    deps: DepsMut,
+    env: Env,
+    _info: MessageInfo,
+    msg: ExecuteMsg,
+) -> Result<Response, ContractError> {
+    // ...
+
+    // prepare the channel open message
+    let channel_open_init = ibc::new_msg_channel_open_init(
+        deps.as_ref(),
+        &env,
+        msg.connection_id,
+        msg.counterparty_port_id,
+    )?;
+
+    // enable channel opening
+    ibc::ALLOW_CHANNEL_OPENING.save(deps.storage, &true)?;
+
+    // send a stargate message to initiate the channel opening
+    Ok(Response::new().add_message(CosmosMsg::Stargate {
+        type_url: "/ibc.core.channel.v1.MsgChannelOpenInit".into(),
+        value: channel_open_init.encode_to_vec().into(),
+    }))
+}
+```
+
+  </Tabs.Tab>
+</Tabs>
 
 ### Channel connect
 
@@ -158,6 +306,13 @@ pub fn ibc_channel_close(
     Err(StdError::generic_err("closing not allowed"))
 }
 ```
+
+<Callout>
+  While closing channels is something that is possible in IBC, you should think
+  carefully about whether you want to allow it in your protocol. In many cases,
+  it might be better to keep the channel open and return an error when someone
+  tries to close it.
+</Callout>
 
 In this entrypoint, you can handle the closing process as you see fit. This can
 involve cleaning up any storage related to the channel or simply returning an

@@ -9,6 +9,7 @@ static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "core" => include_str!("../templates/core.tpl"),
     "execute" => include_str!("../templates/execute.tpl"),
     "instantiate-spec" => include_str!("../templates/instantiate-spec.tpl"),
+    "ibc-channel" => include_str!("../templates/ibc-channel.tpl"),
 };
 
 #[inline]

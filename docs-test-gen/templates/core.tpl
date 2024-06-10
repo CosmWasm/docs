@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables)]
+
 use cosmwasm_std::*;
 use cosmwasm_schema::cw_serde;
 

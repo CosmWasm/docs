@@ -23,14 +23,14 @@ Next you need to define a function to convert an unsigned 64-bit integer into
 bytes, let's call it "num2bytes". This function simply converts the integer into
 its big-endian byte representation.
 
-```rust filename="instantiate2.rs"
-let c_checksum = concat(num2bytes(checksum.len() as u64), checksum);
-let c_creator = concat(num2bytes(creator.len() as u64), creator);
-let c_salt = concat(num2bytes(salt.len() as u64), salt);
-let c_msg = concat(num2bytes(msg.len() as u64), msg);
+```rust filename="instantiate2.rs" template="instantiate-spec"
+let c_checksum = concat!(num2bytes(checksum.len() as u64), checksum);
+let c_creator = concat!(num2bytes(creator.len() as u64), creator);
+let c_salt = concat!(num2bytes(salt.len() as u64), salt);
+let c_msg = concat!(num2bytes(msg.len() as u64), msg);
 
 let canonical_address = hash_sha256(
-    concat(
+    concat!(
         hash_sha256(b"module"),
         b"wasm\0",
         c_checksum,

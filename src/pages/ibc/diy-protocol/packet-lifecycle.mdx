@@ -139,16 +139,121 @@ response, save the destination channel ID and packet sequence in contract state,
 and then acknowledge the packet later using the `IbcMsg::WriteAcknowledgement`
 message.
 
-{/* TODO: full code example here */}
+<Callout type="warning">
+  It is your responsibility to ensure that a received packet is always
+  acknowledged at some point. Not acknowledging can lead to problems for the
+  sender of the packet.
+</Callout>
+
+{/* TODO: add `template="core"` once async acks are merged */}
+
+```rust filename="ibc.rs"
+use cw_storage_plus::Map;
+
+#[entry_point]
+pub fn ibc_packet_receive(
+    deps: DepsMut,
+    _env: Env,
+    msg: IbcPacketReceiveMsg,
+) -> StdResult<IbcReceiveResponse> {
+    // save the data we need for the async acknowledgement in contract state
+    // note: we are just saving a String here, but you can save any information
+    // you need for the acknowledgement later
+    ACK_LATER.save(
+        deps.storage,
+        &(msg.packet.sequence, msg.packet.dest.channel_id),
+        &"ack str".to_string(),
+    )?;
+
+    // return without an acknowledgement
+    Ok(IbcReceiveResponse::without_ack())
+}
+
+/// Called somewhere in the contract to acknowledge the packet
+pub fn async_ack(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    packet_sequence: u64,
+    channel_id: String,
+) -> StdResult<Response> {
+    // load data from contract state
+    let ack_str = ACK_LATER.load(deps.storage, &(packet_sequence, channel_id.clone()))?;
+
+    // send the acknowledgement
+    Ok(Response::new().add_message(IbcMsg::WriteAcknowledgement {
+        packet_sequence,
+        channel_id,
+        data: StdAck::success(ack_str.as_bytes()).into(),
+    }))
+}
+
+const ACK_LATER: Map<&(u64, String), String> = Map::new("ack_later");
+```
 
 ## Receiving a packet acknowledgement
 
+After the packet has been received and acknowledged by chain B, the relayer will
+pass the acknowledgement back to chain A, resulting in the `ibc_packet_ack`
+entrypoint being called. This is where you can handle the acknowledgement:
+
+```rust filename="ibc.rs" template="core"
+#[entry_point]
+pub fn ibc_packet_ack(
+    _deps: DepsMut,
+    _env: Env,
+    msg: IbcPacketAckMsg,
+) -> StdResult<IbcBasicResponse> {
+    // this example assumes that the acknowledgement is an StdAck
+    let ack: StdAck = from_json(&msg.acknowledgement.data)?;
+
+    // here you can do something with the acknowledgement
+
+    Ok(IbcBasicResponse::new())
+}
+```
+
+The [`IbcPacketAckMsg`] struct contains the acknowledgement and original packet
+data, as well as the address of the relayer that sent the acknowledgement.
+
+When this entrypoint is called, it means that the packet has been successfully
+delivered to chain B and has been processed by the counterparty. This is the
+happy path of the packet lifecycle.
+
+[`IbcPacketAckMsg`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcPacketAckMsg.html
+
 ## Receiving a packet timeout
 
-TODO: add content
+If the packet is not relayed to chain B within the specified time frame (e.g.
+because the chain is stopped or no relayer is picking the packet up), a relayer
+can call the `ibc_packet_timeout` entrypoint with a [`IbcPacketTimeoutMsg`].
+This is where you can handle the timeout.
 
 <Callout>
   Please note that a timeout happening on an ordered channel automatically
-  closes the channel, since after a timeout, the order of packets can no longer
+  closes the channel, since after a timeout the order of packets can no longer
   be guaranteed.
 </Callout>
+
+```rust filename="ibc.rs" template="core"
+#[entry_point]
+pub fn ibc_packet_timeout(
+    _deps: DepsMut,
+    _env: Env,
+    _msg: IbcPacketTimeoutMsg,
+) -> StdResult<IbcBasicResponse> {
+    Ok(IbcBasicResponse::new())
+}
+```
+
+When this entrypoint is called, it means that the packet has not been delivered
+until the timeout specified when sending the packet. This is the unhappy path of
+the packet lifecycle.
+
+Note that the timeout is based on when the packet is _received_ on chain B,
+_not_ on when it is _acknowledged_. This means that a packet that is received,
+but not acknowledged will **not** trigger a timeout.
+
+[`IbcPacketTimeoutMsg`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcPacketTimeoutMsg.html

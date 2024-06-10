@@ -11,7 +11,8 @@ We use SHA-256 as the underlying hashing algorithm.
 
 You need to provide the following inputs:
 
-- Checksum: This _has_ to be a SHA-256 hash
+- Checksum: This is the checksum of the contract code (the Wasm module, for
+  example). This _has_ to be a SHA-256 hash
 - Creator: This is the canonicalized address of, for example, the contract instantiating the
   contract
 - Salt: This is some byte string allowing you to distinguish multiple

@@ -12,7 +12,7 @@ We use SHA-256 as the underlying hashing algorithm.
 You need to provide the following inputs:
 
 - Checksum: This _has_ to be a SHA-256 hash
-- Creator: This is the address of, for example, the contract instantiating the
+- Creator: This is the canonicalized address of, for example, the contract instantiating the
   contract
 - Salt: This is some byte string allowing you to distinguish multiple
   instantiations of the same contract by the same creator; this parameter has to

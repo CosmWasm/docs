@@ -15,8 +15,8 @@ You need to provide the following inputs:
 
 - Checksum: This is the checksum of the contract code (the Wasm module, for
   example). This _has_ to be a SHA-256 hash
-- Creator: This is the canonicalized address of, for example, the contract
-  instantiating the contract
+- Creator: This is the canonicalized address of the user instantiating the
+  contract
 - Salt: This is some byte string allowing you to distinguish multiple
   instantiations of the same contract by the same creator; this parameter has to
   be under 64 bytes in length

@@ -11,7 +11,7 @@ hard. It is hard to coordinate, hard to keep in sync, and this gets worse in
 distributed settings such as blockchains.
 
 In CosmWasm, we solve this by passing you some information about the blockchain
-you are running on whenever en entrypoint is invoked.
+you are running on whenever an entrypoint is invoked.
 
 In each of the entrypoints, you get a parameter of the type `Env` and this
 struct contains the field `block`. The struct contained in this field has a

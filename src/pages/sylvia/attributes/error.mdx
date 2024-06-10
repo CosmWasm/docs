@@ -1,0 +1,57 @@
+import { Callout } from "nextra/components";
+
+# `sv::error` attribute
+
+Use the `sv::error` attribute specify custom error types for the contract.
+
+<Callout>
+Custom error type has to implement `Into<StdError>` for the macro to compile.
+You can quickly provide this logic using, for example, [`thiserror`](https://docs.rs/thiserror/latest/thiserror).
+</Callout>
+
+## Macros
+
+List of macros supporting the `sv::error` attribute:
+
+- [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html)
+- [`entry_points`](https://docs.rs/sylvia/latest/sylvia/attr.entry_points.html)
+
+<Callout>
+  The `interface` macro supports custom error types via the `Error` associated
+  type.
+</Callout>
+
+## Usage
+
+```rust
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdError};
+use sylvia::types::InstantiateCtx;
+use thiserror::Error;
+
+pub struct CounterContract;
+
+#[derive(Error, Debug, PartialEq)]
+pub enum ContractError {
+    #[error("{0}")]
+    Std(#[from] StdError),
+}
+
+#[cfg_attr(feature = "library", sylvia::entry_points)]
+#[contract]
+#[sv::error(ContractError)]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> Result<Response, ContractError> {
+        Ok(Response::new())
+    }
+}
+```
+
+<Callout>
+  Each method has to use the error type defined in the `sv::error` attribute.
+</Callout>

@@ -1,0 +1,100 @@
+import { Callout } from "nextra/components";
+
+# `sv::custom` attribute
+
+Use `sv::custom` if you want to use a custom message and/or query in your
+contract.
+
+## Macros
+
+List of macros supporting the `sv::custom` attribute:
+
+- [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html)
+- [`interface`](https://docs.rs/sylvia/latest/sylvia/attr.interface.html)
+- [`entry_points`](https://docs.rs/sylvia/latest/sylvia/attr.entry_points.html)
+
+## Usage
+
+```rust
+use sylvia::contract;
+use sylvia::cw_schema::cw_serde;
+use sylvia::cw_std::{CustomMsg, CustomQuery, Response, StdResult};
+use sylvia::types::InstantiateCtx;
+
+#[cw_serde]
+pub struct SomeMsg {}
+#[cw_serde]
+pub struct SomeQuery {}
+
+impl CustomMsg for SomeMsg {}
+impl CustomQuery for SomeQuery {}
+
+pub struct CounterContract;
+
+#[cw_serde]
+pub struct SomeResponse;
+
+#[cfg_attr(feature = "library", sylvia::entry_points)]
+#[contract]
+#[sv::custom(msg=SomeMsg, query=SomeQuery)]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx<SomeQuery>) -> StdResult<Response<SomeMsg>> {
+        Ok(Response::new())
+    }
+}
+```
+
+`sv::custom` accepts one or two parameters:
+
+- msg - informs Sylvia macros about the custom message used in the contract
+- query - informs Sylvia macros about the custom query used in the contract
+
+<Callout>
+  Types passed as parameters have to implement
+  [`CustomMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.CustomMsg.html)
+  and
+  [`CustomQuery`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.CustomQuery.html)
+  respectively.
+</Callout>
+
+`sv::custom` works the same in the case of the `interface` macro.
+
+```rust
+use cosmwasm_schema::cw_serde;
+use sylvia::cw_std::{CustomMsg, CustomQuery, Response, StdError, StdResult};
+use sylvia::interface;
+use sylvia::types::{ExecCtx, QueryCtx};
+
+#[cw_serde]
+pub struct SomeMsg {}
+#[cw_serde]
+pub struct SomeQuery {}
+
+impl CustomMsg for SomeMsg {}
+impl CustomQuery for SomeQuery {}
+
+#[cw_serde]
+pub struct InterfaceQueryResp {}
+
+#[interface]
+#[sv::custom(msg=SomeMsg, query=SomeQuery)]
+pub trait SomeInterface {
+    type Error: From<StdError>;
+
+    #[sv::msg(exec)]
+    fn interface_exec(&self, ctx: ExecCtx<SomeQuery>) -> StdResult<Response<SomeMsg>>;
+
+    #[sv::msg(query)]
+    fn interface_query(&self, ctx: QueryCtx<SomeQuery>) -> StdResult<InterfaceQueryResp>;
+}
+```
+
+<Callout>
+  It's also possible to define custom types for the interface using associated
+  types. We cover it in the `interface` macro section.
+</Callout>

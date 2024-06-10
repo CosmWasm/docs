@@ -11,10 +11,6 @@ macro_rules! concat {
     }};
 }
 
-fn num2bytes(num: u64) -> [u8; 8] {
-    num.to_be_bytes()
-}
-
 fn hash_sha256(input: impl AsRef<[u8]>) -> Vec<u8> {
     Sha256::digest(input).to_vec()
 }

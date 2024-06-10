@@ -2,6 +2,8 @@
 tags: ["core", "specification"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Instantiate2 algorithm
 
 With the instantiate2 algorithm you can create a contract address in a
@@ -13,22 +15,23 @@ You need to provide the following inputs:
 
 - Checksum: This is the checksum of the contract code (the Wasm module, for
   example). This _has_ to be a SHA-256 hash
-- Creator: This is the canonicalized address of, for example, the contract instantiating the
-  contract
+- Creator: This is the canonicalized address of, for example, the contract
+  instantiating the contract
 - Salt: This is some byte string allowing you to distinguish multiple
   instantiations of the same contract by the same creator; this parameter has to
   be under 64 bytes in length
 - Message: This is usually unused. CosmWasm sets this to an empty byte string
 
-Next you need to define a function to convert an unsigned 64-bit integer into
-bytes, let's call it "num2bytes". This function simply converts the integer into
-its big-endian byte representation.
+<Callout>
+  Make sure you convert all the integers into their *big-endian* byte
+  representation!
+</Callout>
 
 ```rust filename="instantiate2.rs" template="instantiate-spec"
-let c_checksum = concat!(num2bytes(checksum.len() as u64), checksum);
-let c_creator = concat!(num2bytes(creator.len() as u64), creator);
-let c_salt = concat!(num2bytes(salt.len() as u64), salt);
-let c_msg = concat!(num2bytes(msg.len() as u64), msg);
+let c_checksum = concat!((checksum.len() as u64).to_be_bytes(), checksum);
+let c_creator = concat!((creator.len() as u64).to_be_bytes(), creator);
+let c_salt = concat!((salt.len() as u64).to_be_bytes(), salt);
+let c_msg = concat!((msg.len() as u64).to_be_bytes(), msg);
 
 let canonical_address = hash_sha256(
     concat!(

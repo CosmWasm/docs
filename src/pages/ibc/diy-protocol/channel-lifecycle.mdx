@@ -110,18 +110,22 @@ Opening a channel is generally a permissionless process, so make sure to keep
 that in mind when implementing the entrypoints. You can add additional checks to
 ensure that the channel is connecting to the correct counterparty or have a
 state item containing a `bool` that is checked here to explicitly disable new
-channels.
+channels. Depending on the protocol, you might also want to limit yourself to a
+single channel per contract.
 
 You can also be more restrictive and only allow the contract itself to initiate
 the channel creation handshake. This can be done by adding a state item to the
 contract that is only set to true before the contract sends the message to
 initiate the handshake and immediately set to false in the `ibc_channel_open`
-entrypoint:
+entrypoint.
 
-<Callout>
-  The following example requires the `cosmos-sdk-proto` crate that provides
-  protobuf types for Cosmos SDK messages.
-</Callout>
+<details>
+  <summary>Advanced example: Contract initiating the handshake on its own</summary>
+  
+  <Callout>
+    The following example requires the `cosmos-sdk-proto` crate that provides
+    protobuf types for Cosmos SDK messages.
+  </Callout>
 
 ```rust filename="ibc.rs" template="core"
 use cosmos_sdk_proto::ibc::core::channel::v1::{
@@ -188,8 +192,8 @@ pub const ALLOW_CHANNEL_OPENING: Item<bool> = Item::new("allow_opening");
 const IBC_APP_VERSION: &str = "my-protocol-v1";
 ```
 
-<Tabs items={['CosmWasm 2.0+ chains', 'CosmWasm 1.x chains']}>
-  <Tabs.Tab>
+  <Tabs items={['CosmWasm 2.0+ chains', 'CosmWasm 1.x chains']}>
+    <Tabs.Tab>
 
 ```rust filename="contract.rs" template="ibc-channel"
 use cosmos_sdk_proto::traits::Message;
@@ -222,7 +226,7 @@ pub fn execute(
 }
 ```
 
-  </Tabs.Tab>
+    </Tabs.Tab>
 
   <Tabs.Tab>
 
@@ -257,8 +261,11 @@ pub fn execute(
 }
 ```
 
-  </Tabs.Tab>
-</Tabs>
+    </Tabs.Tab>
+
+  </Tabs>
+  
+</details>
 
 ### Channel connect
 

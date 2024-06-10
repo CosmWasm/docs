@@ -254,6 +254,7 @@ pub fn execute(
     ibc::ALLOW_CHANNEL_OPENING.save(deps.storage, &true)?;
 
     // send a stargate message to initiate the channel opening
+    #[allow(deprecated)]
     Ok(Response::new().add_message(CosmosMsg::Stargate {
         type_url: "/ibc.core.channel.v1.MsgChannelOpenInit".into(),
         value: channel_open_init.encode_to_vec().into(),
@@ -314,7 +315,7 @@ pub fn ibc_channel_close(
 }
 ```
 
-<Callout>
+<Callout type="warning">
   While closing channels is something that is possible in IBC, you should think
   carefully about whether you want to allow it in your protocol. In many cases,
   it might be better to keep the channel open and return an error when someone

@@ -166,16 +166,141 @@ optionally set a gas limit for the callback execution. Please take a look at the
   error and the contract will not be called.
 </Callout>
 
-### Entrypoints
+### Receiving IBC Callbacks
 
-TODO
+To receive callbacks, you need to implement two new entrypoints in your
+contract:
 
-- two new entrypoints
-  - `ibc_source_chain_callback`
-  - `ibc_destination_chain_callback`
+{/* TODO: add docs links once IBC Callbacks are released */}
 
----
+- `ibc_source_callback`, receiving an `IbcSourceCallbackMsg` which can be one of
+  two types:
+  - `IbcAckCallbackMsg` if the packet was acknowledged
+  - `IbcTimeoutCallbackMsg` if the packet timed out
+- `ibc_destination_callback`, receiving an `IbcDestinationCallbackMsg`
 
-Notes:
+#### Source Callback
 
-- add link to IbcCallbackRequest docs when merged and deployed
+The `ibc_source_callback` entrypoint is called when the packet was either
+acknowledged or timed out. You can use this to update your contract state,
+release locked funds or trigger other actions.
+
+As mentioned above, the receiver of this callback is always the contract that
+sent the message. This means you don't need to assume that an attacker might be
+sending you fake callbacks, reducing the need for validation.
+
+This is how you can implement the `ibc_source_callback` entrypoint:
+
+{/* TODO: Add template="core" when callbacks are released */}
+
+```rust
+#[entry_point]
+pub fn ibc_source_callback(
+    deps: DepsMut,
+    _env: Env,
+    msg: IbcSourceCallbackMsg,
+) -> StdResult<IbcBasicResponse> {
+    match msg {
+        IbcSourceCallbackMsg::Acknowledgement(ack) => {
+            // handle the acknowledgement
+        }
+        IbcSourceCallbackMsg::Timeout(timeout) => {
+            // handle the timeout
+        }
+    }
+
+    Ok(IbcBasicResponse::new().add_attribute("action", "ibc_source_callback"))
+}
+```
+
+##### Acknowledgement
+
+When the packet was acknowledged, you will receive the
+`Acknowledgement(IbcAckCallbackMsg)` variant of `IbcSourceCallbackMsg`. This
+means that the packet was successfully received and processed by the application
+on the destination chain. The message contains the original packet data, the
+acknowledgement and the address of the relayer.
+
+##### Timeout
+
+When the packet timed out, you will receive the `Timeout(IbcTimeoutCallbackMsg)`
+variant of `IbcSourceCallbackMsg`. This means that the packet was not delivered
+to the destination chain in time (e.g. because no relayer picked it up or the
+chain is stopped). The message contains the original packet data and the address
+of the relayer who told you about the timeout.
+
+#### Destination Callback
+
+The `ibc_destination_callback` entrypoint is called when a packet was
+acknowledged on the destination chain. For the `IbcMsg::Transfer` message, this
+means that the tokens were successfully transferred to the destination chain. It
+allows you to use the received tokens immediately, update the contract state to
+reflect the new tokens or trigger other actions.
+
+<Callout type="warning">
+  It is important to validate that the packet and acknowledgement are what you
+  expect them to be. For example for a transfer message, the receiver of the
+  funds is not necessarily the contract that receives the callbacks.
+</Callout>
+
+This is how you can implement the `ibc_destination_callback` entrypoint:
+
+{/* TODO: Add template="core" when callbacks are released */}
+
+```rust
+#[entry_point]
+pub fn ibc_destination_callback(
+    deps: DepsMut,
+    _env: Env,
+    msg: IbcDestinationCallbackMsg,
+) -> StdResult<IbcBasicResponse> {
+    ensure_eq!(
+        msg.packet.dest.port_id,
+        "transfer", // transfer module uses this port by default
+        StdError::generic_err("only want to handle transfer packets")
+    );
+    ensure_eq!(
+        msg.ack.data,
+        StdAck::success(b"\x01").to_binary(), // this is how a successful transfer ack looks
+        StdError::generic_err("only want to handle successful transfers")
+    );
+    // At this point we know that this is a callback for a successful transfer,
+    // but not to whom it is going, how much and what denom.
+    // Let's parse the packet data to get that information:
+
+    /// This is the data format for a v1 transfer packet (v2 looks different)
+    /// See <https://github.com/cosmos/ibc/tree/main/spec/app/ics-020-fungible-token-transfer#data-structures>
+    #[cw_serde]
+    struct TransferPacketData {
+        denom: String,
+        amount: Uint256,
+        /// The sender on the source chain
+        /// This is not of type `Addr` because it is not a valid address on this chain
+        sender: String,
+        /// The receiver on the destination chain
+        receiver: Addr,
+        memo: String,
+    }
+    let packet_data: TransferPacketData = from_json(&msg.packet.data)?;
+
+    ensure_eq!(
+        packet_data.receiver,
+        env.contract.address,
+        StdError::generic_err("only want to handle transfers to this contract")
+    );
+    ensure_eq!(
+        packet_data.denom,
+        "untrn", // assuming this runs on Neutron,
+        StdError::generic_err("only want to handle this chain's native token")
+    );
+
+    // ... do something with our tokens here
+
+    Ok(IbcBasicResponse::new().add_attribute("action", "ibc_destination_callback"))
+}
+```
+
+As mentioned above, anyone can send you a destination callback for a packet.
+This means you need to make sure that the packet and acknowledgement are what
+you expect them to be. For example, for a transfer message, you need to make
+sure that the receiver of the funds is the contract that receives the callbacks.

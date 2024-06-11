@@ -4,7 +4,12 @@ An `Item` is a container that stores a single value under a specific key in
 storage.
 
 Merely constructing the `Item` object does not commit anything to storage. If an
-`Item` has never been written to before, it will be empty.
+`Item` has never been written to before (or the value has been
+[removed](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html#method.remove)),
+it will be empty.
+
+Under the hood, values are serialized with [`serde`](https://serde.rs/) and
+[`serde_json_wasm`](https://docs.rs/serde_json_wasm/).
 
 Use `save` to write to an `Item`.
 

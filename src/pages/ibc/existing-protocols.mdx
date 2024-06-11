@@ -2,7 +2,7 @@
 tags: ["ibc", "ics20"]
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
 
 # Using existing protocols
 
@@ -96,15 +96,46 @@ the callbacks.
   to the `memo` field.
 </Callout>
 
-To make this as easy as possible, we provide a helper type `IbcCallbackRequest`
-that you can use to generate the JSON:
+{/* TODO: add link to `IbcCallbackRequest` docs once IBC Callbacks are released */}
 
-{/* TODO: add `template="execute"` once IBC Callbacks are merged */}
+To make this as easy as possible, we provide two ways to generate the correct
+JSON. One is a builder type for the `TransferMsg` type which provides a
+type-safe way to generate the complete `TransferMsg`, the other is a helper type
+`IbcCallbackRequest` that just generates the JSON for the `memo` field:
+
+{/* TODO: add `template="execute"` once IBC Callbacks are released */}
+
+<Tabs items={['TransferMsgBuilder (recommended)', 'IbcCallbackRequest']}>
+    <Tabs.Tab>
 
 ```rust
-let _ = IbcMsg::Transfer {
-    to_address: "cosmos1exampleaddress".to_string(),
+let msg = TransferMsgBuilder::new(
+    "channel-0".to_string(),
+    "cosmos1exampleaddress".to_string(),
+    Coin::new(10u32, "ucoin"),
+    Timestamp::from_seconds(12345),
+)
+.with_src_callback(IbcSrcCallback {
+    address: env.contract.address,
+    gas_limit: None,
+})
+.with_dst_callback(IbcDstCallback {
+    address: to_address.clone(),
+    gas_limit: None,
+})
+.build();
+
+Ok(Response::new().add_message(msg))
+```
+
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+
+```rust
+let msg = IbcMsg::Transfer {
     channel_id: "channel-0".to_string(),
+    to_address: "cosmos1exampleaddress".to_string(),
     amount: Coin::new(10u32, "ucoin"),
     timeout: Timestamp::from_seconds(12345).into(),
     memo: Some(to_json_string(&IbcCallbackRequest::both(IbcSrcCallback {
@@ -115,7 +146,13 @@ let _ = IbcMsg::Transfer {
         gas_limit: None,
     })).unwrap()),
 };
+
+Ok(Response::new().add_message(msg))
 ```
+
+    </Tabs.Tab>
+
+</Tabs>
 
 As you can see, you can request callbacks for both the source and destination
 chain. However, you can also request callbacks for only one of them. For this,

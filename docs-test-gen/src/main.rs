@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
+use comrak::nodes::{NodeCodeBlock, NodeValue};
 use glob::glob;
 use phf::phf_map;
-use pulldown_cmark::{CodeBlockKind, Event, Tag, TagEnd};
 use std::{fs, path::Path};
 use strum::{AsRefStr, EnumIter, IntoEnumIterator};
 
@@ -41,14 +41,14 @@ enum Language {
 }
 
 impl Language {
-    fn file_ext(&self) -> &str {
+    fn file_ext(&self) -> &'static str {
         match self {
             Self::Go => "go",
             Self::Rust => "rs",
         }
     }
 
-    fn test_dir(&self) -> &str {
+    fn test_dir(&self) -> &'static str {
         match self {
             Self::Go => "go_tests",
             Self::Rust => "tests",
@@ -65,47 +65,32 @@ struct CodeBlock {
 
 fn process_file(path: &Path) -> Result<()> {
     let src = fs::read_to_string(path)?;
-    let parser = pulldown_cmark::Parser::new(&src);
 
-    let mut is_aggregating = false;
+    let arena = comrak::Arena::new();
+    let ast = comrak::parse_document(&arena, &src, &comrak::Options::default());
 
-    let mut language = Language::Rust;
-    let mut template = String::new();
-    let mut code = String::new();
     let mut blocks = Vec::new();
+    for node in ast.descendants() {
+        let node = &node.data.borrow().value;
 
-    for event in parser {
-        if is_aggregating {
-            if let Event::Text(ref text) = event {
-                code.push_str(text);
-            }
-        }
+        if let NodeValue::CodeBlock(NodeCodeBlock {
+            fenced: true,
+            info,
+            literal,
+            ..
+        }) = node
+        {
+            let Some(language) = find_language(info) else {
+                continue;
+            };
 
-        match event {
-            Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(fence))) => {
-                language = match find_language(&fence) {
-                    Some(found_lang) => found_lang,
-                    None => continue,
-                };
-
-                if let Some(template_name) = get_template_name(&fence) {
-                    is_aggregating = true;
-                    template = template_name.to_string();
-                }
-            }
-            Event::End(TagEnd::CodeBlock) if is_aggregating => {
-                is_aggregating = false;
-
+            if let Some(template_name) = get_template_name(info) {
                 blocks.push(CodeBlock {
-                    template: template.clone(),
-                    code: code.clone(),
                     language,
+                    template: template_name.to_string(),
+                    code: literal.clone(),
                 });
-
-                template.clear();
-                code.clear();
             }
-            _ => (),
         }
     }
 

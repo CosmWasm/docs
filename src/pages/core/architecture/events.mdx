@@ -1,0 +1,31 @@
+---
+tags: ["core", "architecture"]
+---
+
+# Events
+
+CosmWasm can emit
+[Cosmos Events](https://docs.cosmos.network/v0.50/learn/advanced/events). These
+events are stored in the block as metadata, allowing the contract to attach
+metadata to what exactly happened during execution.
+
+By default CosmWasm emits the `wasm` event to which you can add context like so:
+
+```rust filename="wasm_event.rs" template="core"
+let response: Response<Empty> = Response::new()
+    .add_attribute("custom_attribute", "value");
+```
+
+## Custom events
+
+As mentioned above, CosmWasm only emits the event `wasm` by default. If you want
+to emit other events, such as domain-specific events like `user_added`, you can
+construct a fully custom event and attach it to the response.
+
+```rust filename="custom_event.rs" template="core"
+let event = Event::new("custom_event")
+    .add_attribute("custom_attribute", "value");
+
+let response: Response<Empty> = Response::new()
+    .add_event(event);
+```

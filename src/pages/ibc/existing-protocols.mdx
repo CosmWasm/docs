@@ -245,9 +245,25 @@ reflect the new tokens or trigger other actions.
 
 This is how you can implement the `ibc_destination_callback` entrypoint:
 
+<Callout>
+  This example uses the `ibc` crate with the `serde` feature, which provides a
+  data type for the transfer packet format to avoid defining that ourselves. You
+  can add it to your `Cargo.toml` by running `cargo add ibc --features serde`.
+</Callout>
+
+<Callout type="warning">
+  Please note that the following example assumes an ICS20 v1 channel. At the
+  time of writing, the specification and implementation have just been extended
+  with a v2 which changes the packet format. If you want to use this in
+  production code, you should make sure to support both formats, such that a
+  channel upgrade does not break your contract.
+</Callout>
+
 {/* TODO: Add template="core" when callbacks are released */}
 
 ```rust
+use ibc::apps::transfer::types::packet::PacketData as TransferPacketData;
+
 #[entry_point]
 pub fn ibc_destination_callback(
     deps: DepsMut,
@@ -266,41 +282,63 @@ pub fn ibc_destination_callback(
     );
     // At this point we know that this is a callback for a successful transfer,
     // but not to whom it is going, how much and what denom.
-    // Let's parse the packet data to get that information:
 
-    /// This is the data format for a v1 transfer packet (v2 looks different)
-    /// See <https://github.com/cosmos/ibc/tree/main/spec/app/ics-020-fungible-token-transfer#data-structures>
-    #[cw_serde]
-    struct TransferPacketData {
-        denom: String,
-        amount: Uint256,
-        /// The sender on the source chain
-        /// This is not of type `Addr` because it is not a valid address on this chain
-        sender: String,
-        /// The receiver on the destination chain
-        receiver: Addr,
-        memo: String,
-    }
+    // Parse the packet data to get that information:
     let packet_data: TransferPacketData = from_json(&msg.packet.data)?;
 
+    // The receiver should be a valid address on this chain.
+    // Remember, we are on the destination chain.
+    let receiver = deps.api.addr_validate(packet_data.receiver.as_ref())?;
     ensure_eq!(
-        packet_data.receiver,
+        receiver,
         env.contract.address,
         StdError::generic_err("only want to handle transfers to this contract")
     );
+
+    // We only care about this chain's native token in this example.
+    // The `packet_data.token.denom` is formatted as `{port id}/{channel id}/{denom}`,
+    // where the port id and channel id are the source chain's identifiers.
+    // Assuming we are running this on Neutron and only want to handle NTRN tokens,
+    // the denom should look like this:
+    let ntrn_denom = format!(
+        "{}/{}/untrn",
+        msg.packet.src.port_id, msg.packet.src.channel_id
+    );
     ensure_eq!(
-        packet_data.denom,
-        "untrn", // assuming this runs on Neutron,
-        StdError::generic_err("only want to handle this chain's native token")
+        packet_data.token.denom.to_string(),
+        ntrn_denom,
+        StdError::generic_err("only want to handle NTRN tokens")
     );
 
-    // ... do something with our tokens here
+    // Now, we can do something with our tokens.
+    // For example, we could send them to some address:
+    let msg = BankMsg::Send {
+        to_address: "neutron155exr8rqjrknusllpzxdfvezxr8ddpqehj9g9d".to_string(),
+        // this panics if the amount is too large
+        amount: coins(packet_data.token.amount.as_ref().as_u128(), "untrn"),
+    };
 
-    Ok(IbcBasicResponse::new().add_attribute("action", "ibc_destination_callback"))
+    Ok(IbcBasicResponse::new()
+        .add_message(msg)
+        .add_attribute("action", "ibc_destination_callback"))
 }
 ```
 
 As mentioned above, anyone can send you a destination callback for a packet.
 This means you need to make sure that the packet and acknowledgement are what
 you expect them to be. For example, for a transfer message, you need to make
-sure that the receiver of the funds is the contract that receives the callbacks.
+sure that the transfer was successful, that the receiver of the funds is your
+contract and the denomination is what you want to receive. This requires some
+knowledge about the
+[packet format](https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md#data-structures).
+
+#### Error handling
+
+Returning an error or panicking from a callback will **not** influence the IBC
+packet lifecycle. The packet will still be acknowledged or timed out. This means
+that you can safely return errors from your callbacks if you want to ignore the
+packet.
+
+It will, however, undo any state changes that you made in the callback, just
+like most other entrypoints.
+{/* TODO: add link to corresponding core section when that is written */}

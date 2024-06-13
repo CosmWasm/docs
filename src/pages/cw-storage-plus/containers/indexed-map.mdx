@@ -1,0 +1,244 @@
+import { Callout } from "nextra/components";
+
+# `IndexedMap`
+
+An
+[`IndexedMap`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html)
+is a map that, apart from the usual map key (`K`) has some secondary indexes
+(`I`) that can be used to look up values.
+
+<Callout>
+There's no limit to how many indexes you can have, but be careful. Using many indexes can increase the complexity of
+storage writes - with every write, the list of indexes is iterated over since
+they might need to be updated.
+</Callout>
+
+As always, we encourage you to explore the
+[`API reference`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html)
+for a full list of available methods and more rigid definitions of the types
+involved.
+
+## Case study: User lookup
+
+Imagine we have a list of users. Every user is uniquely identified by their
+address, so it makes sense to use that as the primary key. We'll need to look up
+users by their address - if Alice calls the contract, we should be able to look
+up her user data by the address with which she called.
+
+<Callout>
+Every snippet on this page builds on the previous ones. Make sure you've
+  understood the previous snippet before moving on to the next one, and feel free to go back and forth as needed.
+</Callout>
+
+This is easy to model with a normal `Map`.
+
+```rust template="storage"
+use cw_storage_plus::Map;
+
+type Handle = String;
+
+#[cw_serde]
+struct User {
+    handle: Handle,
+    country: String,
+}
+
+let _users = Map::<Addr, User>::new("u");
+```
+
+Great! But what if we want to look up users by their handles? Our only real
+option here is to iterate over all users and check if the handle matches. With a
+big enough user base, this could be slow and expensive.
+
+### Setting up an `IndexedMap` with a `UniqueIndex`
+
+A better way would be to maintain a secondary index. Let's try to do this.
+
+```rust template="storage"
+use cw_storage_plus::{index_list, IndexedMap, UniqueIndex};
+
+use crate::users::*;
+
+#[index_list(User)]
+struct UserIndexes<'a> {
+    handle_ix: UniqueIndex<'a, Handle, User, Addr>,
+}
+
+let user_indexes = UserIndexes {
+    handle_ix: UniqueIndex::new(|user| user.handle.clone(), "uh"),
+};
+
+let _users = IndexedMap::<Addr, _, _>::new("u", user_indexes);
+```
+
+Here's what happens step-by-step
+
+- We define a struct `UserIndexes` that holds all the indexes we want to use. In
+  this case, we only have one index - `handle`, indexing the `handle` field.
+- We construct our `UserIndexes`. Notice the `UniqueIndex` constructor takes two
+  parameters:
+  - A closure. This closure is supposed to take the value of an entry and
+    produce the secondary key. Without this, the `IndexedMap` would not know how
+    to create the index.
+  - A prefix. The index needs its own storage namespace. Note the index prefix
+    has to be distinct from the `IndexedMap` prefix (or any other prefix used
+    with this contract's storage).
+- We construct an `IndexedMap` with that list of indexes.
+
+<Callout type="warning">
+If you're using
+  [`UniqueIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.UniqueIndex.html),
+  it's your responsibility to ensure that the index you've built has unique
+  keys. If you have two users with the same handle, the index will be
+  overwritten and only contain the last user. Be careful!
+  
+  If you need to store a key that is not unique, you'll want to use a [`MultiIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.MultiIndex.html) - see the [next section](#lookup-by-country).
+</Callout>
+
+<Callout>
+Under the hood, the `IndexedMap` will store the data using a regular `Map` for
+the primary key, and then another `Map` for each secondary index. This is how efficient lookups are achieved.
+
+Again, every update to this storage structure will have to update all the
+indexes - that's the price we pay for efficient lookups.
+
+</Callout>
+
+### Taking advantage of the secondary index
+
+As with a regular `Map`, you can
+[load data](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.load),
+[save](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.save)
+data,
+[remove](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.remove)
+data, and iterate over the `IndexedMap`.
+
+```rust template="storage"
+use cw_storage_plus::IndexedMap;
+
+use crate::users::*;
+
+let users = IndexedMap::<Addr, _, _>::new("u", user_indexes("uh"));
+
+let alice_addr = Addr::unchecked("alice");
+let alice_user = User {
+    handle: "alice".to_string(),
+    country: "Wonderland".to_string(),
+};
+
+let bob_addr = Addr::unchecked("bob");
+let bob_user = User {
+    handle: "bob".to_string(),
+    country: "Bikini Bottom".to_string(),
+};
+
+users
+    .save(&mut storage, alice_addr.clone(), &alice_user)
+    .unwrap();
+
+users
+    .save(&mut storage, bob_addr.clone(), &bob_user)
+    .unwrap();
+
+assert_eq!(
+    users.load(&storage, Addr::unchecked("alice")).unwrap(),
+    alice_user
+);
+
+assert_eq!(
+    users
+        .range(&storage, None, None, Order::Ascending)
+        .collect::<StdResult<Vec<_>>>()
+        .unwrap(),
+    vec![
+        (alice_addr.clone(), alice_user.clone()),
+        (bob_addr.clone(), bob_user.clone()),
+    ]
+);
+```
+
+But now we can also look up users by their handle.
+
+```rust template="storage"
+use cw_storage_plus::IndexedMap;
+
+use crate::users::*;
+
+let (_key, alice) = users
+    .idx
+    .handle_ix                           // access the `handle_ix` index
+    .item(&storage, "alice".to_string()) // load a specific record
+    .unwrap()
+    .unwrap();
+
+assert_eq!(
+    alice,
+    User {
+        handle: "alice".to_string(),
+        country: "Wonderland".to_string(),
+    }
+);
+```
+
+We can also iterate over records using bounds based on the secondary index.
+Here's how we can find all user handles starting with "a" or "b".
+
+```rust template="storage"
+use cw_storage_plus::{Bound, IndexedMap};
+
+use crate::users::*;
+
+let found_users = users
+    .idx
+    .handle_ix
+    .range(
+        &storage,
+        Some(Bound::inclusive("a")),
+        Some(Bound::exclusive("c")),
+        Order::Ascending,
+    )
+    .collect::<StdResult<Vec<_>>>()
+    .unwrap();
+
+assert_eq!(found_users.len(), 2);
+assert_eq!(
+    found_users[0],
+    (
+        Addr::unchecked("alice"),
+        User {
+            handle: "alice".to_string(),
+            country: "Wonderland".to_string(),
+        }
+    )
+);
+assert_eq!(found_users[1].1.handle, "bob");
+```
+
+If we're only interested in the addresses (primary keys in our case), we can use
+the `keys` method.
+
+```rust template="storage"
+use cw_storage_plus::{Bound, IndexedMap};
+
+use crate::users::*;
+
+let found_keys = users
+    .idx
+    .handle_ix
+    .keys(&storage, Some(Bound::inclusive("b")), None, Order::Ascending)
+    .collect::<StdResult<Vec<_>>>()
+    .unwrap();
+
+assert_eq!(found_keys.len(), 2);
+assert_eq!(found_keys[0], Addr::unchecked("bob"));
+assert_eq!(found_keys[1], Addr::unchecked("carol"));
+```
+
+TODO: link to a blurb about compound keys iteration order/bounds being wonky?
+probably described in [`Map`](./map.md)
+
+### Lookup by country
+
+TO BE ADDED
+
+A bunch of stuff about `MultiIndex` will follow here.

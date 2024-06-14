@@ -23,24 +23,6 @@ impl From<StdError> for ContractError {
     }
 }
 
-mod ibc {
-    use super::*;
-
-    use cw_storage_plus::Item;
-    use cosmos_sdk_proto::ibc::core::channel::v1::MsgChannelOpenInit;
-
-    pub fn new_msg_channel_open_init(
-        deps: Deps,
-        env: &Env,
-        connection_id: String,
-        counterparty_port_id: String,
-    ) -> StdResult<MsgChannelOpenInit> {
-        todo!() // stub
-    }
-
-    pub const ALLOW_CHANNEL_OPENING: Item<bool> = Item::new("allow_opening");
-}
-
 #[test]
 fn doctest() {
   {{code}}

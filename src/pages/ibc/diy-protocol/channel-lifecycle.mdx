@@ -124,10 +124,11 @@ entrypoint.
     protobuf types for Cosmos SDK messages.
   </Callout>
 
-```rust filename="ibc.rs" template="core"
+```rust filename="ibc.rs" template="ibc-channel"
 use cosmos_sdk_proto::ibc::core::channel::v1::{
     Channel, Counterparty, MsgChannelOpenInit, Order, State,
 };
+use cosmos_sdk_proto::traits::Message;
 use cw_storage_plus::Item;
 
 /// Creates a new Cosmos SDK message that initiates the channel handshake
@@ -185,16 +186,6 @@ pub fn ibc_channel_open(
     Ok(None)
 }
 
-pub const ALLOW_CHANNEL_OPENING: Item<bool> = Item::new("allow_opening");
-const IBC_APP_VERSION: &str = "my-protocol-v1";
-```
-
-  <Tabs items={['CosmWasm 2.0+ chains', 'CosmWasm 1.x chains']}>
-    <Tabs.Tab>
-
-```rust filename="contract.rs" template="ibc-channel"
-use cosmos_sdk_proto::traits::Message;
-
 #[entry_point]
 pub fn execute(
     deps: DepsMut,
@@ -205,7 +196,7 @@ pub fn execute(
     // ...
 
     // prepare the channel open message
-    let channel_open_init = ibc::new_msg_channel_open_init(
+    let channel_open_init = new_msg_channel_open_init(
         deps.as_ref(),
         &env,
         msg.connection_id,
@@ -213,56 +204,25 @@ pub fn execute(
     )?;
 
     // enable channel opening
-    ibc::ALLOW_CHANNEL_OPENING.save(deps.storage, &true)?;
+    ALLOW_CHANNEL_OPENING.save(deps.storage, &true)?;
 
     // send an any message to initiate the channel opening
+    // Note that you need to use the deprecated `CosmosMsg::Stargate` variant if you need to
+    // support pre-2.0 chains
     Ok(Response::new().add_message(AnyMsg {
         type_url: "/ibc.core.channel.v1.MsgChannelOpenInit".into(),
         value: channel_open_init.encode_to_vec().into(),
     }))
 }
+
+pub const ALLOW_CHANNEL_OPENING: Item<bool> = Item::new("allow_opening");
+const IBC_APP_VERSION: &str = "my-protocol-v1";
 ```
 
-    </Tabs.Tab>
+As you can see, the contract itself sends the message to initialize the channel
+handshake in this example. Please note that the rest of the handshake still
+needs to be done by a relayer.
 
-  <Tabs.Tab>
-
-```rust filename="contract.rs" template="ibc-channel"
-use cosmos_sdk_proto::traits::Message;
-
-#[entry_point]
-pub fn execute(
-    deps: DepsMut,
-    env: Env,
-    _info: MessageInfo,
-    msg: ExecuteMsg,
-) -> Result<Response, ContractError> {
-    // ...
-
-    // prepare the channel open message
-    let channel_open_init = ibc::new_msg_channel_open_init(
-        deps.as_ref(),
-        &env,
-        msg.connection_id,
-        msg.counterparty_port_id,
-    )?;
-
-    // enable channel opening
-    ibc::ALLOW_CHANNEL_OPENING.save(deps.storage, &true)?;
-
-    // send a stargate message to initiate the channel opening
-    #[allow(deprecated)]
-    Ok(Response::new().add_message(CosmosMsg::Stargate {
-        type_url: "/ibc.core.channel.v1.MsgChannelOpenInit".into(),
-        value: channel_open_init.encode_to_vec().into(),
-    }))
-}
-```
-
-    </Tabs.Tab>
-
-  </Tabs>
-  
 </details>
 
 ### Channel connect

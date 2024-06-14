@@ -31,17 +31,14 @@ unordered channel, packets are processed in the they arrive.
 ## Establishing a channel
 
 To send packets between two chains, you need to establish a channel between
-them. This process involves two calls per chain. These are described below. Once
-the channel is established, you can start sending packets through it, which we
-will cover in the next section. To initiate the channel creation, you can use a
-relayer binary such as [hermes] to perform the handshake between the two
-endpoints. Returning an error from one of the calls will cause the channel
-handshake to fail.
+them. This process involves two calls per chain. Once the channel is
+established, you can start sending packets through it, which we will cover in
+the next section. To initiate the channel creation, you can use a relayer binary
+such as [hermes] to perform the handshake between the two endpoints. Returning
+an error from one of the calls will cause the channel handshake to fail.
 
-<Callout>
-  In the following, we will refer to the two chains we want to connect as chain
-  A and B. The handshake starts on chain A.
-</Callout>
+In the following, we will refer to the two chains we want to connect as chain A
+and B. The handshake starts on chain A.
 
 We will take a closer look at the handshake process, but here is a brief summary
 of the steps:
@@ -60,7 +57,7 @@ When the channel creation is started by the relayer, the first call to the
 contract is made on chain A. This call is made to the `ibc_channel_open`
 entrypoint with the `IbcChannelOpenMsg::OpenInit` variant. Then the same
 entrypoint is called on chain B with the `IbcChannelOpenMsg::OpenTry` variant.
-See the following example and the [`IbcChannelOpenMsg` documentation].
+See the following example and the [`IbcChannelOpenMsg`] documentation.
 
 ```rust filename="ibc.rs" template="core"
 /// enforces ordering and versioning constraints
@@ -101,7 +98,7 @@ it. The version is used to ensure that both chains are running the protocol that
 the other one expects. You can also return `None` if you just want to accept the
 counterparty version.
 
-[`IbcChannelOpenMsg` documentation]:
+[`IbcChannelOpenMsg`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
 
 #### Permissions
@@ -286,7 +283,6 @@ pub fn ibc_channel_connect(
 
     // you probably want to save the `channel.endpoint.channel_id` to storage,
     // so you can use it when sending packets
-    // TODO: add storage code above using storey?
 
     Ok(IbcBasicResponse::new())
 }

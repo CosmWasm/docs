@@ -1,7 +1,6 @@
 {
   "basics": "Basics",
   "containers": "Containers",
-  "iteration": "Iteration",
   "snapshots": "Snapshots",
   "multi-indexes": "Multi index collections"
 }

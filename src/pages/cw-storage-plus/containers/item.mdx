@@ -1,9 +1,80 @@
 # `Item`
 
-## Overview
+An `Item` is a container that stores a single value under a specific key in
+storage.
 
-## Examples
+Merely constructing the `Item` object does not commit anything to storage. If an
+`Item` has never been written to before (or the value has been
+[removed](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html#method.remove)),
+it will be empty.
+
+Under the hood, values are serialized with [`serde`](https://serde.rs/) and
+[`serde_json_wasm`](https://docs.rs/serde_json_wasm/).
+
+Use `save` to write to an `Item`.
+
+Use `load` to read from the `Item`, producing an error if the `Item` is empty or
+if deserialization fails.
+
+Use `may_load` if you want to explicitly handle the possibility the `Item` is
+empty - this will produce an
+[`StdError`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdError.html)
+if deserialization fails, but produce an `Ok(None)` if it is empty.
+
+More information can be found in the
+[API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html).
+
+## Usage examples
 
 ### Saving an admin address
 
-### Saving a config structure
+```rust template="storage"
+use cw_storage_plus::Item;
+
+let admin: Item<String> = Item::new("a");
+assert_eq!(admin.may_load(&storage).unwrap(), None);
+
+admin.save(&mut storage, &"some_address".to_string()).unwrap();
+assert_eq!(admin.load(&storage).unwrap(), "some_address");
+```
+
+### Maintaining a config structure
+
+```rust template="storage"
+use cw_storage_plus::Item;
+use serde::{Serialize, Deserialize};
+
+#[cw_serde]
+struct Config {
+    admin: String,
+    interest_rate: Decimal,
+}
+
+let cfg = Config {
+    admin: "some_address".to_string(),
+    interest_rate: Decimal::percent(5),
+};
+let cfg_storage: Item<Config> = Item::new("c");
+cfg_storage.save(&mut storage, &cfg).unwrap();
+
+assert_eq!(cfg_storage.load(&storage).unwrap(), cfg);
+```
+
+### Default values
+
+Sometimes you might like to read a value, but if it may have never been set, you
+want to provide a default. This is a common pattern for counters or other
+numeric values.
+
+```rust template="storage"
+use cw_storage_plus::Item;
+
+let counter: Item<u128> = Item::new("t");
+
+let mut total = counter.may_load(&storage).unwrap().unwrap_or(0);
+
+assert_eq!(total, 0);
+total += 1;
+
+counter.save(&mut storage, &total).unwrap();
+```

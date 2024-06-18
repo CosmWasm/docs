@@ -251,14 +251,6 @@ This is how you can implement the `ibc_destination_callback` entrypoint:
   can add it to your `Cargo.toml` by running `cargo add ibc --features serde`.
 </Callout>
 
-<Callout type="warning">
-  Please note that the following example assumes an ICS20 v1 channel. At the
-  time of writing, the specification and implementation have just been extended
-  with a v2 which changes the packet format. If you want to use this in
-  production code, you should make sure to support both formats, such that a
-  channel upgrade does not break your contract.
-</Callout>
-
 {/* TODO: Add template="core" when callbacks are released */}
 
 ```rust
@@ -324,13 +316,23 @@ pub fn ibc_destination_callback(
 }
 ```
 
+<Callout type="warning">
+  Please note that this example assumes an ICS20 v1 channel. At the time of
+  writing, the specification and implementation have just been extended with a
+  v2 which changes the [packet format]. If you want to use this in production
+  code, you should make sure to support both formats, such that a channel
+  upgrade does not break your contract.
+</Callout>
+
 As mentioned above, anyone can send you a destination callback for a packet.
 This means you need to make sure that the packet and acknowledgement are what
 you expect them to be. For example, for a transfer message, you need to make
 sure that the transfer was successful, that the receiver of the funds is your
 contract and the denomination is what you want to receive. This requires some
-knowledge about the
-[packet format](https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md#data-structures).
+knowledge about the [packet format].
+
+[packet format]:
+  https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md#data-structures
 
 #### Error handling
 

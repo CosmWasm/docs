@@ -1,0 +1,141 @@
+import { Callout } from "nextra/components";
+
+# Contract
+
+Use the `contract` macro to generate contract messages
+
+<Callout>Use `contract` macro only on top of struct impl blocks</Callout>
+
+## Attributes
+
+List of attributes supported by `contract` macro:
+
+- [`custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom)
+- [`error`](https://cosmwasm-docs.vercel.app/sylvia/attributes/error)
+- [`message`](https://cosmwasm-docs.vercel.app/sylvia/attributes/message)
+- [`msg`](https://cosmwasm-docs.vercel.app/sylvia/attributes/msg)
+- [`override_entry_point`](https://cosmwasm-docs.vercel.app/sylvia/attributes/override-entry-point)
+
+## Usage
+
+```rust
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::{Reply, Response, StdResult};
+
+use sylvia::contract;
+use sylvia::types::{ExecCtx, InstantiateCtx, MigrateCtx, QueryCtx, ReplyCtx, SudoCtx};
+
+pub struct CounterContract;
+
+#[cw_serde]
+pub struct SomeResponse;
+
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn some_exec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn some_query(&self, ctx: QueryCtx) -> StdResult<SomeResponse> {
+        Ok(SomeResponse)
+    }
+
+    #[sv::msg(sudo)]
+    fn some_sudo(&self, ctx: SudoCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(migrate)]
+    fn some_migrate(&self, ctx: MigrateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(reply)]
+    fn some_reply(&self, ctx: ReplyCtx, reply: Reply) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+}
+```
+
+We define our messages signatures by marking the appropriate methods with the
+[`sv::msg`](https://cosmwasm-docs.vercel.app/sylvia/attributes/msg) attribute.
+
+The `impl` block must contain the attributeless `new` method for the generated
+`dispatch` to work properly.
+
+## Custom types
+
+You can construct your contract to work with some specific custom types with the
+[`sv::custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom).
+
+## Generic types
+
+Sylvia contracts can be reused as a state by other contracts. This way you could
+expand functionality of one contract with another one. In such a case you might
+want to present a possibility for the user to use it with types that suits their
+purpose. You can do that by defining generics on your contract.
+
+```rust
+use std::marker::PhantomData;
+
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::{Response, StdResult};
+
+use cw_storage_plus::Item;
+use sylvia::contract;
+use sylvia::types::{CustomMsg, ExecCtx, InstantiateCtx};
+
+pub struct CounterContract<ExecParamT, FieldT> {
+    field: Item<FieldT>,
+    _phantom: PhantomData<ExecParamT>,
+}
+
+#[cw_serde]
+pub struct SomeResponse;
+
+#[contract]
+impl<ExecParamT, FieldT> CounterContract<ExecParamT, FieldT>
+where
+    ExecParamT: CustomMsg + 'static,
+    FieldT: 'static,
+{
+    pub const fn new() -> Self {
+        Self {
+            field: Item::new("field"),
+            _phantom: PhantomData,
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn some_exec(&self, ctx: ExecCtx, param: ExecParamT) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+}
+```
+
+This is a standard way to create generic structs in Rust. Two important things
+to mention are:
+
+- Rust will complain that generics used in method signatures are unused. You
+  have to create a `std::marker::PhantomData` field to silence this error. In
+  case a contract uses multiple generic types, simply wrap them in a tuple
+  `PhantomData<(T1, T2)>`.
+- If generic types are used as part of the method signature, generated messages
+  will require them to fulfill their trait bounds. In most cases it's enough to
+  add the `sylvia::types::CustomMsg + \'static` bounds.

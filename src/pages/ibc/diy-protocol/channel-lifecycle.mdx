@@ -59,6 +59,9 @@ entrypoint with the `IbcChannelOpenMsg::OpenInit` variant. Then the same
 entrypoint is called on chain B with the `IbcChannelOpenMsg::OpenTry` variant.
 See the following example and the [`IbcChannelOpenMsg`] documentation.
 
+<Tabs items={['StoragePlus', 'Storey']}>
+  <Tabs.Tab>
+
 ```rust filename="ibc.rs" template="core"
 use cw_storage_plus::Item;
 
@@ -113,6 +116,72 @@ struct ChannelInfo {
 const CHANNEL: Item<ChannelInfo> = Item::new("channel");
 const IBC_APP_VERSION: &str = "my-protocol-v1";
 ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust filename="ibc.rs" template="core"
+use cw_storey::{containers::Item, CwStorage};
+
+/// enforces ordering and versioning constraints
+#[entry_point]
+pub fn ibc_channel_open(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelOpenMsg,
+) -> StdResult<IbcChannelOpenResponse> {
+    let mut storage = CwStorage(deps.storage);
+
+    let channel = msg.channel();
+
+    // in this example, we only allow a single channel per contract instance
+    // you can do more complex checks here
+    ensure!(
+        CHANNEL.access(&storage).get()?.is_none(),
+        StdError::generic_err("channel already exists")
+    );
+
+    // we should check if the channel is what we expect (e.g. the order)
+    if channel.order != IbcOrder::Ordered {
+        return Err(StdError::generic_err("only ordered channels are supported"));
+    }
+
+    // the OpenTry variant (on chain B) also has the counterparty version
+    // we should check if it is what we expect
+    if let Some(counter_version) = msg.counterparty_version() {
+        if counter_version != IBC_APP_VERSION {
+            return Err(StdError::generic_err(format!(
+                "Counterparty version must be `{IBC_APP_VERSION}`"
+            )));
+        }
+    }
+
+    // now, we save the channel ID to storage, so we can use it later
+    // this also prevents any further channel openings
+    CHANNEL.access(&mut storage).set(&ChannelInfo {
+        channel_id: channel.endpoint.channel_id.clone(),
+        finalized: false,
+    })?;
+
+    // return the channel version we support
+    Ok(Some(Ibc3ChannelOpenResponse {
+        version: IBC_APP_VERSION.to_string(),
+    }))
+}
+
+#[cw_serde]
+struct ChannelInfo {
+    channel_id: String,
+    /// whether the channel is completely set up
+    finalized: bool,
+}
+
+const CHANNEL: Item<ChannelInfo> = Item::new(0);
+const IBC_APP_VERSION: &str = "my-protocol-v1";
+```
+
+  </Tabs.Tab>
+</Tabs>
 
 In the example above, we return the same version we expect from the
 counterparty, but you can return a different version if the counterparty accepts
@@ -261,6 +330,9 @@ variant on chain A, then the `IbcChannelConnectMsg::OpenConfirm` variant on
 chain B. The full data this entrypoint receives can be seen in the
 [`IbcChannelConnectMsg`] documentation. Here is more example code:
 
+<Tabs items={['StoragePlus', 'Storey']}>
+  <Tabs.Tab>
+
 ```rust filename="ibc.rs" template="core"
 use cw_storage_plus::Item;
 
@@ -293,6 +365,56 @@ struct ChannelInfo {
 
 const CHANNEL: Item<ChannelInfo> = Item::new("channel");
 ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust filename="ibc.rs" template="core"
+use cw_storey::{containers::Item, CwStorage};
+
+pub fn ibc_channel_connect(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelConnectMsg,
+) -> StdResult<IbcBasicResponse> {
+    let mut storage = CwStorage(deps.storage);
+
+    let channel = msg.channel();
+
+    // in this example, we only allow a single channel per contract instance
+    // you can do more complex checks here
+    let mut channel_info = CHANNEL
+        .access(&storage)
+        .get()?
+        .ok_or_else(|| StdError::generic_err("channel not found"))?;
+    ensure!(
+        !channel_info.finalized,
+        StdError::generic_err("channel already finalized")
+    );
+    debug_assert_eq!(
+        channel_info.channel_id, channel.endpoint.channel_id,
+        "channel ID mismatch"
+    );
+
+    // at this point, we are finished setting up the channel and can mark it as finalized
+    channel_info.finalized = true;
+    CHANNEL.access(&mut storage).set(&channel_info)?;
+
+    Ok(IbcBasicResponse::new())
+}
+
+#[cw_serde]
+struct ChannelInfo {
+    channel_id: String,
+    /// whether the channel is completely set up
+    finalized: bool,
+}
+
+const CHANNEL: Item<ChannelInfo> = Item::new(0);
+```
+
+  </Tabs.Tab>
+</Tabs>
 
 [`IbcChannelConnectMsg`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelConnectMsg.html

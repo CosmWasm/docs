@@ -258,3 +258,31 @@ but not acknowledged will **not** trigger a timeout.
 
 [`IbcPacketTimeoutMsg`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcPacketTimeoutMsg.html
+
+## State rewinding
+
+As you can see, IBC is inherently non-atomic. In a single atomic transaction,
+you can do all the changes you want and later return an error, which reverts the
+whole transaction. In IBC, you send a packet in one transaction and receive the
+acknowledgement or timeout in another transaction. This means that you have to
+take care of undoing the changes yourself. This includes any state changes you
+made when sending the packet, as well as any funds sent to you. You also need to
+make sure that when you send the packet, you don't do anything that shouldn't
+happen until the packet is acknowledged (like sending funds to someone else).
+
+For state changes there are two main strategies:
+
+- **Temporary state**: You can save the state changes you want to make in a
+  special temporary storage container. If the packet is acknowledged, you can
+  move them to the main storage to finalize them. If the packet times out, you
+  can discard them.
+- **Undoing state changes**: You can do the state changes when sending the
+  packet and later undo them if the packet times out. It is important to make
+  sure that you can actually undo the changes you made and that you cannot get
+  into an inconsistent state by doing this. For example, if you give tokens to
+  someone in exchange for sending an IBC packet, you must lock those tokens
+  until the packet is acknowledged. Otherwise, the user could spend them before
+  the packet is acknowledged and you would not be able to undo the transfer.
+
+You can mix and match these strategies as needed, but be especially careful with
+the second one. It is easy to make logical errors that can lead to problems.

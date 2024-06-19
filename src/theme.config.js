@@ -52,7 +52,7 @@ export default {
   ),
   editLink: { text: "Edit this page on GitHub" },
   footer: {
-    text: (
+    component: (
       <div>
         <p>CosmWasm is proudly created and maintained by Confio.</p>
         <p style={{ marginTop: "8px" }}>

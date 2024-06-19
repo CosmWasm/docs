@@ -10,7 +10,7 @@ It's built on top of crates such as
 [`cw-multi-test`](https://crates.io/crates/cw-multi-test).
 
 <Callout>
-  Sylvia contracts are fully interoperable with regular `CosmWasm` contracts
+  Sylvia contracts are fully interoperable with regular CosmWasm contracts
 </Callout>
 
 It allows the users to focus purely on business logic by generating message
@@ -24,17 +24,17 @@ dispatching the messages, or even helpers for
 better control of interfaces, including validating their completeness in compile
 time.
 
-`Sylvia` consists of two crates:
+Sylvia consists of two crates:
 
 - [`sylvia`](https://crates.io/crates/sylvia) - Crate the users should use.
   Exposes all of the macros from the `sylvia-derive` and provides some
   additional utilities.
 - [`sylvia-derive`](https://crates.io/crates/sylvia-derive) - Contains all of
-  the `Sylvia` macros. Do not add this as a dependency on your contract.
+  the Sylvia macros. Do not add this as a dependency on your contract.
 
-While using `Sylvia` consider using reexported crates like `cosmwasm-std` and
+While using Sylvia consider using reexported crates like `cosmwasm-std` and
 `cw-multi-test` instead of adding those dependencies yourself as this would lead
 you to smaller dependencies to maintain.
 
 You can visit [`docs.rs`](https://docs.rs/sylvia/latest/sylvia/) to learn about
-the types exposed in the `Sylvia`.
+the types exposed in the Sylvia.

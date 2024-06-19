@@ -1,0 +1,49 @@
+---
+tags: ["core", "conventions"]
+---
+
+import { Callout } from "nextra/components";
+
+# Enum dispatch
+
+In most production contracts you want to handle multiple message types in a
+single contract. Unfortunately you can't create multiple endpoints of the same
+type in a single contract, so you need to dispatch based on the message type.
+
+The most common way to do this is to use an enum to represent the different
+message types and then match on that enum in the endpoint.
+
+<Callout>
+    If this sounds like something you don't want to do manually, we got you covered!
+    The `sylvia` crate provides a procedural macro to generate the boilerplate code for you.
+
+    You can find the documentation of the `sylvia` crate [here](../../sylvia.mdx).
+
+</Callout>
+
+```rust filename="contract.rs" template="core"
+#[cw_serde]
+enum ExecuteMsg {
+    Add { value: i32 },
+    Subtract { value: i32 },
+}
+
+#[entry_point]
+pub fn execute(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    msg: ExecuteMsg,
+) -> StdResult<Response> {
+    match msg {
+        ExecuteMsg::Add { value } => {
+            // TODO: Add operation
+        }
+        ExecuteMsg::Subtract { value } => {
+            // TODO: Subtract operation
+        }
+    }
+
+    Ok(Response::new())
+}
+```

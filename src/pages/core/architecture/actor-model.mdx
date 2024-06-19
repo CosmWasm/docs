@@ -50,6 +50,12 @@ As you can see in the simple graphic above, they simply exchange messages
 addressed to each other, and the messages reference previous messages if need
 be.
 
+<Callout>
+  In CosmWasm you can only pass a single message type to a contract endpoint. If
+  you are wondering how to handle multiple message types, check out the [enum
+  dispatch] page.
+</Callout>
+
 But how does that fix reentrancy? In CosmWasm, you can only send out messages at
 the end of a contract execution as part of the response. This ensures you have
 already written everything to the state, meaning the state can't suddenly change
@@ -60,5 +66,6 @@ Interactions)] while other similar systems only have this as a "best practice".
 
 [reentrancy issues]:
   https://ethereum.org/en/developers/docs/smart-contracts/security/#reentrancy
+[enum dispatch]: ../conventions/enum-dispatch
 [CEI pattern (Checks, Effects, Interactions)]:
   https://fravoll.github.io/solidity-patterns/checks_effects_interactions.html

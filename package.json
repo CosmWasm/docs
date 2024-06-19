@@ -5,7 +5,7 @@
     "gen-tags": "node scripts/gen-tags.mjs",
     "predev": "npm run gen-tags && rm -r .next 2> /dev/null || true",
     "dev": "next",
-    "prebuild": "npm run gen-tags",
+    "prebuild": "npm run gen-tags && rm -r .next 2> /dev/null || true",
     "build": "next build",
     "start": "next start"
   },

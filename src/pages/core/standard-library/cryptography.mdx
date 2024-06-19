@@ -20,8 +20,7 @@ documentation about them.
 
 <Callout>
   Note that these values are in CosmWasm Gas (which is very much different from
-  Cosmos SDK Gas). For more info on gas, [check this
-  document](https://github.com/CosmWasm/cosmwasm/blob/main/docs/GAS.md).
+  Cosmos SDK Gas). For more info on gas, [check this document].
 </Callout>
 
 ### secp256k1
@@ -58,8 +57,7 @@ documentation about them.
   - Base: 2_112_000_000 gas
   - Per item: 163_000_000 gas
 
-You can also check these numbers in the
-[source code](https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L62-L101).
+You can also check these numbers in the [source code].
 
 ## Note on hash functions
 
@@ -80,3 +78,8 @@ functions, and we intend to keep it that way. The reasoning for that is:
 Keep in mind that, thanks to Wasm being our execution environment, contract
 execution is quite fast. In most cases the perceived need to move hashing into a
 host function is premature optimization and not actually needed.
+
+[check this document]:
+  https://github.com/CosmWasm/cosmwasm/blob/main/docs/GAS.md
+[source code]:
+  https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L62-L101

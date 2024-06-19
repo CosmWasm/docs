@@ -18,8 +18,7 @@ struct contains the field `block`. The struct contained in this field has a
 bunch of different information about the current state of the blockchain you are
 running on.
 
-> The documentation about the `BlockInfo` struct can be
-> [found here](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html)
+> The documentation about the `BlockInfo` struct can be [found here]
 
 The timestamp contained in this struct can be safely used in your program as the
 source of the current time. Well, kinda. It won't be 100% matching the current
@@ -29,3 +28,6 @@ But you can rely on this timestamp to have the following properties:
 
 - Consistent across the chain (every validator on the chain has the same info)
 - Monotonic (it will ever only increase or stay the same; never decrease)
+
+[found here]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html

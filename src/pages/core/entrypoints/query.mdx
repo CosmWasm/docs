@@ -6,9 +6,9 @@ import { Callout } from "nextra/components";
 
 # Query
 
-In the previous section we talked about the [`execute` endpoint](./execute.mdx).
-The `query` endpoint is actually pretty similar to its sibling `execute`, but
-with one key difference: The storage is only accessible immutably.
+In the previous section we talked about the [`execute` endpoint]. The `query`
+endpoint is actually pretty similar to its sibling `execute`, but with one key
+difference: The storage is only accessible immutably.
 
 This means you can only _read_ from the storage but not _write_ to it.
 
@@ -24,3 +24,5 @@ pub fn query(
   Ok(QueryResponse::default())
 }
 ```
+
+[`execute` endpoint]: ./execute.mdx

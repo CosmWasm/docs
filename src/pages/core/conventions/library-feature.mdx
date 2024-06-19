@@ -44,10 +44,11 @@ pub fn instantiate(
 </Callout>
 
 The rationale behind this is that currently using `#[entry_point]` exports
-special symbols from the binary, and these symbols **must** be unique. That
-means if you have two `instantiate` endpoints annotated with `#[entry_point]`
-_somewhere_ in your project (that includes all your dependencies!), your
-contract will fail to compile.
+special symbols from the binary, and these symbols **must** be unique.
+
+That means if you have two `instantiate` endpoints annotated with
+`#[entry_point]` _somewhere_ in your project (that includes all your
+dependencies!), your contract will fail to compile.
 
 Using this library feature will enable developers to use your contract as a
 dependency and reuse your code.

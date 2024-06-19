@@ -29,6 +29,11 @@ and set it to one of the following values:
 - `ReplyOn::Error`
 - `ReplyOn::Success`
 
+<Callout>
+  The `reply_on` value has an impact on when a transaction is cancelled. For
+  more info, check the page about [transactions].
+</Callout>
+
 ```rust filename="contract.rs" template="core"
 const CONTRACT_ADDR: &str = "other_contract";
 const SUBMSG_ID: u64 = 1; // This is a unique identifier so we can associate a reply with a specific submessage. It can be any numeric value.
@@ -65,3 +70,5 @@ pub fn reply(deps: DepsMut, env: Env, msg: cosmwasm_std::Reply) -> StdResult<Res
     Ok(Response::default())
 }
 ```
+
+[transactions]: ../architecture/transactions

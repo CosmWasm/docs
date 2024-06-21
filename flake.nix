@@ -33,6 +33,7 @@
                 rustc
                 rustfmt
               ]
+              ++ lib.optionals stdenv.isDarwin [libiconv]
               ++ baseDependencies;
             };
           };

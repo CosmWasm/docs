@@ -43,6 +43,7 @@ jobs:
           cargo update -p cosmwasm-std
           cargo update -p cw2
           cargo update -p cw-storage-plus
+          cargo update -p cw-storey
           cargo update -p serde
       - uses: Swatinem/rust-cache@v2
         with:

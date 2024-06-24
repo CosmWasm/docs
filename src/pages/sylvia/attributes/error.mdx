@@ -2,10 +2,10 @@ import { Callout } from "nextra/components";
 
 # `sv::error` attribute
 
-Use the `sv::error` attribute specify custom error types for the contract.
+Use the `sv::error` attribute to specify custom error types for the contract.
 
 <Callout>
-Custom error type has to implement `Into<StdError>` for the macro to compile.
+Custom error type has to implement `From<StdError>` for the macro to compile.
 You can quickly provide this logic using, for example, [`thiserror`](https://docs.rs/thiserror/latest/thiserror).
 </Callout>
 

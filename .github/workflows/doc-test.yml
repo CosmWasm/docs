@@ -17,19 +17,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: "Install ripgrep"
         run: sudo apt-get install -y ripgrep
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            docs-test-gen
-      - name: Extract all the tests
-        working-directory: ./docs-test-gen
-        run: cargo run
-      - name: Check all the extracted tests
-        working-directory: ./docs-test-gen/tests
+      - name: Check the repo for wrong entrypoint mentions
         run: |
-          for file in *; do
+          for file in src/**/*; do
             echo "Checking $file"
             rg -q "^\s*#\[entry_point\]" $file && exit 1
           done

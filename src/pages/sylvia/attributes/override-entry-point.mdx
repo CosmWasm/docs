@@ -35,7 +35,7 @@ pub mod entrypoints {
 
     use super::*;
 
-    #[entry_point]
+    #[cfg_attr(not(feature = "library"), entry_point)]
     pub fn execute(
         deps: DepsMut,
         env: Env,
@@ -100,7 +100,7 @@ pub mod entrypoints {
 
     use super::*;
 
-    #[entry_point]
+    #[cfg_attr(not(feature = "library"), entry_point)]
     pub fn execute(
         deps: DepsMut,
         env: Env,

@@ -19,8 +19,10 @@ jobs:
         run: sudo apt-get install -y ripgrep
       - name: Check the repo for wrong entrypoint mentions
         run: |
-          find src -type f -name "*.mdx" -exec rg -q '^\s*#\[entry_point\]' {} && exit 1 \;
-          exit 0
+          for item in $(find src -type f -name "*.mdx"); do
+            echo "Checking $item"
+            rg -q "^\s*#\[entry_point\]" $item && exit 1
+          done
 
   extract-and-run:
     name: "Extract and run tests"

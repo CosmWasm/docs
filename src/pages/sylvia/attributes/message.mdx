@@ -91,7 +91,7 @@ In most cases, the only parameter the `sv::messages` expects is a path to the
 interface, in this case `crate::interface`. Sylvia macros can deduce the
 interface's name if it is simply an UpperCamelCase version of the module name.
 
-If the interface name differs from the module name, use below syntax:
+If the interface name differs from the module name, use the syntax below:
 
 ```rust
 #[sv::messages(crate::interface as OtherInterface)]
@@ -99,7 +99,7 @@ If the interface name differs from the module name, use below syntax:
 
 ### Custom types
 
-It's possible to implement an Interface using
+It's possible to implement an interface using
 [`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
 instead of custom types used in the contract.
 

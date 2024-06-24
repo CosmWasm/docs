@@ -20,7 +20,7 @@ two chain modules, two contracts, or a module and a contract.
 Each channel also has an order that can be either `Ordered` or `Unordered`. This
 is encoded in the [`IbcOrder`] enum. In an ordered channel, packets must be
 processed by the receiving chain in the order in which they were sent. In an
-unordered channel, packets are processed in the they arrive.
+unordered channel, packets are processed in the order they arrive.
 
 [`IbcOrder`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcOrder.html

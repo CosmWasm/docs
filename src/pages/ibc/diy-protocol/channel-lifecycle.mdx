@@ -124,7 +124,7 @@ const IBC_APP_VERSION: &str = "my-protocol-v1";
 use cw_storey::{containers::Item, CwStorage};
 
 /// enforces ordering and versioning constraints
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_open(
     deps: DepsMut,
     env: Env,

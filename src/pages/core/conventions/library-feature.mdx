@@ -13,7 +13,7 @@ contract behind a compile-time feature. The feature is conventionally called
 So instead of doing this:
 
 ```rust filename="contract.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     _deps: DepsMut,
     _env: Env,

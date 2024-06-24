@@ -66,7 +66,7 @@ See the following example and the [`IbcChannelOpenMsg`] documentation.
 use cw_storage_plus::Item;
 
 /// enforces ordering and versioning constraints
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_open(
     deps: DepsMut,
     env: Env,
@@ -124,7 +124,7 @@ const IBC_APP_VERSION: &str = "my-protocol-v1";
 use cw_storey::{containers::Item, CwStorage};
 
 /// enforces ordering and versioning constraints
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_open(
     deps: DepsMut,
     env: Env,
@@ -259,7 +259,7 @@ pub fn new_msg_channel_open_init(
     })
 }
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_open(
     deps: DepsMut,
     _env: Env,
@@ -283,7 +283,7 @@ pub fn ibc_channel_open(
     Ok(None)
 }
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     deps: DepsMut,
     env: Env,
@@ -429,7 +429,7 @@ entrypoint with the `IbcChannelCloseMsg::CloseConfirm` on chain B. The full data
 can be seen in the [`IbcChannelCloseMsg`] documentation. Here is an example:
 
 ```rust filename="ibc.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_close(
     deps: DepsMut,
     env: Env,

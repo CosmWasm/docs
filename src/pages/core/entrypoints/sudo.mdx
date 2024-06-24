@@ -18,7 +18,7 @@ provided by some sort of chain SDK.
 ## Definition
 
 ```rust filename="contract.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn sudo(deps: DepsMut, env: Env, msg: SudoMsg) -> StdResult<Response> {
     Ok(Response::default())
 }

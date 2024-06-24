@@ -4,7 +4,7 @@ use cosmwasm_schema::cw_serde;
 #[cw_serde]
 struct ExecuteMsg {}
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> StdResult<Response> {
     // this weird construction allows us to return a StdResult<Response> or () in the code
     // it tricks the compiler into infering the correct generics

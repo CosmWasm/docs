@@ -11,7 +11,7 @@ on:
 
 jobs:
   entrypoint-check:
-    name: "Extract and run entrypoint checks"
+    name: "Run entrypoint checks"
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4

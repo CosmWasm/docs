@@ -40,7 +40,8 @@ crate-type = ["cdylib", "rlib"]
 cosmwasm-std = { version = "2.0.2", features = ["staking"] }
 sylvia = "1.0.2"
 serde = "1.0.198"
-schemars = "0.8"cosmwasm-schema = "2.0.2"
+schemars = "0.8"
+cosmwasm-schema = "2.0.2"
 cw-storage-plus = "2.0.0"
 
 [dev-dependencies]
@@ -86,8 +87,8 @@ to generate `Multitest` helpers in the test environment.
 The structure present in the `sylvia-template` is an example and you can set up
 the project in any way you want.
 
-- `src/lib.rs` - exposes contract modules. `src/contract.rs` - main module in
-  which the contract is defined.
+- `src/lib.rs` - exposes contract modules.
+- `src/contract.rs` - main module in which the contract is defined.
 - `src/multitest/` - module in which we define our tests. It's a good practice
   to separate the tests between files semantically.
 - `src/bin/schema.rs` - builds into a binary which generates the contract
@@ -97,6 +98,6 @@ the project in any way you want.
   - `cargo wasm` - run `cargo build` with additional options to compile a proper
     _wasm_ binary.
   - `cargo wasm-debug` - same as `cargo wasm`, but without `--release` profile
-    to provide more debugging symbols. -
+    to provide more debugging symbols.
   - `cargo schema` - builds and runs the `src/schema.rs` for simpler schema
     generation.

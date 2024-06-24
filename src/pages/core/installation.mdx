@@ -24,6 +24,18 @@ platform.
   For production builds you probably also want to install [Docker], too.
   <br /> This is because we offer the [CosmWasm Optimizing Compiler], which uses
   a Docker image to build the smallest contract possible in a deterministic fashion.
+
+Please note that this image is _not_ suitable for development or in general
+environments where you want to iterate quickly. The builder is optimizing for
+size, not compilation speed. If you want to slim down your contract for
+development, you can do so by tweaking your Cargo profile.
+
+```toml
+[profile.dev]
+lto = "thin"
+strip = true
+```
+
 </Callout>
 
 After installing Rust, you need to add the WebAssembly target. This is needed so

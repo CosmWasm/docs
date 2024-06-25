@@ -194,7 +194,7 @@ This is how you can implement the `ibc_source_callback` entrypoint:
 {/* TODO: Add template="core" when callbacks are released */}
 
 ```rust
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_source_callback(
     deps: DepsMut,
     _env: Env,
@@ -256,7 +256,7 @@ This is how you can implement the `ibc_destination_callback` entrypoint:
 ```rust
 use ibc::apps::transfer::types::packet::PacketData as TransferPacketData;
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_destination_callback(
     deps: DepsMut,
     _env: Env,

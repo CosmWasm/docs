@@ -68,7 +68,7 @@ limbo if the destination chain does not receive it.
 To receive a packet, you need to implement the `ibc_packet_receive` entrypoint:
 
 ```rust filename="ibc.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_receive(
     deps: DepsMut,
     _env: Env,
@@ -151,7 +151,7 @@ message.
 ```rust filename="ibc.rs"
 use cw_storage_plus::Map;
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_receive(
     deps: DepsMut,
     _env: Env,
@@ -199,7 +199,7 @@ pass the acknowledgement back to chain A, resulting in the `ibc_packet_ack`
 entrypoint being called. This is where you can handle the acknowledgement:
 
 ```rust filename="ibc.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_ack(
     _deps: DepsMut,
     _env: Env,
@@ -238,7 +238,7 @@ This is where you can handle the timeout.
 </Callout>
 
 ```rust filename="ibc.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_timeout(
     _deps: DepsMut,
     _env: Env,

@@ -6,8 +6,8 @@ import { Callout } from "nextra/components";
 
 # K256 (secp256k1)
 
-K256 is a Koblitz curve that is widely used in the blockchain space (e.g. Bitcoin and Ethereum). CosmWasm
-offers the following APIs:
+K256 is a Koblitz curve that is widely used in the blockchain space (e.g.
+Bitcoin and Ethereum). CosmWasm offers the following APIs:
 
 - Signature verification
 - Public key recovery
@@ -17,7 +17,7 @@ offers the following APIs:
 ### Signature verification
 
 ```rust filename="contract.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(
     deps: Deps,
     _env: Env,
@@ -38,7 +38,7 @@ pub fn query(
 ### Public key recovery
 
 ```rust filename="contract.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(
     deps: Deps,
     _env: Env,

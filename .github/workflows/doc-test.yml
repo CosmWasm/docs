@@ -10,6 +10,21 @@ on:
   workflow_dispatch:
 
 jobs:
+  entrypoint-check:
+    name: "Run entrypoint checks"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install ripgrep"
+        run: sudo apt-get install -y ripgrep
+      - name: Check the repo for wrong entrypoint mentions
+        run: |
+          for item in $(find src -type f -name "*.mdx"); do
+            echo "Checking $item"
+            rg "^\s*#\[entry_point\]" $item && echo "Found file that didn't match specification: $item" && exit 1
+          done
+          exit 0
+
   extract-and-run:
     name: "Extract and run tests"
     runs-on: "ubuntu-latest"
@@ -28,6 +43,7 @@ jobs:
           cargo update -p cosmwasm-std
           cargo update -p cw2
           cargo update -p cw-storage-plus
+          cargo update -p cw-storey
           cargo update -p serde
       - uses: Swatinem/rust-cache@v2
         with:

@@ -15,7 +15,7 @@ This means you can only _read_ from the storage but not _write_ to it.
 ## Definition
 
 ```rust filename="contract.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(
     _deps: Deps,
     _env: Env,

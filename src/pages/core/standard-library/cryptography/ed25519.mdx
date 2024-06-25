@@ -17,7 +17,7 @@ being valid in one place and invalid in another.
 ## Example
 
 ```rust filename="contract.rs" template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(
     deps: Deps,
     _env: Env,

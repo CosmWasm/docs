@@ -28,7 +28,7 @@ enum ExecuteMsg {
     Subtract { value: i32 },
 }
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     deps: DepsMut,
     env: Env,

@@ -25,18 +25,31 @@ platform.
   <br /> This is because we offer the [CosmWasm Optimizing Compiler], which uses
   a Docker image to build the smallest contract possible in a deterministic fashion.
 
-Please note that this image is _not_ suitable for development or in general
-environments where you want to iterate quickly. The builder is optimizing for
-size, not compilation speed. If you want to slim down your contract for
-development, you can do so by doing the following:
+  <details>
 
-```sh
-RUSTFLAGS="-C link-arg=-s" cargo build --release --lib --target=wasm32-unknown-unknown
-wasm-opt -Os --signext-lowering "target/wasm32-unknown-unknown/release/my-contract.wasm" -o "artifacts/my-contract.wasm"
-```
+    <summary>Additional information about the Optimizing Compiler</summary>
 
-(Note: Replace `my-contract` with the name of your contract. You also need
-`wasm-opt` installed, which is part of the [binaryen] project.)
+    Please note that this image is _not_ suitable for development or in general
+    environments where you want to iterate quickly. The builder is optimizing for
+    size, not compilation speed. If you want to slim down your contract for
+    development, you can do so by tweaking your Cargo profile.
+
+    ```toml
+    [profile.dev]
+    lto = "thin"
+    strip = true
+    ```
+
+    If you can't use the optimizing compiler, you might miss out on determinism, but you can still build your contract into a small size like so:
+
+    ```sh
+    RUSTFLAGS="-C link-arg=-s" cargo build --release --lib --target=wasm32-unknown-unknown
+    wasm-opt -Os --signext-lowering "target/wasm32-unknown-unknown/release/my-contract.wasm" -o "artifacts/my-contract.wasm"
+    ```
+
+    (Note: Replace `my-contract` with the name of your contract. You also need `wasm-opt` installed, which is part of the [binaryen] project.)
+
+  </details>
 
 </Callout>
 

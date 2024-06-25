@@ -41,7 +41,7 @@ platform.
     strip = true
     ```
 
-    If you can't use the optimizing compiler, you might miss out on determinism, but you can still build your contract into a small size like so:
+    If you want to build with native tools, you might miss out on determinism, but you can still build your contract into a small size like so:
 
     ```sh
     RUSTFLAGS="-C link-arg=-s" cargo build --release --lib --target=wasm32-unknown-unknown

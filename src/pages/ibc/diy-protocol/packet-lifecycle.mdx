@@ -104,18 +104,26 @@ in the error case. This is the same format that is used in some existing IBC
 protocols, like e.g. [ICS-20]. However, using this format is not a requirement.
 You can use any type you like, as long as it can be converted to `Binary`.
 
-This comes with a caveat, though: The error handling for `ibc_packet_receive`
-works differently than for other entrypoints. If you return an error from
-`ibc_packet_receive`, it will revert your contract state changes, but will not
-fail the transaction. Instead, it will cause an `StdAck::error` acknowledgement
-to be written. So, if you want to return errors in `ibc_packet_receive`, you
-might want to also use the [`StdAck`] type for your successful acknowledgements
-to keep the format consistent for the sender.
+### Error handling
+
+Using a different acknowledgement format comes with a caveat, though: The error
+handling for `ibc_packet_receive` works differently than for other entrypoints.
+
+If you return an error from `ibc_packet_receive`, it will revert your contract
+state changes, but will not fail the transaction. Instead, it will cause an
+`StdAck::error` acknowledgement to be written. So, if you want to return errors
+in `ibc_packet_receive`, you might want to also use the [`StdAck`] type for your
+successful acknowledgements to keep the format consistent for the sender.
 
 Alternatively, you can also handle all errors within the `ibc_packet_receive`
 entrypoint, always returning an `Ok(...)` result. In that case, **state changes
 will be committed**, the transaction will succeed and you can use whatever
 acknowledgement format you prefer.
+
+Panicking in `ibc_packet_receive` works the same as in other entrypoints: it
+will revert all state changes and **fail** the transaction. One use case for
+this is implementing a relayer allowlist because the failed receive can then be
+picked up by another relayer.
 
 [`IbcReceiveResponse`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html

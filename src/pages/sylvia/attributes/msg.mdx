@@ -83,8 +83,8 @@ Each message type except for `query` expects the result type generic over
 It is possible to use aliases for types in message signatures. In case of
 `query` return type it requires however additional action. Due to
 [`QueryResponses`](https://docs.rs/cosmwasm-schema/latest/cosmwasm_schema/derive.QueryResponses.html)
-macro derive on generated `query` message, we have to explicitly provide the the
-return type, as macro, wouldn't be able to deduce that from the alias.
+macro derive on generated `query` message, we have to explicitly provide the
+return type, as the macro wouldn't be able to deduce that from the alias.
 
 ```rust
     #[sv::msg(query, resp=SomeResponse)]

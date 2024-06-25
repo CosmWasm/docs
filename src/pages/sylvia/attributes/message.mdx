@@ -1,18 +1,18 @@
 import { Callout } from "nextra/components";
 
-# `sv::message` attribute
+# `sv::messages` attribute
 
-Use `sv::message` to expand your contract functionality with the Sylvia
+Use `sv::messages` to expand your contract functionality with the Sylvia
 interface.
 
 <Callout>
-  The `sv::message` attribute expects that the trait is implemented on the
+  The `sv::messages` attribute expects that the trait is implemented on the
   contract type.
 </Callout>
 
 ## Macros
 
-List of macros supporting the `sv::message` attribute:
+List of macros supporting the `sv::messages` attribute:
 
 - [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html)
 - [`entry_points`](https://docs.rs/sylvia/latest/sylvia/attr.entry_points.html)
@@ -87,11 +87,11 @@ pub mod contract {
 
 ### Module/Interface name mismatch
 
-In most cases, the only parameter the `sv::message` expects is a path to the
+In most cases, the only parameter the `sv::messages` expects is a path to the
 interface, in this case `crate::interface`. Sylvia macros can deduce the
 interface's name if it is simply an UpperCamelCase version of the module name.
 
-If the interface name differs from the module name, use below syntax:
+If the interface name differs from the module name, use the syntax below:
 
 ```rust
 #[sv::messages(crate::interface as OtherInterface)]
@@ -99,7 +99,7 @@ If the interface name differs from the module name, use below syntax:
 
 ### Custom types
 
-It's possible to implement an Interface using
+It's possible to implement an interface using
 [`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
 instead of custom types used in the contract.
 

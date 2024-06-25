@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables)]
+
 use cosmwasm_std::*;
 use cosmwasm_schema::cw_serde;
 
@@ -18,7 +20,7 @@ pub enum ContractError {
 }
 
 impl From<StdError> for ContractError {
-    fn from(err: StdError) -> Self {
+    fn from(_err: StdError) -> Self {
         ContractError::ChannelOpenInitNotAllowed {}
     }
 }

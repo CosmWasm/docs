@@ -1,8 +1,10 @@
+#![allow(dead_code, unused_variables)]
+
 use cosmwasm_std::*;
 use cosmwasm_schema::cw_serde;
 
 #[cw_serde]
-struct ExecuteMsg {}
+pub struct ExecuteMsg {}
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> StdResult<Response> {
@@ -25,7 +27,8 @@ fn doctest() {
 
     let mut deps = mock_dependencies();
     let env = mock_env();
-    let info = mock_info("sender", &[]);
+    let sender = deps.api.addr_make("sender");
+    let info = message_info(&sender, &[]);
     let msg = ExecuteMsg {};
 
     let res = execute(deps.as_mut(), env, info, msg).unwrap();

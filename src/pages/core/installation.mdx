@@ -28,13 +28,15 @@ platform.
 Please note that this image is _not_ suitable for development or in general
 environments where you want to iterate quickly. The builder is optimizing for
 size, not compilation speed. If you want to slim down your contract for
-development, you can do so by tweaking your Cargo profile.
+development, you can do so by doing the following:
 
-```toml
-[profile.dev]
-lto = "thin"
-strip = true
+```sh
+RUSTFLAGS="-C link-arg=-s" cargo build --release --lib --target=wasm32-unknown-unknown
+wasm-opt -Os --signext-lowering "target/wasm32-unknown-unknown/release/my-contract.wasm" -o "artifacts/my-contract.wasm"
 ```
+
+(Note: Replace `my-contract` with the name of your contract. You also need
+`wasm-opt` installed, which is part of the [binaryen] project.)
 
 </Callout>
 
@@ -84,3 +86,4 @@ Now you should have a ready contract project in a new folder called
 [rustup installer]: https://rustup.rs
 [Docker]: https://www.docker.com/
 [CosmWasm Optimizing Compiler]: https://github.com/CosmWasm/optimizer
+[binaryen]: https://github.com/WebAssembly/binaryen

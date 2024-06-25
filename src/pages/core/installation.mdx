@@ -24,6 +24,34 @@ platform.
   For production builds you probably also want to install [Docker], too.
   <br /> This is because we offer the [CosmWasm Optimizing Compiler], which uses
   a Docker image to build the smallest contract possible in a deterministic fashion.
+
+  <details>
+
+    <summary>Additional information about the Optimizing Compiler</summary>
+
+    Please note that this image is intended for reproducible production builds.
+    It is _not_ optimized for development or in general environments where you 
+    want to iterate quickly. The builder is optimizing for size, not compilation speed. 
+    If you want to slim down your contract for development, you can do so by 
+    tweaking your Cargo profile.
+
+    ```toml
+    [profile.dev]
+    lto = "thin"
+    strip = true
+    ```
+
+    If you want to build with native tools, you might miss out on determinism, but you can still build your contract into a small size like so:
+
+    ```sh
+    RUSTFLAGS="-C link-arg=-s" cargo build --release --lib --target=wasm32-unknown-unknown
+    wasm-opt -Os --signext-lowering "target/wasm32-unknown-unknown/release/my-contract.wasm" -o "artifacts/my-contract.wasm"
+    ```
+
+    (Note: Replace `my-contract` with the name of your contract. You also need `wasm-opt` installed, which is part of the [binaryen] project.)
+
+  </details>
+
 </Callout>
 
 After installing Rust, you need to add the WebAssembly target. This is needed so
@@ -72,3 +100,4 @@ Now you should have a ready contract project in a new folder called
 [rustup installer]: https://rustup.rs
 [Docker]: https://www.docker.com/
 [CosmWasm Optimizing Compiler]: https://github.com/CosmWasm/optimizer
+[binaryen]: https://github.com/WebAssembly/binaryen

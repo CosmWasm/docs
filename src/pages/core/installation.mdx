@@ -29,10 +29,11 @@ platform.
 
     <summary>Additional information about the Optimizing Compiler</summary>
 
-    Please note that this image is _not_ suitable for development or in general
-    environments where you want to iterate quickly. The builder is optimizing for
-    size, not compilation speed. If you want to slim down your contract for
-    development, you can do so by tweaking your Cargo profile.
+    Please note that this image is intended for reproducible production builds.
+    It is _not_ optimized for development or in general environments where you 
+    want to iterate quickly. The builder is optimizing for size, not compilation speed. 
+    If you want to slim down your contract for development, you can do so by 
+    tweaking your Cargo profile.
 
     ```toml
     [profile.dev]

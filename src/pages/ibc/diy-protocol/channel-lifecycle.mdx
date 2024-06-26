@@ -336,6 +336,7 @@ chain B. The full data this entrypoint receives can be seen in the
 ```rust filename="ibc.rs" template="core"
 use cw_storage_plus::Item;
 
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_connect(
     deps: DepsMut,
     env: Env,
@@ -372,6 +373,7 @@ const CHANNEL: Item<ChannelInfo> = Item::new("channel");
 ```rust filename="ibc.rs" template="core"
 use cw_storey::{containers::Item, CwStorage};
 
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_connect(
     deps: DepsMut,
     env: Env,

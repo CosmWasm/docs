@@ -1,5 +1,5 @@
 ---
-tags: ["ibc"]
+tags: ["ibc", "entrypoints"]
 ---
 
 # Build your own protocol
@@ -16,15 +16,65 @@ entrypoints.
 
 Three for the channel lifecycle:
 
-- `ibc_channel_open`
-- `ibc_channel_connect`
-- `ibc_channel_close`
+```rust
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_channel_open(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelOpenMsg
+) -> StdResult<IbcChannelOpenResponse> {
+    Ok(None)
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_channel_connect(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelConnectMsg,
+) -> StdResult<IbcBasicResponse> {
+    Ok(IbcBasicResponse::new())
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_channel_close(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelCloseMsg,
+) -> StdResult<IbcBasicResponse> {
+    Ok(IbcBasicResponse::new())
+}
+```
 
 And three for the packet lifecycle:
 
-- `ibc_packet_receive`
-- `ibc_packet_ack`
-- `ibc_packet_timeout`
+```rust
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_packet_receive(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcPacketReceiveMsg,
+) -> StdResult<IbcReceiveResponse> {
+    Ok(IbcReceiveResponse::new(b""))
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_packet_ack(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcPacketAckMsg,
+) -> StdResult<IbcBasicResponse> {
+    Ok(IbcBasicResponse::new())
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_packet_timeout(
+    _deps: DepsMut,
+    _env: Env,
+    _msg: IbcPacketTimeoutMsg,
+) -> StdResult<IbcBasicResponse> {
+    Ok(IbcBasicResponse::new())
+}
+```
 
 We will explain what these are for in the next sections, but it is important to
 understand that you need to implement **all** of these entrypoints to get a

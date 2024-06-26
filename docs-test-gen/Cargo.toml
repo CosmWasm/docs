@@ -20,3 +20,4 @@ cosmos-sdk-proto = { version = "0.21.1", default-features = false }             
 cw-storage-plus = "*"
 serde = "*"
 cw-storey = "*"
+schemars = "0.8.21" # Used in entrypoint example

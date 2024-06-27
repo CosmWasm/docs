@@ -14,6 +14,16 @@ these entrypoints, each one different from the last.
 In this section we want to give you a quick overview over all the entrypoints
 and when they are called.
 
+<Callout>
+  In our examples, we will always refer to `StdResult` as the return type (and therefore `StdError` as the error type).
+  This is just for convenience since every type that implements the `ToString` type can be used as an error type!
+
+Meaning, as long as it implements `ToString`, nothing is stopping you from
+defining `Result<Response, MyError>`. This can reduce your code complexity,
+especially if you want to use the try operator.
+
+</Callout>
+
 ## Defining entrypoints
 
 While you will learn all about entrypoints in the next sections, we want to give
@@ -51,3 +61,85 @@ pub fn instantiate(
     Ok(Response::default())
 }
 ```
+
+## Entrypoint parameters
+
+Entrypoints have a few parameters (as you can see above), some of them are
+predefined by `cosmwasm-std`, others are defined by the user themselves.
+
+Here we go over the different predefined types the standard library provides,
+and how you can define your own types.
+
+### Predefined types
+
+#### `Deps`/`DepsMut`
+
+These structs provide you access to the:
+
+- Storage
+- VM API
+- Querier
+
+The big difference is that `DepsMut` gives you _mutable_ access to the storage.
+This design is deliberate since you, for example, can't mutate the state in the
+`query` endpoint. Instead of relying on runtime errors, this is made
+_irrepresentable_ through Rust's type system.
+
+#### `Env`
+
+This struct provides you with some information of the current state of the
+environment your contract is executed in.
+
+The information provided is, for example, the block height, chain ID,
+transaction info, etc. Basically anything you'd ever want to know about the
+current state of the execution environment!
+
+#### `MessageInfo`
+
+This struct isn't provided to every endpoint, only to a select few.
+
+It provides you with some information that might be crucial to you, depending on
+the operation you want to perform. It contains the sender of the message you
+just received, and the funds that were transferred along with it to your
+contract.
+
+### Defining your own messages
+
+In our examples, you might have seen messages such as `InstantiateMsg`. These
+messages are actually _user-defined_, meaning each contract developer has to
+define them themselves.
+
+To make this easier our `cosmwasm-schema` crate provides the `cw_serde`
+attribute macro, to define an instantiate message, you simply write this:
+
+```rust filename="instantiate.rs" template="core"
+#[cw_serde]
+struct CustomInstantiateMsg {
+  initial_admins: Vec<Addr>,
+}
+```
+
+<Callout>
+  This macro actually just expands into a bunch of `derive` attributes.
+  We provide this simply for your convenience, otherwise you'd have to keep track of all of these derives yourself.
+
+  <details>
+    <summary>Without `#[cw_serde]`</summary>
+
+```rust filename="instantiate.rs" template="core"
+#[derive(
+  serde::Serialize,
+  serde::Deserialize,
+  Clone,
+  Debug,
+  PartialEq,
+  schemars::JsonSchema
+)]
+#[serde(deny_unknown_fields)]
+struct CustomInstantiateMsg {
+  initial_admins: Vec<Addr>,
+}
+```
+
+  </details>
+</Callout>

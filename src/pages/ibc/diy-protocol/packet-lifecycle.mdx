@@ -2,7 +2,7 @@
 tags: ["ibc", "ics4"]
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
 
 # Packet lifecycle
 
@@ -34,11 +34,18 @@ A visual representation of these flows can be found in the
 In order to send a packet, you need to send the `IbcMsg::SendPacket` message. It
 looks like this:
 
-```rust template="execute"
-// TODO: load channel id from state?
+<Tabs items={['StoragePlus', 'Storey']}>
+  <Tabs.Tab>
+
+```rust template="ibc-packet"
+use cw_storage_plus::Item;
+
+const CHANNEL: Item<ChannelInfo> = Item::new("channel");
+
+let channel_id = CHANNEL.load(deps.storage)?.channel_id;
 // construct the transfer message
 let msg = IbcMsg::SendPacket {
-    channel_id: "channel-0".to_string(),
+    channel_id,
     data: br#"{"hello":{"text":"Hello, chain B!"}}"#.into(),
     timeout: IbcTimeout::with_block(IbcTimeoutBlock {
         revision: 4,
@@ -50,6 +57,35 @@ let msg = IbcMsg::SendPacket {
 Ok(Response::new().add_message(msg))
 ```
 
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust template="ibc-packet"
+use cw_storey::{containers::Item, CwStorage};
+
+const CHANNEL: Item<ChannelInfo> = Item::new(0);
+
+let channel_id = CHANNEL
+    .access(&mut CwStorage(deps.storage))
+    .get()?
+    .ok_or_else(|| StdError::generic_err("channel handshake hasn't started yet"))?
+    .channel_id;
+// construct the transfer message
+let msg = IbcMsg::SendPacket {
+    channel_id,
+    data: br#"{"hello":{"text":"Hello, chain B!"}}"#.into(),
+    timeout: IbcTimeout::with_block(IbcTimeoutBlock {
+        revision: 4,
+        height: 1000,
+    }),
+};
+
+// attach the message and return the response
+Ok(Response::new().add_message(msg))
+```
+
+  </Tabs.Tab>
+</Tabs>
 The `channel_id` is the identifier of the channel you want to use for the
 packet. This must be a channel that was previously established, as described in
 the [previous section], so you probably want to load this from contract state.

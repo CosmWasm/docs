@@ -71,6 +71,12 @@ let user_indexes = UserIndexes {
 let _users = IndexedMap::<Addr, _, _>::new("u", user_indexes);
 ```
 
+<Callout>
+The `index_list` macro is used to define a list of indexes for a given struct.
+  This is a helper macro that generates an implementation of the
+  [`IndexList`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.IndexList.html) trait, with all the fields of the struct as indexes.
+</Callout>
+
 Here's what happens step-by-step
 
 - We define a struct `UserIndexes` that holds all the indexes we want to use. In

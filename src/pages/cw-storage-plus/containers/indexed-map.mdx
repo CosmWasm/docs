@@ -108,7 +108,7 @@ If you're using
   keys. If you have two users with the same handle, the index will be
   overwritten and only contain the last user. Be careful!
   
-  If you need to store a key that is not unique, you'll want to use a [`MultiIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.MultiIndex.html) - see the [next section](#lookup-by-country).
+  If you need to store a key that is not unique, you'll want to use a [`MultiIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.MultiIndex.html) - see [*Lookup by country*](#lookup-by-country).
 </Callout>
 
 <Callout>
@@ -135,7 +135,7 @@ use cw_storage_plus::IndexedMap;
 
 use crate::users::*;
 
-let users = IndexedMap::<Addr, _, _>::new("u", user_indexes("uh"));
+let users = IndexedMap::<Addr, _, _>::new("u", user_indexes());
 
 let alice_addr = Addr::unchecked("aaa");
 let alice_user = User {
@@ -231,6 +231,20 @@ assert_eq!(
 assert_eq!(found_users[1].1.handle, "bob");
 ```
 
+<Callout type="warning">
+Note when iterating like this, the items yielded are of type `(PK::Output, V)`,
+where `PK` is the primary key type of the `IndexedMap` and `V` is the value.
+
+The `PK::Output` associated type is generally just the owned version of the `PK`
+type. For example, if `PK` is `Addr`, `PK::Output` will be `Addr`. If it's a
+`String` or a `&str`, `PK::Output` will be a `String`.
+
+What's important and possibly surprising is we **don't** get back the secondary
+index. Because of that, it's sadly hard to implement anything like pagination
+with secondary key iteration.
+
+</Callout>
+
 If we're only interested in the addresses (primary keys in our case), we can use
 the `keys` method.
 
@@ -246,7 +260,95 @@ let found_keys = users
     .collect::<StdResult<Vec<_>>>()
     .unwrap();
 
-assert_eq!(found_keys.len(), 2);
-assert_eq!(found_keys[0], Addr::unchecked("bbb"));
-assert_eq!(found_keys[1], Addr::unchecked("ccc"));
+assert_eq!(found_keys, [
+    Addr::unchecked("bbb"),
+    Addr::unchecked("ccc"),
+    Addr::unchecked("ddd"),
+]);
 ```
+
+### Lookup by country
+
+Let's say we want to look up users by their country. This time, we'll use a
+`MultiIndex` instead of a `UniqueIndex`. This is because multiple users can be
+from the same country.
+
+```rust template="storage" showLineNumbers
+use cw_storage_plus::{index_list, IndexedMap, MultiIndex, UniqueIndex};
+
+use crate::users::*;
+
+#[index_list(User)]
+struct UserIndexes<'a> {
+    handle_ix: UniqueIndex<'a, Handle, User, Addr>,
+    country_ix: MultiIndex<'a, String, User, Addr>,
+}
+
+let user_indexes = UserIndexes {
+    handle_ix: UniqueIndex::new(|user| user.handle.clone(), "uh"),
+    country_ix: MultiIndex::new(|_pk, user| user.country.clone(), "u", "uc"),
+};
+
+let _users = IndexedMap::<Addr, _, _>::new("u", user_indexes);
+```
+
+Note that the `MultiIndex` constructor (line 13) takes three parameters:
+
+- A closure that produces the secondary key. This is similar to the
+  `UniqueIndex` constructor's first parameter.
+- A namespace for the map. This is supposed to be the same value as the prefix
+  used for the `IndexedMap`.
+- A prefix for the index. This is supposed to be distinct from the prefix used
+  for the `IndexedMap`, and is similar to the `UniqueIndex` constructor's second
+  parameter.
+
+Let's take advantage of the new index. We'll find all users from the USA. The
+call chain is a bit different here, so hang on tight.
+
+```rust template="storage"
+use cw_storage_plus::{Bound, IndexedMap};
+
+use crate::users::*;
+
+let us_users = users
+    .idx
+    .country_ix
+    .prefix("USA".to_string())
+    .range(&storage, None, None, Order::Ascending)
+    .collect::<StdResult<Vec<_>>>()
+    .unwrap();
+
+assert_eq!(us_users, [
+    (
+        Addr::unchecked("bbb"),
+        User {
+            handle: "bob".to_string(),
+            country: "USA".to_string(),
+        }
+    ),
+    (
+        Addr::unchecked("ddd"),
+        User {
+            handle: "dave".to_string(),
+            country: "USA".to_string(),
+        }
+    ),
+]);
+```
+
+Due to technical limitations, the `MultiIndex` does not support **bounded**
+iteration over the secondary key for dynamically sized types (like `Addr` or
+`String`). For example, this means we can't find out all the entries for
+countries starting with "U". If your secondary index is something with a fixed
+size (like `u32` or `[u8; 32]`), bounds should work just fine.
+
+<Callout>
+The technical reason for this is that the `MultiIndex` is implemented as a
+`Map<(IK, PK), _>` under the hood, where `IK` is the secondary key and `PK` is
+the primary key. This means it's subject to the same limitations as compound keys in general.
+</Callout>
+
+If you're interested in iterating over all the entries in a `MultiIndex`, you
+can use the `range` method without bounds. As before, there's also the
+[`keys`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.MultiIndex.html#method.keys)
+method for when values don't matter to you.

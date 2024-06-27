@@ -1,5 +1,6 @@
 {
   "item": "Item",
   "map": "Map",
-  "deque": "Deque"
+  "deque": "Deque",
+  "indexed-map": "IndexedMap"
 }

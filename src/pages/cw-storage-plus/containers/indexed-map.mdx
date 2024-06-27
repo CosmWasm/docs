@@ -91,6 +91,16 @@ Here's what happens step-by-step
     with this contract's storage).
 - We construct an `IndexedMap` with that list of indexes.
 
+<Callout>
+  Note the `UniqueIndex` type has three type parameters. The order might be
+  slightly confusing, but here it goes:
+
+- The secondary key type (`Handle` in our case).
+- The value type (`User` in our case).
+- The primary key type (`Addr` in our case).
+
+</Callout>
+
 <Callout type="warning">
 If you're using
   [`UniqueIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.UniqueIndex.html),

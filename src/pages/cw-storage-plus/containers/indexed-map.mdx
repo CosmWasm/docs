@@ -1,6 +1,6 @@
 import { Callout } from "nextra/components";
 
-# `IndexedMap`
+# IndexedMap
 
 An
 [`IndexedMap`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html)
@@ -123,7 +123,8 @@ indexes - that's the price we pay for efficient lookups.
 ### Taking advantage of the secondary index
 
 As with a regular `Map`, you can
-[load data](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.load),
+[load](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.load)
+data,
 [save](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.save)
 data,
 [remove](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.IndexedMap.html#method.remove)
@@ -249,12 +250,3 @@ assert_eq!(found_keys.len(), 2);
 assert_eq!(found_keys[0], Addr::unchecked("bbb"));
 assert_eq!(found_keys[1], Addr::unchecked("ccc"));
 ```
-
-TODO: link to a blurb about compound keys iteration order/bounds being wonky?
-probably described in [`Map`](./map.md)
-
-### Lookup by country
-
-TO BE ADDED
-
-A bunch of stuff about `MultiIndex` will follow here.

@@ -136,13 +136,13 @@ use crate::users::*;
 
 let users = IndexedMap::<Addr, _, _>::new("u", user_indexes("uh"));
 
-let alice_addr = Addr::unchecked("alice");
+let alice_addr = Addr::unchecked("aaa");
 let alice_user = User {
     handle: "alice".to_string(),
     country: "Wonderland".to_string(),
 };
 
-let bob_addr = Addr::unchecked("bob");
+let bob_addr = Addr::unchecked("bbb");
 let bob_user = User {
     handle: "bob".to_string(),
     country: "Bikini Bottom".to_string(),
@@ -157,7 +157,7 @@ users
     .unwrap();
 
 assert_eq!(
-    users.load(&storage, Addr::unchecked("alice")).unwrap(),
+    users.load(&storage, alice_addr.clone()).unwrap(),
     alice_user
 );
 
@@ -220,7 +220,7 @@ assert_eq!(found_users.len(), 2);
 assert_eq!(
     found_users[0],
     (
-        Addr::unchecked("alice"),
+        Addr::unchecked("aaa"),
         User {
             handle: "alice".to_string(),
             country: "Wonderland".to_string(),
@@ -246,8 +246,8 @@ let found_keys = users
     .unwrap();
 
 assert_eq!(found_keys.len(), 2);
-assert_eq!(found_keys[0], Addr::unchecked("bob"));
-assert_eq!(found_keys[1], Addr::unchecked("carol"));
+assert_eq!(found_keys[0], Addr::unchecked("bbb"));
+assert_eq!(found_keys[1], Addr::unchecked("ccc"));
 ```
 
 TODO: link to a blurb about compound keys iteration order/bounds being wonky?

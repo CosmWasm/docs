@@ -60,21 +60,21 @@ fn doctest() {
 
     let users_data = [
         (
-            Addr::unchecked("alice"),
+            Addr::unchecked("aaa"),
             users::User {
                 handle: "alice".to_string(),
                 country: "Wonderland".to_string(),
             },
         ),
         (
-            Addr::unchecked("bob"),
+            Addr::unchecked("bbb"),
             users::User {
                 handle: "bob".to_string(),
                 country: "USA".to_string(),
             },
         ),
         (
-            Addr::unchecked("carol"),
+            Addr::unchecked("ccc"),
             users::User {
                 handle: "carol".to_string(),
                 country: "UK".to_string(),

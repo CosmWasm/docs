@@ -83,9 +83,9 @@ Here's what happens step-by-step
   this case, we only have one index - `handle`, indexing the `handle` field.
 - We construct our `UserIndexes`. Notice the `UniqueIndex` constructor takes two
   parameters:
-  - A closure. This closure is supposed to take the value of an entry and
-    produce the secondary key. Without this, the `IndexedMap` would not know how
-    to create the index.
+  - A function pointer (here we provide an anonymous function). This function is
+    supposed to take the value of an entry and produce the secondary key.
+    Without this, the `IndexedMap` would not know how to create the index.
   - A prefix. The index needs its own storage namespace. Note the index prefix
     has to be distinct from the `IndexedMap` prefix (or any other prefix used
     with this contract's storage).

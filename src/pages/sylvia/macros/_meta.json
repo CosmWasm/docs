@@ -1,4 +1,5 @@
 {
   "interface": "Interface",
-  "contract": "Contract"
+  "contract": "Contract",
+  "entry-points": "Entry-points"
 }

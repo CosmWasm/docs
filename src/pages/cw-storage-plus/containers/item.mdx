@@ -2,31 +2,35 @@
 tags: ["storage-plus", "containers"]
 ---
 
+import { Callout } from "nextra/components";
+
 # `Item`
 
-An `Item` is a container that stores a single value under a specific key in
-storage.
+An `Item` is a container that stores a single value that may be stored in some
+storage under some key.
 
-Merely constructing the `Item` object does not commit anything to storage. If an
-`Item` has never been written to before (or the value has been
-[removed](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html#method.remove)),
-it will be empty.
+## Creating an `Item`
 
-Under the hood, values are serialized with [`serde`](https://serde.rs/) and
-[`serde_json_wasm`](https://docs.rs/serde_json_wasm/).
+Simply creating an `Item` does not commit anything to storage. In order to
+actually store a value into a storage, you need to call the `save` method.
 
-Use `save` to write to an `Item`.
+At the moment, values are serialized to the underlying storage in the JSON
+format. Your value must implement the `Serialize` and `Deserialize` traits from
+the [`serde`] crate in order to be stored.
 
-Use `load` to read from the `Item`, producing an error if the `Item` is empty or
-if deserialization fails.
+<Callout>
+  This is an implementation detail that may change in the future. You should
+  always use the provided API methods to interact with the storage.
+</Callout>
 
-Use `may_load` if you want to explicitly handle the possibility the `Item` is
-empty - this will produce an
-[`StdError`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdError.html)
-if deserialization fails, but produce an `Ok(None)` if it is empty.
+## Loading an `Item`
 
-More information can be found in the
-[API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html).
+`cw-storage-plus` provides you with two functions for loading an `Item`:
+
+- `load` - which will return an error if the `Item` is empty or if
+  deserialization fails.
+- `may_load` - which will return `Ok(None)` if the `Item` is empty, and an error
+  if deserialization fails.
 
 ## Usage examples
 
@@ -82,3 +86,5 @@ total += 1;
 
 counter.save(&mut storage, &total).unwrap();
 ```
+
+[`serde`]: https://serde.rs/

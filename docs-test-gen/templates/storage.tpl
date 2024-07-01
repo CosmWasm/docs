@@ -11,7 +11,7 @@ use imports::*;
 mod users {
     use super::*;
 
-    use cw_storage_plus::{index_list, IndexedMap, UniqueIndex};
+    use cw_storage_plus::{index_list, IndexedMap, MultiIndex, UniqueIndex};
 
     pub type Handle = String;
 
@@ -42,11 +42,21 @@ mod users {
     #[index_list(User)]
     pub struct UserIndexes<'a> {
         pub handle_ix: UniqueIndex<'a, Handle, User, Addr>,
+        pub country_ix: MultiIndex<'a, String, User, Addr>,
     }
 
-    pub fn user_indexes(prefix: &'static str) -> UserIndexes<'static> {
+    pub fn user_indexes() -> UserIndexes<'static> {
+        user_indexes_custom("u", "uh", "uc")
+    }
+
+    pub fn user_indexes_custom(
+        ns: &'static str,
+        handle_prefix: &'static str,
+        country_prefix: &'static str,
+    ) -> UserIndexes<'static> {
         UserIndexes {
-            handle_ix: UniqueIndex::new(|user| user.handle.clone(), prefix),
+            handle_ix: UniqueIndex::new(|user| user.handle.clone(), handle_prefix),
+            country_ix: MultiIndex::new(|_pk, user| user.country.clone(), ns, country_prefix),
         }
     }
 }
@@ -56,7 +66,10 @@ fn doctest() {
     #[allow(unused_variables, unused_mut)]
     let mut storage = cosmwasm_std::testing::MockStorage::new();
 
-    let users = cw_storage_plus::IndexedMap::<Addr, _, _>::new("uu", users::user_indexes("uuh"));
+    let users = cw_storage_plus::IndexedMap::<Addr, _, _>::new(
+        "uu",
+        users::user_indexes_custom("uu", "uuh", "uuc"),
+    );
 
     let users_data = [
         (
@@ -78,6 +91,13 @@ fn doctest() {
             users::User {
                 handle: "carol".to_string(),
                 country: "UK".to_string(),
+            },
+        ),
+        (
+            Addr::unchecked("ddd"),
+            users::User {
+                handle: "dave".to_string(),
+                country: "USA".to_string(),
             },
         ),
     ];

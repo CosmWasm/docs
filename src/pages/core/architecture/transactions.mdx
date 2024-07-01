@@ -11,7 +11,8 @@ fails, the whole transaction is rolled back.
 
 In our case, these operations are invocations of contract entrypoints. If one of
 the invocations in the chain fails, the whole transaction is usually rolled
-back.
+back. Failing in this context means that the contract entrypoint returns an
+error or panics.
 
 ## Preventing rollbacks in case of failure
 

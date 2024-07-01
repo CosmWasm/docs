@@ -1,3 +1,7 @@
+---
+tags: ["storage-plus", "containers"]
+---
+
 import { Callout } from "nextra/components";
 
 # `Map`
@@ -15,7 +19,9 @@ Other types include binary strings (`Vec<u8>`, `[u8; N]`, `&[u8]`), numerical
 types, or even tuples, which can be used to create composite keys.
 
 <Callout>
-Unlike values, keys do **not** need to implement anything like `serde::Serialize` or `serde::Deserialize`. Key encoding is handled by the `PrimaryKey` trait.
+  Unlike values, keys do **not** need to implement anything like
+  `serde::Serialize` or `serde::Deserialize`. Key encoding is handled by the
+  `PrimaryKey` trait.
 </Callout>
 
 ## Values
@@ -36,7 +42,8 @@ or
 [`range`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.range).
 
 <Callout>
-  [For each bound, it's possible to decide if it's meant to be inclusive or exclusive.](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/enum.Bound.html)
+  [For each bound, it's possible to decide if it's meant to be inclusive or
+  exclusive.](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/enum.Bound.html)
 </Callout>
 
 More information can be found in the

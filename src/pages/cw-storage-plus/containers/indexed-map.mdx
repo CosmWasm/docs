@@ -1,3 +1,7 @@
+---
+tags: ["storage-plus", "containers"]
+---
+
 import { Callout } from "nextra/components";
 
 # IndexedMap
@@ -8,9 +12,9 @@ is a map that, apart from the usual map key `K` has some secondary indexes `I`
 that can be used to look up values.
 
 <Callout>
-There's no limit to how many indexes you can have, but be careful. Using many indexes can increase the complexity of
-storage writes - with every write, the list of indexes is iterated over since
-they might need to be updated.
+  There's no limit to how many indexes you can have, but be careful. Using many
+  indexes can increase the complexity of storage writes - with every write, the
+  list of indexes is iterated over since they might need to be updated.
 </Callout>
 
 As always, we encourage you to explore the
@@ -26,8 +30,9 @@ users by their address - if Alice calls the contract, we should be able to look
 up her user data by the address with which she called.
 
 <Callout>
-Every snippet on this page builds on the previous ones. Make sure you've
-  understood the previous snippet before moving on to the next one, and feel free to go back and forth as needed.
+  Every snippet on this page builds on the previous ones. Make sure you've
+  understood the previous snippet before moving on to the next one, and feel
+  free to go back and forth as needed.
 </Callout>
 
 This is easy to model with a normal `Map`.
@@ -72,9 +77,10 @@ let _users = IndexedMap::<Addr, _, _>::new("u", user_indexes);
 ```
 
 <Callout>
-The `index_list` macro is used to define a list of indexes for a given struct.
+  The `index_list` macro is used to define a list of indexes for a given struct.
   This is a helper macro that generates an implementation of the
-  [`IndexList`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.IndexList.html) trait, with all the fields of the struct as indexes.
+  [`IndexList`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.IndexList.html)
+  trait, with all the fields of the struct as indexes.
 </Callout>
 
 Here's what happens step-by-step
@@ -102,7 +108,7 @@ Here's what happens step-by-step
 </Callout>
 
 <Callout type="warning">
-If you're using
+  If you're using
   [`UniqueIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.UniqueIndex.html),
   it's your responsibility to ensure that the index you've built has unique
   keys. If you have two users with the same handle, the index will be

@@ -74,10 +74,15 @@ transfer. It is often used for additional functionality like
 
 When you send an ICS20 transfer as described above, you do not get any feedback
 on whether the transfer was successful or not and the destination does not get
-informed of its newfound wealth. To solve this problem, the ADR-8 specification
+informed of its newfound wealth. To solve this problem, the [ADR-8 specification][adr-8]
 was created. On the source chain, it provides callbacks when an IBC packet was
 acknowledged or timed out. On the destination chain, it triggers callbacks when
 a packet is received.
+
+IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks].
+
+[adr-8]: https://github.com/cosmos/ibc-go/blob/main/docs/architecture/adr-008-app-caller-cbs.md
+[ibc-hooks]: https://github.com/cosmos/ibc-apps/blob/main/modules/ibc-hooks/README.md
 
 <Callout>
   To receive callbacks, the chain needs to support IBC Callbacks for the message
@@ -99,8 +104,8 @@ the callbacks.
 {/* TODO: add link to `IbcCallbackRequest` docs once IBC Callbacks are released */}
 
 To make this as easy as possible, we provide two ways to generate the correct
-JSON. One is a builder type for the `TransferMsg` type which provides a
-type-safe way to generate the complete `TransferMsg`, the other is a helper type
+JSON. One is a builder type for the `IbcMsg::Transfer` type which provides a
+type-safe way to generate the complete `IbcMsg::Transfer`, the other is a helper type
 `IbcCallbackRequest` that just generates the JSON for the `memo` field:
 
 {/* TODO: add `template="execute"` once IBC Callbacks are released */}
@@ -173,7 +178,7 @@ contract:
 
 {/* TODO: add docs links once IBC Callbacks are released */}
 
-- `ibc_source_callback`, receiving an `IbcSourceCallbackMsg` which can be one of
+- `ibc_source_callback`, receiving an `IbcSourceCallbackMsg` enum which can be one of
   two types:
   - `IbcAckCallbackMsg` if the packet was acknowledged
   - `IbcTimeoutCallbackMsg` if the packet timed out
@@ -232,8 +237,11 @@ of the relayer who told you about the timeout.
 #### Destination Callback
 
 The `ibc_destination_callback` entrypoint is called when a packet was
-acknowledged on the destination chain. For the `IbcMsg::Transfer` message, this
-means that the tokens were successfully transferred to the destination chain. It
+acknowledged on the destination chain. The shape of an acknowledgement is
+protocol specific and usually contains both success and error cases.
+
+For the `IbcMsg::Transfer` message, a success acknowledgement means that the tokens
+were successfully transferred to the destination chain. It
 allows you to use the received tokens immediately, update the contract state to
 reflect the new tokens or trigger other actions.
 

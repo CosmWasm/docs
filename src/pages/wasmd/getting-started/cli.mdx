@@ -1,0 +1,214 @@
+# Interact via the CLI
+
+## Tx commands
+
+### Upload code
+
+You can upload your contract by running the following command. In this example
+we are uploading the `hackatom.wasm` contract.
+
+```sh
+wasmd tx wasm store "$DIR/../../../x/wasm/keeper/testdata/hackatom.wasm" \
+  --from validator \
+  --chain-id=testing \
+  --keyring-backend=test
+```
+
+You can retrieve the code_id for the uploaded contract with the following
+command:
+
+```sh
+RESP=$(wasmd q tx $(echo "$RESP"| jq -r '.txhash') -o json)
+CODE_ID=$(echo "$RESP" | jq -r '.events[]| select(.type=="store_code").attributes[]| select(.key=="code_id").value')
+
+# Print code id
+echo "* Code id: $CODE_ID"
+```
+
+### Create a new contract instance
+
+You can instantiate the code uploaded in the previous step with th efollowing
+command:
+
+```sh
+wasmd tx wasm instantiate "$CODE_ID" "{}" \
+  --from validator \
+  --no-admin \
+  --label "local0.1.0" \
+  --chain-id=testing \
+   --keyring-backend=test
+```
+
+You can retrieve the contract address for the instantated code with the
+following command:
+
+```sh
+CONTRACT=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.contracts[-1]')
+
+# Print contract address
+echo "* Contract address: $CONTRACT"
+```
+
+### Create a new contract instance with predictable address
+
+```sh
+wasmd tx wasm instantiate2 "$CODE_ID" "{}" 10 \
+  --from validator \
+  --no-admin \
+  --label "local0.1.0" \
+  --chain-id=testing \
+  --keyring-backend=test
+```
+
+You can retrieve the contract address for the instantated code with the
+following command:
+
+```sh
+CONTRACT_PREDICTABLE=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.contracts[-1]')
+
+# Print contract address
+echo "* Contract address: $CONTRACT_PREDICTABLE"
+```
+
+### Execute a command on a wasm contract
+
+To execute a command on a wasm contract you can run the following commands:
+
+```sh
+# Define message
+MSG='{"release":{}}'
+
+# Execute message
+wasmd tx wasm execute "$CONTRACT" "$MSG" \
+  --from validator \
+  --chain-id=testing \
+  --keyring-backend=test
+```
+
+### Migrate a wasm contract to a new code version
+
+```sh
+wasmd start
+```
+
+### Submit proposal
+
+```sh
+wasmd start
+```
+
+### Update instantiate config
+
+```sh
+wasmd start
+```
+
+### Set contract label
+
+```sh
+wasmd start
+```
+
+### Set contract admin
+
+```sh
+wasmd start
+```
+
+### Clear contract admin
+
+```sh
+wasmd start
+```
+
+### Clear contract admin
+
+```sh
+wasmd start
+```
+
+### Grant code upload permissions
+
+```sh
+wasmd start
+```
+
+### Grant contract execute permissions
+
+```sh
+wasmd start
+```
+
+### Grant contract migrate permissions
+
+```sh
+wasmd start
+```
+
+## Query commands
+
+### Query wasm bytecode
+
+```sh
+wasmd start
+```
+
+### Query code id metadata
+
+```sh
+wasmd start
+```
+
+### Query contract metadata
+
+```sh
+wasmd start
+```
+
+### Query contract history
+
+```sh
+wasmd start
+```
+
+### Query contract state
+
+```sh
+wasmd start
+```
+
+### Query libwasmvm version
+
+```sh
+wasmd start
+```
+
+### Query codes
+
+```sh
+wasmd start
+```
+
+### Query contracts by code id
+
+```sh
+wasmd start
+```
+
+### Query contracts by creator
+
+```sh
+wasmd start
+```
+
+### Query parameters
+
+```sh
+wasmd start
+```
+
+### Query pinned contracts
+
+```sh
+wasmd start
+```

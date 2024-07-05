@@ -1,0 +1,32 @@
+# Run A Node
+
+To review all the details on how to run a node, visit
+[this tutorial](https://tutorials.cosmos.network/tutorials/3-run-node/). Below,
+we provide a script to do it quickly.
+
+## Setup Node
+
+Run the following script
+
+```sh
+#init chain
+wasmd init --chain-id "CHAIN_ID" "MONIKER"
+
+# add a new key
+wasmd keys add alice --keyring-backend=test
+
+# add an account
+wasmd genesis add-genesis-account validator "1000000000000$STAKE,1000000000000$FEE" --keyring-backend=test
+
+wasmd genesis gentx validator "250000000$STAKE" --chain-id="$CHAIN_ID" --amount="250000000$STAKE" --keyring-backend=test
+
+wasmd genesis collect-gentxs
+```
+
+## Start node
+
+To start the node run:
+
+```sh
+wasmd start
+```

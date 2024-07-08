@@ -14,11 +14,11 @@ Use the `contract` macro to generate contract messages
 
 List of attributes supported by `contract` macro:
 
-- [`custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom)
-- [`error`](https://cosmwasm-docs.vercel.app/sylvia/attributes/error)
-- [`message`](https://cosmwasm-docs.vercel.app/sylvia/attributes/message)
-- [`msg`](https://cosmwasm-docs.vercel.app/sylvia/attributes/msg)
-- [`override_entry_point`](https://cosmwasm-docs.vercel.app/sylvia/attributes/override-entry-point)
+- [`custom`](../attributes/custom)
+- [`error`](../attributes/error)
+- [`message`](../attributes/message)
+- [`msg`](../attributes/msg)
+- [`override_entry_point`](../attributes/override-entry-point)
 
 ## Usage
 
@@ -73,7 +73,7 @@ impl CounterContract {
 ```
 
 We define our messages signatures by marking the appropriate methods with the
-[`sv::msg`](https://cosmwasm-docs.vercel.app/sylvia/attributes/msg) attribute.
+[`sv::msg`](../attributes/msg) attribute.
 
 The `impl` block must contain the attributeless `new` method for the generated
 `dispatch` to work properly.
@@ -81,7 +81,7 @@ The `impl` block must contain the attributeless `new` method for the generated
 ## Custom types
 
 You can construct your contract to work with some specific custom types with the
-[`sv::custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom).
+[`sv::custom`](../attributes/custom).
 
 ## Generic types
 

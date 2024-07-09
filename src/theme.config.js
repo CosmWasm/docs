@@ -9,7 +9,7 @@ import { cn } from "./lib/utils";
  * @type {import('nextra-theme-docs').DocsThemeConfig}
  */
 export default {
-  docsRepositoryBase: "https://github.com/cosmwasm/docs",
+  docsRepositoryBase: "https://github.com/CosmWasm/docs/blob/main",
   logo: (
     <>
       <svg

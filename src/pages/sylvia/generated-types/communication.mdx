@@ -1,0 +1,116 @@
+---
+tags: ["sylvia", "macro"]
+---
+
+import { Callout, Tabs } from "nextra/components";
+
+# Generated communication helpers
+
+Sylvia exposes types to ease communication between contracts. Currently there
+are two types:
+
+- [`BoundQuerier`](https://docs.rs/sylvia/latest/sylvia/types/struct.BoundQuerier.html) -
+  for sending query messages,
+- [`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html) -
+  for building execute messages.
+
+The [`contract`](../macros/contract) and [`interface`](../macros/interface)
+expand these types by generating and implementing traits with methods
+representing execute and query methods
+
+Examples in the following paragraphs are generated from the below contract:
+
+```rust
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx, mutable: bool) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn some_exec(&self, ctx: ExecCtx, addr: String) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn some_query(&self, ctx: QueryCtx, addr: String) -> StdResult<SomeResponse> {
+        Ok(SomeResponse)
+    }
+}
+```
+
+## Query helpers
+
+Sylvia macros generate a `Querier` trait that mirrors all of the methods marked
+with the [`sv::msg(query)`](../attributes/msg.mdx) attribute. This trait is then
+implemented on the
+[`BoundQuerier`](https://docs.rs/sylvia/latest/sylvia/types/struct.BoundQuerier.html)
+type. Implementation of each method constructs the appropriate message and sends
+it to the contract.
+
+```rust
+pub trait Querier {
+    fn some_query(&self, addr: String) -> Result<SomeResponse, sylvia::cw_std::StdError>;
+}
+impl<'a, C: sylvia::cw_std::CustomQuery> Querier
+    for sylvia::types::BoundQuerier<'a, C, CounterContract>
+{
+    fn some_query(&self, addr: String) -> Result<SomeResponse, sylvia::cw_std::StdError> {
+        let query = <CounterContract as sylvia::types::ContractApi>::Query::some_query(addr);
+        self.querier().query_wasm_smart(self.contract(), &query)
+    }
+}
+```
+
+## Executor helpers
+
+Sylvia macros generate an `Executor` trait that mirrors all of the methods
+marked with the [`sv::msg(exec)`](../attributes/msg.mdx) attribute. This trait
+is then implemented on the
+[`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html)
+type. Implementation of each method constructs the appropriate message and
+returns the
+[`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html)
+generic over
+[`ReadyExecutorBuilderState`](https://docs.rs/sylvia/latest/sylvia/types/struct.ReadyExecutorBuilderState.html).
+
+```rust
+pub trait Executor {
+    fn some_exec(
+        self,
+        addr: String,
+    ) -> Result<
+        sylvia::types::ExecutorBuilder<sylvia::types::ReadyExecutorBuilderState>,
+        sylvia::cw_std::StdError,
+    >;
+}
+impl Executor
+    for sylvia::types::ExecutorBuilder<(
+        sylvia::types::EmptyExecutorBuilderState,
+        CounterContract,
+    )>
+{
+    fn some_exec(
+        self,
+        addr: String,
+    ) -> Result<
+        sylvia::types::ExecutorBuilder<sylvia::types::ReadyExecutorBuilderState>,
+        sylvia::cw_std::StdError,
+    > {
+        Ok(sylvia::types::ExecutorBuilder::<
+            sylvia::types::ReadyExecutorBuilderState,
+        >::new(
+            self.contract().to_owned(),
+            self.funds().to_owned(),
+            sylvia::cw_std::to_json_binary(
+                &<CounterContract as sylvia::types::ContractApi>::Exec::some_exec(addr),
+            )?,
+        ))
+    }
+}
+```

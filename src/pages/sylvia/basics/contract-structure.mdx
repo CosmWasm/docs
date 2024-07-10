@@ -16,9 +16,7 @@ pub struct CounterContract {
 ```
 
 In Sylvia we keep the state accessors as part of the contract definition. The
-accessors are
-[`cw_storage_plus`](https://cosmwasm-docs.vercel.app/cw-storage-plus)
-primitives.
+accessors are [`cw_storage_plus`](../../cw-storage-plus) primitives.
 
 Let's take a look at the behavior implementation.
 
@@ -67,10 +65,9 @@ In the first two lines, we see the usage of two macros:
   feature flag is not enabled. This way, other users who might want to use this
   contract in theirs won't get an entry point collision.
 
-- [`contract`](https://cosmwasm-docs.vercel.app/sylvia/macros/contract) - Parses
-  every method inside the `impl` block marked with the `[sv::msg(...)]`
-  attribute and create proper messages and utilities like helpers for
-  [`MultiTest`](https://cosmwasm-docs.vercel.app/cw-multi-test).
+- [`contract`](../macros/contract) - Parses every method inside the `impl` block
+  marked with the `[sv::msg(...)]` attribute and create proper messages and
+  utilities like helpers for [`MultiTest`](../../cw-multi-test).
 
 This simple example also has the `sv::msg(...)` attributes. Sylvia macros
 distinguish the if message should be generated from the marked method and of

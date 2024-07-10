@@ -18,10 +18,10 @@ Use the `entry_points` macro to generate entry points of your contract.
 
 List of attributes supported by `entry_points` macro:
 
-- [`custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom)
-- [`error`](https://cosmwasm-docs.vercel.app/sylvia/attributes/error)
-- [`msg`](https://cosmwasm-docs.vercel.app/sylvia/attributes/msg)
-- [`override_entry_point`](https://cosmwasm-docs.vercel.app/sylvia/attributes/override-entry-point)
+- [`custom`](../attributes/custom)
+- [`error`](../attributes/error)
+- [`msg`](../attributes/msg)
+- [`override_entry_point`](../attributes/override-entry-point)
 
 ## Usage
 
@@ -59,14 +59,13 @@ impl CounterContract {
 }
 ```
 
-The `entry_points` macro scans for
-[`sv::msg`](https://cosmwasm-docs.vercel.app/sylvia/attributes/msg) attributes.
-By default it generates: instantiate, exec, and query entry points.
+The `entry_points` macro scans for [`sv::msg`](../attributes/msg) attributes. By
+default it generates: instantiate, exec, and query entry points.
 
 ## Custom types
 
 You can construct your entry points to work with some specific custom types with
-the [`sv::custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom).
+the [`sv::custom`](../attributes/custom).
 
 ## Generic types
 
@@ -138,8 +137,7 @@ If the contract uses generic custom types we have to do some more work.
 
 After coma we have to pass another parameter `custom`, and in the paranthesis
 specify which types should be used in place of custom message and custom query.
-The syntax reflects one used in the
-[`custom`](https://cosmwasm-docs.vercel.app/sylvia/attributes/custom).
+The syntax reflects one used in the [`custom`](../attributes/custom).
 
 This is required as, for at least now, Sylvia is unable to determine which
 concrete types are supposed to be used in place of generic custom types.

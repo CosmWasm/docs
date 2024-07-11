@@ -99,9 +99,9 @@ is a wrapper over the
 We provide the querying functionality via traits. The
 [`contract`](../macros/contract) and [`interface`](../macros/interface) macros
 generate these traits for us. You can learn about that in
-[`this section`](../generated-types/communication#query-helpers). If you don't
-use Sylvia yet, you can create and implement those traits manually. Feel free to
-get inspiration from above example.
+[`this section`](../macros/generated-types/communication#query-helpers). If you
+don't use Sylvia yet, you can create and implement those traits manually. Feel
+free to get inspiration from above example.
 
 With the traits implemented, a contract with a query method `some_query` can be
 queried as follows:
@@ -134,7 +134,8 @@ For the `ExecutorBuilder` generic over `EmptyExecutorBuilderState`, we also
 provide the message constructing functionality. The
 [`contract`](../macros/contract) and [`interface`](../macros/interface) macros
 generate a trait with methods for every execute message. You can learn about
-that in [`this section`](../generated-types/communication#execute-helpers). If
+that in
+[`this section`](../macros/generated-types/communication#execute-helpers). If
 you don't use Sylvia yet, you can create and implement those traits manually.
 Feel free to get inspiration from above example.
 

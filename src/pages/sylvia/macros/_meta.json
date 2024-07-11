@@ -1,5 +1,6 @@
 {
   "interface": "Interface",
   "contract": "Contract",
-  "entry-points": "Entry-points"
+  "entry-points": "Entry points",
+  "generated-types": "Generated types"
 }

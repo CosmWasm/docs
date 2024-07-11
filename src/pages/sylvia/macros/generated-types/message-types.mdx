@@ -7,7 +7,7 @@ import { Callout, Tabs } from "nextra/components";
 # Generated message types
 
 Sylvia macros generate CosmWasm messages from methods marked with
-[`sv::msg`](../attributes/msg) attributes.
+[`sv::msg`](../../attributes/msg) attributes.
 
 Messages are generated either as struct, for instantiate and migrate, or enum in
 case of the rest of the types.
@@ -67,7 +67,7 @@ impl CounterContract {
 ```
 
 generates the following messages for every respective
-[entrypoint](../../core/entrypoints):
+[entrypoint](../../../core/entrypoints):
 
 <Tabs items={['InstantiateMsg', 'ExecMsg', 'QueryMsg', 'SudoMsg', 'MigrateMsg']} defaultIndex={0}>
   <Tabs.Tab>
@@ -269,10 +269,10 @@ generates the following messages for every respective
   and their variants.
 </Callout>
 
-The [`contract`](../macros/contract) macro also generates wrapper messages for
-exec, query and sudo. Their goal is to wrap respective messages, like `ExecMsg`,
-from both the contract and interfaces implemented on it, which are used as the
-main messages of the contract.
+The [`contract`](../contract) macro also generates wrapper messages for exec,
+query and sudo. Their goal is to wrap respective messages, like `ExecMsg`, from
+both the contract and interfaces implemented on it, which are used as the main
+messages of the contract.
 
 <Callout>
   Use `ContractExecMsg`/`ContractQueryMsg`/`ContractSudoMsg` in hand made entry
@@ -408,8 +408,8 @@ validation that none of the messages overlap between a contract and interfaces.
 
 ## Interface messages
 
-The generation done by [`interface`](../macros/interface) macro is much simpler,
-as Sylvia generates just three types of messages.
+The generation done by [`interface`](../interface) macro is much simpler, as
+Sylvia generates just three types of messages.
 
 We will use the below example interface to generate the messages:
 

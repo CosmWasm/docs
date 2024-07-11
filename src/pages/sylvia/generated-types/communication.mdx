@@ -9,10 +9,10 @@ import { Callout, Tabs } from "nextra/components";
 Sylvia exposes types to ease communication between contracts. Currently there
 are two types:
 
-- [`BoundQuerier`](https://docs.rs/sylvia/latest/sylvia/types/struct.BoundQuerier.html) -
-  for sending query messages,
-- [`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html) -
-  for building execute messages.
+- [`BoundQuerier`](../types/communication#boundquerier) - for sending query
+  messages,
+- [`ExecutorBuilder`](../types/communication#executorbuilder) - for building
+  execute messages.
 
 The [`contract`](../macros/contract) and [`interface`](../macros/interface)
 expand these types by generating and implementing traits with methods
@@ -48,10 +48,9 @@ impl CounterContract {
 
 Sylvia macros generate a `Querier` trait that mirrors all of the methods marked
 with the [`sv::msg(query)`](../attributes/msg.mdx) attribute. This trait is then
-implemented on the
-[`BoundQuerier`](https://docs.rs/sylvia/latest/sylvia/types/struct.BoundQuerier.html)
-type. Implementation of each method constructs the appropriate message and sends
-it to the contract.
+implemented on the [`BoundQuerier`](../types/communication#boundquerier) type.
+Implementation of each method constructs the appropriate message and sends it to
+the contract.
 
 ```rust
 pub trait Querier {
@@ -72,11 +71,9 @@ impl<'a, C: sylvia::cw_std::CustomQuery> Querier
 Sylvia macros generate an `Executor` trait that mirrors all of the methods
 marked with the [`sv::msg(exec)`](../attributes/msg.mdx) attribute. This trait
 is then implemented on the
-[`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html)
-type. Implementation of each method constructs the appropriate message and
-returns the
-[`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html)
-generic over
+[`ExecutorBuilder`](../types/communication#executorbuilder) type. Implementation
+of each method constructs the appropriate message and returns the
+[`ExecutorBuilder`](../types/communication#executorbuilder) generic over
 [`ReadyExecutorBuilderState`](https://docs.rs/sylvia/latest/sylvia/types/struct.ReadyExecutorBuilderState.html).
 
 ```rust

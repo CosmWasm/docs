@@ -3,6 +3,7 @@
   "core": "CosmWasm Core",
   "ibc": "IBC",
   "sylvia": "Sylvia",
+  "storey": "Storey",
   "cw-storage-plus": "StoragePlus",
   "cw-multi-test": "MultiTest",
   "how-to-doc": "How to doc",

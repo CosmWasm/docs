@@ -1,0 +1,23 @@
+[package]
+name = "docs-test-gen"
+authors = ["Aumetra Weisman <aumetra@cryptolab.net>"]
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.82"
+comrak = { version = "0.24.1", default-features = false }
+glob = "0.3.1"
+phf = { version = "0.11.2", features = ["macros"] }
+strum = { version = "0.26.2", features = ["derive"] }
+
+[dev-dependencies]
+cw2 = "*"
+cw-storage-plus = { version = "*", features = ["macro"]}
+cosmwasm-schema = "*"
+cosmwasm-std = { version = "*", features = ["stargate", "staking", "cosmwasm_2_0"] }
+sha2 = "0.10.8"
+cosmos-sdk-proto = { version = "0.21.1", default-features = false }                  # Used in IBC code
+serde = "*"
+cw-storey = "*"
+schemars = "0.8.21" # Used in entrypoint example

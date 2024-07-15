@@ -1,0 +1,58 @@
+---
+tags: ["core", "cryptography"]
+---
+
+import { Callout } from "nextra/components";
+
+# K256 (secp256k1)
+
+K256 is a Koblitz curve that is widely used in the blockchain space (e.g.
+Bitcoin and Ethereum). CosmWasm offers the following APIs:
+
+- Signature verification
+- Public key recovery
+
+## Example
+
+### Signature verification
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: EcdsaVerifyMsg,
+) -> StdResult<QueryResponse> {
+    let public_key = msg.public_key;
+    let signature = msg.signature;
+    let message_hash = msg.message_hash;
+
+    // Verify the signature. On chain!
+    let is_valid = deps.api.secp256k1_verify(&message_hash, &signature, &public_key)?;
+    let response = format!("{{ \"is_valid\": {is_valid} }}");
+
+    Ok(QueryResponse::new(response.into_bytes()))
+}
+```
+
+### Public key recovery
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: EcdsaRecoverMsg,
+) -> StdResult<QueryResponse> {
+    let signature = msg.signature;
+    let message_hash = msg.message_hash;
+    let recovery_id = msg.recovery_id;
+
+    // Recover the public key. On chain!
+    let public_key = deps.api.secp256k1_recover_pubkey(&message_hash, &signature, recovery_id)?;
+    let public_key = HexBinary::from(public_key).to_hex();
+    let response = format!("{{ \"public_key\": \"{public_key}\" }}");
+
+    Ok(QueryResponse::new(response.into_bytes()))
+}
+```

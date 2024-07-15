@@ -1,7 +1,13 @@
 {
   "index": "Welcome",
   "core": "CosmWasm Core",
+  "ibc": "IBC",
   "sylvia": "Sylvia",
-  "multitest": "MultiTest",
-  "how-to-doc": "How to doc"
+  "storey": "Storey",
+  "cw-storage-plus": "StoragePlus",
+  "cw-multi-test": "MultiTest",
+  "how-to-doc": "How to doc",
+  "tags": {
+    "display": "hidden"
+  }
 }

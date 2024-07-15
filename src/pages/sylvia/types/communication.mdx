@@ -1,0 +1,152 @@
+---
+tags: ["sylvia", "types"]
+---
+
+import { Callout } from "nextra/components";
+
+# Communication helpers
+
+Sylvia defines few types to ease the communication between contracts. By design,
+they are very limited in their functionality and serve as an infrastructure. All
+of the message constructing methods are meant to be provided via traits.
+
+To gate these methods to be only accessible for the specific contracts, all of
+these types are generic over a contract type.
+
+<Callout>
+  The goal of these helpers is to automate the message construction, making the
+  code more readable and reducing risk of an error.
+</Callout>
+
+## Remote
+
+The [`Remote`](https://docs.rs/sylvia/latest/sylvia/types/struct.Remote.html)
+type is a gateway, that stores the remote contract address and expose methods
+constructing the communication helpers.
+
+These methods are:
+
+- [`Remote::querier`](https://docs.rs/sylvia/latest/sylvia/types/struct.Remote.html#method.querier) -
+  returns the
+  [`BoundQuerier<_, Contract>`](https://docs.rs/sylvia/latest/sylvia/types/struct.BoundQuerier.html),
+- [`Remote::executor`](https://docs.rs/sylvia/latest/sylvia/types/struct.Remote.html#method.executor) -
+  returns the
+  [`ExecutorBuilder<(EmptyExecutorBuilderState, Contract)>`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html).
+
+<Callout>
+  We recommend to store the `Remote` type as the contract state and access the
+  `BoundQuerier` and `ExecutorBuilder` via above methods.
+</Callout>
+
+The `Remote` can be stored as a represantation of a specific contract:
+
+```rust
+pub struct Contract<'a> {
+    remote: Item<Remote<'a, OtherContract>>,
+}
+```
+
+we can also store a `Remote` to some contract implementing an interface:
+
+```rust
+pub struct Contract<'a> {
+    remote: Remote<
+        'a,
+        dyn SomeInterface<
+            Error = StdError,
+            ExecC = ExampleMsg,
+            QueryC = ExampleQuery,
+            CounterT = CounterT,
+        >,
+    >,
+}
+```
+
+<Callout>
+  Note that we have to use the dynamic dispatch here and also provide values for
+  every associated type defined in the interface.
+</Callout>
+
+The initialization of the `Remote` requires only the address of the external
+contract:
+
+```rust
+self.remote
+    .save(ctx.deps.storage, &sylvia::types::Remote::new(remote_addr))?;
+```
+
+and in the usage you can access the `BoundQuerier` and the `ExecutorBuilder`.
+
+```rust
+let bound_querier = self
+    .remote
+    .load(ctx.deps.storage)?
+    .querier(&ctx.deps.querier);
+
+let executor_builder = self
+    .remote
+    .load(ctx.deps.storage)?
+    .executor();
+```
+
+## BoundQuerier
+
+The
+[`BoundQuerier`](https://docs.rs/sylvia/latest/sylvia/types/struct.BoundQuerier.html)
+is a wrapper over the
+[`QuerierWrapper`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.QuerierWrapper.html).
+
+We provide the querying functionality via traits. The
+[`contract`](../macros/contract) and [`interface`](../macros/interface) macros
+generate these traits for us. You can learn about that in
+[`this section`](../macros/generated-types/communication#query-helpers). If you
+don't use Sylvia yet, you can create and implement those traits manually. Feel
+free to get inspiration from above example.
+
+With the traits implemented, a contract with a query method `some_query` can be
+queried as follows:
+
+```rust
+let some_response = self
+    .remote
+    .load(ctx.deps.storage)?
+    .querier(&ctx.deps.querier)
+    .count()?;
+```
+
+## ExecutorBuilder
+
+The
+[`ExecutorBuilder`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html)
+is used to construct the
+[`WasmMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.WasmMsg.html).
+
+It's generic over two states limiting it's functionality depending on the stage
+it's in:
+
+- [`EmptyExecutorBuilderState`](https://docs.rs/sylvia/latest/sylvia/types/struct.EmptyExecutorBuilderState.html) -
+  Setting funds for the transaction,
+- [`ReadyExecutorBuilderState`](https://docs.rs/sylvia/latest/sylvia/types/struct.ReadyExecutorBuilderState.html) -
+  [`Building`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecutorBuilder.html#method.build)
+  the `WasmMsg`.
+
+For the `ExecutorBuilder` generic over `EmptyExecutorBuilderState`, we also
+provide the message constructing functionality. The
+[`contract`](../macros/contract) and [`interface`](../macros/interface) macros
+generate a trait with methods for every execute message. You can learn about
+that in
+[`this section`](../macros/generated-types/communication#execute-helpers). If
+you don't use Sylvia yet, you can create and implement those traits manually.
+Feel free to get inspiration from above example.
+
+With the traits implemented, we can create an execute method `some_exec` can be
+queried as follows:
+
+```rust
+let wasm_msg = self
+    .remote
+    .load(ctx.deps.storage)?
+    .executor()
+    .some_exec()?
+    .build();
+```

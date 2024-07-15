@@ -1,5 +1,9 @@
 {
   "installation": "Installation",
   "entrypoints": "Entrypoints",
-  "standard-library": "Standard Library"
+  "architecture": "Architecture",
+  "standard-library": "Standard Library",
+  "conventions": "Conventions",
+  "advanced": "Advanced",
+  "specification": "Specification"
 }

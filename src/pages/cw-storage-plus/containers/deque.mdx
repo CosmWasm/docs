@@ -1,0 +1,108 @@
+---
+tags: ["storage-plus", "containers"]
+---
+
+import { Callout } from "nextra/components";
+
+# `Deque`
+
+A `Deque` imitates a traditional double-ended queue. This collection is designed
+for efficient pushes and pops from either the beginning or end, but not for
+insertions/deletions from the middle. It can easily serve as a queue or stack.
+
+The main operations available here are [`push_back`], [`push_front`],
+[`pop_back`], and [`pop_front`]. It is also possible to check the [`len`]gth of
+the deque, [`get`] an element by index, and [`iter`]ate over the elements.
+
+[`push_back`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
+[`push_front`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
+[`pop_back`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
+[`pop_front`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
+[`len`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len
+[`get`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get
+[`iter`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter
+
+<Callout type="warning">
+  The maximum capacity of a `Deque` is `u32::MAX - 1` elements. Trying to push
+  more elements is considered Undefined Behavior💀.
+</Callout>
+
+More information can be found in the
+[API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html).
+
+## Examples
+
+### Pushing and popping
+
+```rust template="storage"
+use cw_storage_plus::Deque;
+
+let deque: Deque<u32> = Deque::new("d");
+
+deque.push_back(&mut storage, &2).unwrap();
+deque.push_back(&mut storage, &3).unwrap();
+deque.push_front(&mut storage, &1).unwrap();
+
+// at this point, we have [1, 2, 3]
+
+assert_eq!(deque.pop_back(&mut storage).unwrap(), Some(3));
+assert_eq!(deque.pop_front(&mut storage).unwrap(), Some(1));
+assert_eq!(deque.pop_back(&mut storage).unwrap(), Some(2));
+assert_eq!(deque.pop_back(&mut storage).unwrap(), None);
+```
+
+### Checking length
+
+```rust template="storage"
+use cw_storage_plus::Deque;
+
+let deque: Deque<u32> = Deque::new("d");
+
+assert_eq!(deque.len(&storage).unwrap(), 0);
+
+deque.push_back(&mut storage, &1).unwrap();
+deque.push_back(&mut storage, &2).unwrap();
+
+assert_eq!(deque.len(&storage).unwrap(), 2);
+```
+
+### Getting an element by index
+
+```rust template="storage"
+use cw_storage_plus::Deque;
+
+let deque: Deque<u32> = Deque::new("d");
+
+deque.push_back(&mut storage, &1).unwrap();
+deque.push_back(&mut storage, &2).unwrap();
+
+assert_eq!(deque.get(&storage, 0).unwrap(), Some(1));
+assert_eq!(deque.get(&storage, 1).unwrap(), Some(2));
+assert_eq!(deque.get(&storage, 2).unwrap(), None);
+```
+
+### Iterating over elements
+
+```rust template="storage"
+use cw_storage_plus::Deque;
+
+let deque: Deque<u32> = Deque::new("d");
+
+deque.push_back(&mut storage, &2).unwrap();
+deque.push_back(&mut storage, &3).unwrap();
+deque.push_front(&mut storage, &1).unwrap();
+
+let mut iter = deque.iter(&storage).unwrap();
+
+assert_eq!(iter.next(), Some(Ok(1)));
+assert_eq!(iter.next(), Some(Ok(2)));
+assert_eq!(iter.next(), Some(Ok(3)));
+assert_eq!(iter.next(), None);
+```

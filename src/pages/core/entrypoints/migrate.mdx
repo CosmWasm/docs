@@ -5,3 +5,81 @@ tags: ["core", "entrypoints"]
 import { Callout } from "nextra/components";
 
 # Migrate
+
+This is another special endpoint. It is, just like `instantiate`, not called
+frequently.
+
+`migrate` is only called once you upload a new version to the chain and lets you
+run all the required changes to the storage.
+
+Let's say your storage has the following layout, expressed as JSON for
+simplicity's sake:
+
+```json filename="structure.json"
+{
+  "user_count": 205,
+  "call_count": 543,
+  "balance": 43
+}
+```
+
+But then you notice "Hey! Why don't I nest all the counts into an own object?
+That way I don't have that redundant postfix, making the keys smaller".
+
+So you go ahead and rework your logic to query the data from the following
+structure:
+
+```json filename="structure.json"
+{
+  "count": {
+    "user": 205,
+    "call": 543
+  },
+  "balance": 43
+}
+```
+
+But your storage on-chain still stores the old format. You need to somehow
+transform it.
+
+That's what you do in the `migrate` entrypoint. You transform the structure of
+the storage in there.
+
+## Example
+
+```rust filename="contract.rs" template="core"
+const CONTRACT_NAME: &str = "my_contract";
+const STATE_VERSION: &str = "v2";
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
+    // Check if the state version is older than the current one and update it
+    cw2::ensure_from_older_version(deps.storage, CONTRACT_NAME, STATE_VERSION)?;
+
+    // Load the old data
+    let Some(old_data) = deps.storage.get(b"persisted_data") else {
+      return Err(StdError::generic_err("Data not found"));
+    };
+    // Deserialize it from the old format
+    let old_data: OldData = cosmwasm_std::from_json(&old_data)?;
+
+    // Transform it
+    let new_data = transform(old_data);
+
+    // Serialize the new data
+    let new_data = cosmwasm_std::to_json_vec(&new_data)?;
+    // Store the new data
+    deps.storage.set(b"persisted_data", &new_data);
+
+    Ok(Response::default())
+}
+```
+
+## Definition
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
+    Ok(Response::default())
+}
+```

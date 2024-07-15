@@ -1,3 +1,7 @@
+---
+tags: ["MultiTest"]
+---
+
 # Introduction
 
 [**CosmWasm MultiTest**](https://github.com/CosmWasm/cw-multi-test) is a suite

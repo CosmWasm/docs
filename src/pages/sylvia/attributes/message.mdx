@@ -1,0 +1,118 @@
+---
+tags: ["sylvia", "attributes"]
+---
+
+import { Callout } from "nextra/components";
+
+# `sv::messages` attribute
+
+Use `sv::messages` to expand your contract functionality with the Sylvia
+interface.
+
+<Callout>
+  The `sv::messages` attribute expects that the trait is implemented on the
+  contract type.
+</Callout>
+
+## Macros
+
+List of macros supporting the `sv::messages` attribute:
+
+- [`contract`](../macros/contract)
+- [`entry_points`](../macros/entry-points)
+
+## Usage
+
+```rust
+pub mod interface {
+    use cosmwasm_schema::cw_serde;
+    use sylvia::cw_std::{Response, StdError, StdResult};
+    use sylvia::interface;
+    use sylvia::types::{ExecCtx, QueryCtx};
+
+    #[cw_serde]
+    pub struct InterfaceQueryResp {}
+
+    #[interface]
+    pub trait Interface {
+        type Error: From<StdError>;
+
+        #[sv::msg(exec)]
+        fn interface_exec(&self, ctx: ExecCtx) -> StdResult<Response>;
+
+        #[sv::msg(query)]
+        fn interface_query(&self, ctx: QueryCtx) -> StdResult<InterfaceQueryResp>;
+    }
+}
+
+pub mod contract {
+    use cosmwasm_std::StdError;
+    use sylvia::contract;
+    use sylvia::cw_std::{Response, StdResult};
+    use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+    use crate::interface::{Interface, InterfaceQueryResp};
+
+    pub struct CounterContract;
+
+    #[cfg_attr(feature = "library", sylvia::entry_points)]
+    #[contract]
+    #[sv::messages(crate::interface)]
+    impl CounterContract {
+        pub const fn new() -> Self {
+            Self
+        }
+
+        #[sv::msg(instantiate)]
+        fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+            Ok(Response::new())
+        }
+    }
+
+    impl Interface for CounterContract {
+        type Error = StdError;
+
+        fn interface_exec(&self, ctx: ExecCtx) -> StdResult<Response> {
+            // some code
+        }
+
+        fn interface_query(&self, ctx: QueryCtx) -> StdResult<InterfaceQueryResp> {
+            // some code
+        }
+    }
+}
+```
+
+<Callout>
+  Single `sv::messages` attribute corresponds to a single interface implemented
+  on a contract. If multiple interfaces are implemented, add this attribute for
+  each of them.
+</Callout>
+
+### Module/Interface name mismatch
+
+In most cases, the only parameter the `sv::messages` expects is a path to the
+interface, in this case `crate::interface`. Sylvia macros can deduce the
+interface's name if it is simply an UpperCamelCase version of the module name.
+
+If the interface name differs from the module name, use the syntax below:
+
+```rust
+#[sv::messages(crate::interface as OtherInterface)]
+```
+
+### Custom types
+
+It's possible to implement an interface using
+[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
+instead of custom types used in the contract.
+
+In such a case, we must inform Sylvia to convert the types in the `dispatch`
+methods.
+
+```rust
+#[sv::messages(crate::interface: custom(msg, query))]
+```
+
+The order of `msg` and `query` doesn't matter, and the attribute accepts either
+`msg`, `query` or both.

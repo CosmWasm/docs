@@ -1,0 +1,75 @@
+---
+tags: ["core", "entrypoints"]
+---
+
+import { Callout } from "nextra/components";
+
+# Reply
+
+The `reply` endpoint is another special one.
+
+It relates to CosmWasm's actor model which dictates how you call other contracts
+and interact with them.
+
+<Callout>
+  If you are not familiar with the actor model, you can find out more about it
+  on [its own page].
+</Callout>
+
+This endpoint gets invoked when you receive a response to a message you sent out
+over the chain. The reply parameter then allows you to inspect and work with the
+response that was produced.
+
+## Request a reply
+
+To request a reply, you need to use the `reply_on` field in the message you send
+and set it to one of the following values:
+
+- `ReplyOn::Always`
+- `ReplyOn::Error`
+- `ReplyOn::Success`
+
+<Callout>
+  The `reply_on` value has an impact on when a transaction is cancelled. For
+  more info, check the page about [transactions].
+</Callout>
+
+```rust filename="contract.rs" template="core"
+const CONTRACT_ADDR: &str = "other_contract";
+const SUBMSG_ID: u64 = 1; // This is a unique identifier so we can associate a reply with a specific submessage. It can be any numeric value.
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn reply(deps: DepsMut, env: Env, msg: cosmwasm_std::Reply) -> StdResult<Response> {
+    if msg.id != SUBMSG_ID {
+        return Err(StdError::generic_err("Invalid submsg id"));
+    }
+
+    // We received a message! From the contract we invoked earlier.
+
+    Ok(Response::default())
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn execute(deps: DepsMut, env: Env, msg: ExecuteMsg) -> StdResult<Response> {
+    let msg = WasmMsg::Execute {
+        contract_addr: CONTRACT_ADDR.into(),
+        msg: to_json_binary(&OtherContractMsg::DoSomething {}).unwrap(),
+        funds: vec![],
+    };
+
+    let submsg = SubMsg::reply_always(msg, SUBMSG_ID);
+    Ok(Response::new().add_submessage(submsg))
+}
+```
+
+## Definition
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn reply(deps: DepsMut, env: Env, msg: cosmwasm_std::Reply) -> StdResult<Response> {
+    Ok(Response::default())
+}
+```
+
+[its own page]: ../architecture/actor-model
+[transactions]: ../architecture/transactions

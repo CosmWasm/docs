@@ -1,0 +1,584 @@
+---
+tags: ["sylvia", "macro"]
+---
+
+import { Callout, Tabs } from "nextra/components";
+
+# Generated message types
+
+Sylvia macros generate CosmWasm messages from methods marked with
+[`sv::msg`](../../attributes/msg) attributes.
+
+Messages are generated either as struct, for instantiate and migrate, or enum in
+case of the rest of the types.
+
+Each message's implementation contains a `dispatch` method. Calling the
+`msg.dispatch(...)` method on a struct message forwards the message's fields to
+the single method as arguments, i.e. structure's fields become the method's
+arguments. For the enum messages, the respective method will be called depending
+on the enum variant. This is described in the example below
+
+## Contract messages
+
+The following code:
+
+```rust
+use cosmwasm_schema::cw_serde;
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdResult};
+use sylvia::types::{ExecCtx, InstantiateCtx, MigrateCtx, QueryCtx, SudoCtx};
+
+#[cw_serde]
+pub struct SomeResponse;
+
+pub struct CounterContract;
+
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx, mutable: bool) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn some_exec(&self, ctx: ExecCtx, addr: String) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn some_query(&self, ctx: QueryCtx, addr: String) -> StdResult<SomeResponse> {
+        Ok(SomeResponse)
+    }
+
+    #[sv::msg(sudo)]
+    fn some_sudo(&self, ctx: SudoCtx, addr: String) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(migrate)]
+    fn some_migrate(&self, ctx: MigrateCtx, addr: String) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+}
+```
+
+generates the following messages for every respective
+[entrypoint](../../../core/entrypoints):
+
+<Tabs items={['InstantiateMsg', 'ExecMsg', 'QueryMsg', 'SudoMsg', 'MigrateMsg']} defaultIndex={0}>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub struct InstantiateMsg {
+        pub mutable: bool,
+    }
+    impl InstantiateMsg {
+        pub fn new(mutable: bool) -> Self {
+            Self { mutable }
+        }
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+                sylvia::cw_std::MessageInfo,
+            ),
+        ) -> StdResult<Response> {
+            let Self { mutable } = self;
+            contract
+                .instantiate(Into::into(ctx), mutable)
+                .map_err(Into::into)
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum ExecMsg {
+        SomeExec { addr: String },
+    }
+    impl ExecMsg {
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+                sylvia::cw_std::MessageInfo,
+            ),
+        ) -> std::result::Result<
+            sylvia::cw_std::Response<sylvia::cw_std::Empty>,
+            sylvia::cw_std::StdError,
+        > {
+            use ExecMsg::*;
+            match self {
+                SomeExec { addr: field1 } => contract
+                    .some_exec(Into::into(ctx), field1)
+                    .map_err(Into::into),
+            }
+        }
+        pub fn some_exec(addr: String) -> Self {
+            Self::SomeExec { addr }
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+        sylvia::cw_schema::QueryResponses,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum QueryMsg {
+        #[returns(SomeResponse)]
+        SomeQuery { addr: String },
+    }
+    impl QueryMsg {
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::Deps<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> std::result::Result<sylvia::cw_std::Binary, sylvia::cw_std::StdError> {
+            use QueryMsg::*;
+            match self {
+                SomeQuery { addr: field1 } => {
+                    sylvia::cw_std::to_json_binary(&contract.some_query(Into::into(ctx), field1)?)
+                        .map_err(Into::into)
+                }
+            }
+        }
+        pub fn some_query(addr: String) -> Self {
+            Self::SomeQuery { addr }
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum SudoMsg {
+        SomeSudo { addr: String },
+    }
+    impl SudoMsg {
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> std::result::Result<
+            sylvia::cw_std::Response<sylvia::cw_std::Empty>,
+            sylvia::cw_std::StdError,
+        > {
+            use SudoMsg::*;
+            match self {
+                SomeSudo { addr: field1 } => contract
+                    .some_sudo(Into::into(ctx), field1)
+                    .map_err(Into::into),
+            }
+        }
+        pub fn some_sudo(addr: String) -> Self {
+            Self::SomeSudo { addr }
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub struct MigrateMsg {
+        pub addr: String,
+    }
+    impl MigrateMsg {
+        pub fn new(addr: String) -> Self {
+            Self { addr }
+        }
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> StdResult<Response> {
+            let Self { addr } = self;
+            contract
+                .some_migrate(Into::into(ctx), addr)
+                .map_err(Into::into)
+        }
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+<Callout>
+  Notice that the method parameters are used as fields of appropriate messages
+  and their variants.
+</Callout>
+
+The [`contract`](../contract) macro also generates wrapper messages for exec,
+query and sudo. Their goal is to wrap respective messages, like `ExecMsg`, from
+both the contract and interfaces implemented on it, which are used as the main
+messages of the contract.
+
+<Callout>
+  Use `ContractExecMsg`/`ContractQueryMsg`/`ContractSudoMsg` in hand made entry
+  points and in
+  [`write_api!`](https://docs.rs/cosmwasm-schema/latest/cosmwasm_schema/macro.write_api.html)
+  macro.
+</Callout>
+
+<Tabs items={['ContractExecMsg', 'ContractQueryMsg', 'ContractSudoMsg']} defaultIndex={0}>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(sylvia::serde::Serialize, Clone, Debug, PartialEq, sylvia::schemars::JsonSchema)]
+    #[serde(rename_all = "snake_case", untagged)]
+    pub enum ContractExecMsg {
+        Interface(<interface::sv::Api as sylvia::types::InterfaceApi>::Exec),
+        CounterContract(ExecMsg),
+    }
+    impl ContractExecMsg {
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+                sylvia::cw_std::MessageInfo,
+            ),
+        ) -> std::result::Result<
+            sylvia::cw_std::Response<sylvia::cw_std::Empty>,
+            sylvia::cw_std::StdError,
+        > {
+            const _: () = {
+                let msgs: [&[&str]; 2usize] =
+                    [&interface::sv::execute_messages(), &execute_messages()];
+                sylvia::utils::assert_no_intersection(msgs);
+            };
+            match self {
+                ContractExecMsg::Interface(msg) => msg.dispatch(contract, Into::into(ctx)),
+                ContractExecMsg::CounterContract(msg) => msg.dispatch(contract, ctx),
+            }
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(sylvia::serde::Serialize, Clone, Debug, PartialEq, sylvia::schemars::JsonSchema)]
+    #[serde(rename_all = "snake_case", untagged)]
+    pub enum ContractQueryMsg {
+        Interface(<interface::sv::Api as sylvia::types::InterfaceApi>::Query),
+        CounterContract(QueryMsg),
+    }
+    impl ContractQueryMsg {
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::Deps<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> std::result::Result<sylvia::cw_std::Binary, sylvia::cw_std::StdError> {
+            const _: () = {
+                let msgs: [&[&str]; 2usize] = [&interface::sv::query_messages(), &query_messages()];
+                sylvia::utils::assert_no_intersection(msgs);
+            };
+            match self {
+                ContractQueryMsg::Interface(msg) => msg.dispatch(contract, Into::into(ctx)),
+                ContractQueryMsg::CounterContract(msg) => msg.dispatch(contract, ctx),
+            }
+        }
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    impl sylvia::cw_schema::QueryResponses for ContractQueryMsg {
+        fn response_schemas_impl(
+        ) -> std::collections::BTreeMap<String, sylvia::schemars::schema::RootSchema> {
+            let responses = [
+                <interface::sv::Api as sylvia::types::InterfaceApi>::Query::response_schemas_impl(),
+                QueryMsg::response_schemas_impl(),
+            ];
+            responses.into_iter().flatten().collect()
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(sylvia::serde::Serialize, Clone, Debug, PartialEq, sylvia::schemars::JsonSchema)]
+    #[serde(rename_all = "snake_case", untagged)]
+    pub enum ContractSudoMsg {
+        Interface(<interface::sv::Api as sylvia::types::InterfaceApi>::Sudo),
+        CounterContract(SudoMsg),
+    }
+    impl ContractSudoMsg {
+        pub fn dispatch(
+            self,
+            contract: &CounterContract,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> std::result::Result<
+            sylvia::cw_std::Response<sylvia::cw_std::Empty>,
+            sylvia::cw_std::StdError,
+        > {
+            const _: () = {
+                let msgs: [&[&str]; 2usize] = [&interface::sv::sudo_messages(), &sudo_messages()];
+                sylvia::utils::assert_no_intersection(msgs);
+            };
+            match self {
+                ContractSudoMsg::Interface(msg) => msg.dispatch(contract, Into::into(ctx)),
+                ContractSudoMsg::CounterContract(msg) => msg.dispatch(contract, ctx),
+            }
+        }
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+We mark the wrapper message with the
+[`serde(untagged)`](https://serde.rs/enum-representations.html#untagged)
+attribute to drop the wrapping variant names so that serialization matches one
+done for the regular CosmWasm messages.
+
+The interface variants use
+`<interface::sv::Api as sylvia::types::InterfaceApi>::Sudo`, which is an
+accessor meant to simplify the API while using generics in the
+contract/interface.
+
+Lastly, in dispatch, there is a const block. Its goal is to provide compile time
+validation that none of the messages overlap between a contract and interfaces.
+
+## Interface messages
+
+The generation done by [`interface`](../interface) macro is much simpler, as
+Sylvia generates just three types of messages.
+
+We will use the below example interface to generate the messages:
+
+```rust
+use cosmwasm_std::{Response, StdError};
+use sylvia::types::{ExecCtx, QueryCtx, SudoCtx};
+
+use sylvia::interface;
+
+use super::SomeResponse;
+
+#[interface]
+pub trait Interface {
+    type Error: From<StdError>;
+
+    #[sv::msg(exec)]
+    fn interface_exec(&self, ctx: ExecCtx, addr: String) -> Result<Response, Self::Error>;
+
+    #[sv::msg(query)]
+    fn interface_query(&self, ctx: QueryCtx, addr: String)
+        -> Result<SomeResponse, Self::Error>;
+
+    #[sv::msg(sudo)]
+    fn interface_sudo(&self, ctx: SudoCtx, addr: String) -> Result<Response, Self::Error>;
+}
+```
+
+And the three generated messages:
+
+<Tabs items={['ExecMsg', 'QueryMsg', 'SudoMsg']} defaultIndex={0}>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum InterfaceExecMsg {
+        InterfaceExec { addr: String },
+    }
+    pub type ExecMsg = InterfaceExecMsg;
+    impl InterfaceExecMsg {
+        pub fn dispatch<ContractT>(
+            self,
+            contract: &ContractT,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+                sylvia::cw_std::MessageInfo,
+            ),
+        ) -> std::result::Result<sylvia::cw_std::Response<sylvia::cw_std::Empty>, ContractT::Error>
+        where
+            ContractT: Interface,
+        {
+            use InterfaceExecMsg::*;
+            match self {
+                InterfaceExec { addr: field1 } => contract
+                    .interface_exec(Into::into(ctx), field1)
+                    .map_err(Into::into),
+            }
+        }
+        pub fn interface_exec(addr: String) -> Self {
+            Self::InterfaceExec { addr }
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+        sylvia::cw_schema::QueryResponses,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum InterfaceQueryMsg {
+        #[returns(SomeResponse)]
+        InterfaceQuery { addr: String },
+    }
+    pub type QueryMsg = InterfaceQueryMsg;
+    impl InterfaceQueryMsg {
+        pub fn dispatch<ContractT>(
+            self,
+            contract: &ContractT,
+            ctx: (
+                sylvia::cw_std::Deps<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> std::result::Result<sylvia::cw_std::Binary, ContractT::Error>
+        where
+            ContractT: Interface,
+        {
+            use InterfaceQueryMsg::*;
+            match self {
+                InterfaceQuery { addr: field1 } => sylvia::cw_std::to_json_binary(
+                    &contract.interface_query(Into::into(ctx), field1)?,
+                )
+                .map_err(Into::into),
+            }
+        }
+        pub fn interface_query(addr: String) -> Self {
+            Self::InterfaceQuery { addr }
+        }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust
+    #[allow(clippy::derive_partial_eq_without_eq)]
+    #[derive(
+        sylvia::serde::Serialize,
+        sylvia::serde::Deserialize,
+        Clone,
+        Debug,
+        PartialEq,
+        sylvia::schemars::JsonSchema,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum InterfaceSudoMsg {
+        InterfaceSudo { addr: String },
+    }
+    pub type SudoMsg = InterfaceSudoMsg;
+    impl InterfaceSudoMsg {
+        pub fn dispatch<ContractT>(
+            self,
+            contract: &ContractT,
+            ctx: (
+                sylvia::cw_std::DepsMut<sylvia::cw_std::Empty>,
+                sylvia::cw_std::Env,
+            ),
+        ) -> std::result::Result<sylvia::cw_std::Response<sylvia::cw_std::Empty>, ContractT::Error>
+        where
+            ContractT: Interface,
+        {
+            use InterfaceSudoMsg::*;
+            match self {
+                InterfaceSudo { addr: field1 } => contract
+                    .interface_sudo(Into::into(ctx), field1)
+                    .map_err(Into::into),
+            }
+        }
+        pub fn interface_sudo(addr: String) -> Self {
+            Self::InterfaceSudo { addr }
+        }
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+Although interface messages are almost the same as contract ones, some slight
+differences exist.
+
+Notice that the messages are prefixed with the interfaces name:
+`InterfaceSudoMsg`, while in case of the contract the name was just `SudoMsg`.
+This prefix is required. Otherwise, `ContractSudoMsg` variants names would
+overlap during the schema generation, and all but one would be lost. However, a
+simplified alias is generated for them, so it's possible to access them like,
+e.g., `SudoMsg`. The same rule applies to the exec and query messages.
+
+Since multiple contracts might use these messages, the `dispatch` is generic
+over the `ContractT` type implementing the interface. The error type returned in
+the `dispatch` is the associated type defined on the interface.

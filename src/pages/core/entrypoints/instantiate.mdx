@@ -5,3 +5,37 @@ tags: ["core", "entrypoints"]
 import { Callout } from "nextra/components";
 
 # Instantiate
+
+This is one of the most fundamental entrypoints. This entrypoint is called once
+during the contract lifecycle.  
+It essentially is there to initialise the state of your contract (for example,
+initialising a counter in storage, etc.).
+
+You can imagine it as the constructor of your contract.
+
+<Callout>
+    Note that this function is called for *each instance* of your contract 
+    that you decide to create, not one time ever.
+
+    To equate it to OOP, your contract is a *class*, and this is the *constructor*,
+    and you can have *multiple instances* of the same class, and the constructor
+    is called once for every one of these instances.
+
+    It is **not** a singleton.
+
+</Callout>
+
+## Definition
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn instantiate(
+    _deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    _msg: InstantiateMsg,
+) -> StdResult<Response> {
+    // TODO: Initialise storage, send out metrics, do mischief
+    Ok(Response::new())
+}
+```

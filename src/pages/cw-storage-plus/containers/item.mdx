@@ -32,6 +32,36 @@ the [`serde`] crate in order to be stored.
 - `may_load` - which will return `Ok(None)` if the `Item` is empty, and an error
   if deserialization fails.
 
+### Lifecycle example
+
+```rust template="storage"
+use cw_storage_plus::Item;
+
+// First create an item. It does not exist in storage yet.
+let value: Item<String> = Item::new("v");
+assert_eq!(value.may_load(&storage).unwrap(), None);
+
+// Save a value to storage
+let some_value = "Storage cycle".to_string();
+value.save(&mut storage, &some_value).unwrap();
+
+// Load the value from storage
+assert_eq!(value.load(&storage).unwrap(), some_value);
+
+// Update the value
+let new_value = "Update cycle".to_string();
+value.save(&mut storage, &new_value).unwrap();
+
+// Load the updated value
+assert_eq!(value.load(&storage).unwrap(), new_value);
+
+// Remove the value from storage
+value.remove(&mut storage);
+
+// Check that the value is removed
+assert!(!value.exists(&storage));
+```
+
 ## Usage examples
 
 ### Saving an admin address

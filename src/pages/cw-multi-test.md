@@ -1,5 +1,5 @@
 ---
-tags: ["MultiTest"]
+tags: ["multitest"]
 ---
 
 # Introduction
@@ -51,8 +51,8 @@ debugging smart contracts in various scenarios.
 
 Topics to cover:
 
-- ✅ [Installation](multitest/installation) (1)
-- 🚧 [Getting started](multitest/getting-started) (2)
+- ✅ [Installation](cw-multi-test/installation) (1)
+- 🚧 [Getting started](cw-multi-test/getting-started) (2)
 - [ ] ? (3)
 - [ ] ? (4)
 - [ ] ? (5)

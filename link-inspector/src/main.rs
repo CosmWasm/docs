@@ -1,13 +1,29 @@
 use anyhow::bail;
 use comrak::{nodes::NodeValue, Arena};
 use glob::glob;
+use url::Url;
+
+static EXCLUDED_HOSTS: phf::Set<&'static str> = phf::phf_set! {
+    "crates.io", // Excluded because it always returns 200 OK when requesting HTML documents, and 404 for any other type
+};
 
 fn check_link(link: &str) -> anyhow::Result<()> {
+    let url = Url::parse(link)?;
+    if EXCLUDED_HOSTS.contains(url.host_str().unwrap_or_default()) {
+        println!("⚠️ Skipping link to excluded host: {link}");
+        return Ok(());
+    }
+
     let response = ureq::get(link).call()?;
 
     if !(200..=299).contains(&response.status()) {
-        bail!("❌ Link \"{link}\" is broken (status code: {})", response.status());
+        bail!(
+            "❌ Link \"{link}\" is broken (status code: {})",
+            response.status()
+        );
     }
+
+    println!("✅ Link \"{link}\" is valid");
 
     Ok(())
 }
@@ -47,7 +63,7 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    println!("✅ All links are valid!");
+    println!("🎉 All links are valid!");
 
     Ok(())
 }

@@ -9,6 +9,8 @@ import { Callout } from "nextra/components";
 An `Item` is a container that contains a single value that is potentially stored
 in some storage identified by a unique key.
 
+<Callout>More information can be found in the [API docs].</Callout>
+
 ## Item lifecycle
 
 Just creating an `Item` does not commit anything to storage yet. In order to
@@ -118,3 +120,5 @@ counter.save(&mut storage, &total).unwrap();
 ```
 
 [`serde`]: https://serde.rs/
+[API docs]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html

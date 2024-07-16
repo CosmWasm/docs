@@ -4,15 +4,31 @@ tags: ["multitest", "features"]
 
 # Features
 
+## Functionalities
+
+| Functionality | Impl | Feature    | AppBuilder          | Description                                |
+| ------------- | ---- | ---------- | ------------------- | ------------------------------------------ |
+| Block         | YES  |            | `with_block`        | Operations on blocks.                      |
+| API           | YES  |            | `with_api`          | Access to CosmWasm API.                    |
+| Storage       | YES  |            | `with_storage`      | Access to storage.                         |
+| Bank          | YES  |            | `with_bank`         | Interactions with bank module.             |
+| Staking       | YES  | `staking`  | `with_staking`      | Interactions with staking module.          |
+| Distribution  | YES  | `staking`  | `with_distribution` | Interactions with distribution module.     |
+| Governance    | NO   |            | `with_gov`          | Interactions with governance module.       |
+| Stargate      | NO   | `stargate` | `with_stargate`     | Operations using Stargate/Any messages.    |
+| Wasm          | YES  |            | `with_wasm`         | Interactions with wasm module.             |
+| Custom        | NO   |            | `new_custom`        | Operations on custom module.               |
+| IBC           | NO   | `stargate` | `with_ibc`          | Inter-blockchain communication operations. |
+
 ## Feature flags
 
-| Feature flag   | Description                                                                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `backtrace`    | Enables `backtrace` feature in _**anyhow**_ dependency.                                                                             |
-| `staking`      | Enables `staking` feature in _**cosmwasm-std**_ dependency and enables staking module functionality in **`MultiTest`** library.     |
-| `stargate`     | Enables `stargate` feature in _**cosmwasm-std**_ dependency and enables stargate module functionality in **`MultiTest`** library.   |
-| `cosmwasm_1_1` | Enables `cosmwasm_1_1` feature in _**cosmwasm-std**_ dependency.                                                                    |
-| `cosmwasm_1_2` | Enables `cosmwasm_1_2` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_1` feature in **`MultiTest`** library. |
-| `cosmwasm_1_3` | Enables `cosmwasm_1_3` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_2` feature in **`MultiTest`** library. |
-| `cosmwasm_1_4` | Enables `cosmwasm_1_4` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_3` feature in **`MultiTest`** library. |
-| `cosmwasm_2_0` | Enables `cosmwasm_2_0` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_4` feature in **`MultiTest`** library. |
+| Feature flag   | Description                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `backtrace`    | Enables `backtrace` feature in _**anyhow**_ dependency.                                                                               |
+| `staking`      | Enables `staking` feature in _**cosmwasm-std**_ dependency and enables staking/distribution functionality in **`MultiTest`** library. |
+| `stargate`     | Enables `stargate` feature in _**cosmwasm-std**_ dependency and enables stargate/IBC functionality in **`MultiTest`** library.        |
+| `cosmwasm_1_1` | Enables `cosmwasm_1_1` feature in _**cosmwasm-std**_ dependency.                                                                      |
+| `cosmwasm_1_2` | Enables `cosmwasm_1_2` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_1` feature in **`MultiTest`** library.   |
+| `cosmwasm_1_3` | Enables `cosmwasm_1_3` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_2` feature in **`MultiTest`** library.   |
+| `cosmwasm_1_4` | Enables `cosmwasm_1_4` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_3` feature in **`MultiTest`** library.   |
+| `cosmwasm_2_0` | Enables `cosmwasm_2_0` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_4` feature in **`MultiTest`** library.   |

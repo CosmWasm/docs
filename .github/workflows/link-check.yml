@@ -1,0 +1,17 @@
+name: Check if links are valid
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  link-check:
+    name: "Check if links are valid"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Check if links are valid"
+        uses: AlexanderDokuchaev/md-dead-link-check@v0.9

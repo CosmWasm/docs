@@ -10,21 +10,22 @@ Storey is an abstraction layer that can be adapted to a binary KV store,
 providing a typed API with a number of conveniences. This abstraction layer
 lives in the [`storey`](https://docs.rs/storey/latest/storey/) crate.
 
-This abstraction layer has been integrated with the Cosmos/CosmWasm storage API.
-The integration lives in the
+There's also the integration of `storey` with the Cosmos/CosmWasm storage API.
+This integration lives in the
 [`cw-storey`](https://docs.rs/cw-storey/latest/cw_storey/) crate. Since you
 likely came here wanting to build CosmWasm contracts, this is the crate you'll
-be interacting with for basic things.
+be interacting with for fundamental things.
 
 ## Containers
 
-Storey provides some tools to build and compose ["containers"](containers). This
-section is probably the most relevant for practical contract development.
+Storey provides some tools to build and compose "containers". The
+[_Containers_](containers) section is probably the most relevant for practical
+contract development; it describes storey's built-in containers.
 
 ## Keys encoding
 
 `storey` does a lot of key management for you, and doesn't use any particular
-encoding scheme for that. The encoding scheme is a combination of:
+encoding scheme for that. The defacto encoding scheme is a combination of:
 
 - One-byte keys provided to `storey` containers
 - The particular way a given container decides to use that key - it might save

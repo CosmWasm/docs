@@ -4,4 +4,15 @@ tags: ["multitest", "features"]
 
 # Features
 
-`MultiTest`...
+## Feature flags
+
+| Feature flag   | Description                                                                                                                         |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `backtrace`    | Enables `backtrace` feature in _**anyhow**_ dependency.                                                                             |
+| `staking`      | Enables `staking` feature in _**cosmwasm-std**_ dependency and enables staking module functionality in **`MultiTest`** library.     |
+| `stargate`     | Enables `stargate` feature in _**cosmwasm-std**_ dependency and enables stargate module functionality in **`MultiTest`** library.   |
+| `cosmwasm_1_1` | Enables `cosmwasm_1_1` feature in _**cosmwasm-std**_ dependency.                                                                    |
+| `cosmwasm_1_2` | Enables `cosmwasm_1_2` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_1` feature in **`MultiTest`** library. |
+| `cosmwasm_1_3` | Enables `cosmwasm_1_3` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_2` feature in **`MultiTest`** library. |
+| `cosmwasm_1_4` | Enables `cosmwasm_1_4` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_3` feature in **`MultiTest`** library. |
+| `cosmwasm_2_0` | Enables `cosmwasm_2_0` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_4` feature in **`MultiTest`** library. |

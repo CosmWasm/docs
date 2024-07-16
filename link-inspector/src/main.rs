@@ -33,9 +33,9 @@ fn main() -> anyhow::Result<()> {
 
     let arena = Arena::new();
     let comrak_options = comrak::ComrakOptions::default();
-    let mdx_files = glob("../src/**/*.mdx")?;
+    let md_files = glob("../src/**/*.md*")?;
 
-    for entry in mdx_files {
+    for entry in md_files {
         let path = entry?;
         println!("📄 Checking file \"{}\"..", path.display());
 

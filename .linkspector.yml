@@ -1,5 +1,0 @@
-dirs:
-  - .
-files:
-  - "*.mdx"
-useGitIgnore: true

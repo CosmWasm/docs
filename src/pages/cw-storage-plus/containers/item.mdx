@@ -2,31 +2,67 @@
 tags: ["storage-plus", "containers"]
 ---
 
+import { Callout } from "nextra/components";
+
 # `Item`
 
-An `Item` is a container that stores a single value under a specific key in
-storage.
+An `Item` is a container that contains a single value that is potentially stored
+in some storage identified by a unique key.
 
-Merely constructing the `Item` object does not commit anything to storage. If an
-`Item` has never been written to before (or the value has been
-[removed](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html#method.remove)),
-it will be empty.
+<Callout>More information can be found in the [API docs].</Callout>
 
-Under the hood, values are serialized with [`serde`](https://serde.rs/) and
-[`serde_json_wasm`](https://docs.rs/serde_json_wasm/).
+## Item lifecycle
 
-Use `save` to write to an `Item`.
+Just creating an `Item` does not commit anything to storage yet. In order to
+actually store a value into a storage, you need to call the `save` method.
 
-Use `load` to read from the `Item`, producing an error if the `Item` is empty or
-if deserialization fails.
+At the moment, values are serialized to the underlying storage in the JSON
+format. Your value must implement the `Serialize` and `Deserialize` traits from
+the [`serde`] crate in order to be stored.
 
-Use `may_load` if you want to explicitly handle the possibility the `Item` is
-empty - this will produce an
-[`StdError`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdError.html)
-if deserialization fails, but produce an `Ok(None)` if it is empty.
+<Callout>
+  This is an implementation detail that may change in the future. You should
+  always use the provided API methods to interact with the storage.
+</Callout>
 
-More information can be found in the
-[API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html).
+### Loading existing values
+
+`cw-storage-plus` provides you with two functions for loading an `Item`:
+
+- `load` - which will return an error if the `Item` is empty or if
+  deserialization fails.
+- `may_load` - which will return `Ok(None)` if the `Item` is empty, and an error
+  if deserialization fails.
+
+### Lifecycle example
+
+```rust template="storage"
+use cw_storage_plus::Item;
+
+// First create an item. It does not exist in storage yet.
+let value: Item<String> = Item::new("v");
+assert_eq!(value.may_load(&storage).unwrap(), None);
+
+// Save a value to storage
+let some_value = "Storage cycle".to_string();
+value.save(&mut storage, &some_value).unwrap();
+
+// Load the value from storage
+assert_eq!(value.load(&storage).unwrap(), some_value);
+
+// Update the value
+let new_value = "Update cycle".to_string();
+value.save(&mut storage, &new_value).unwrap();
+
+// Load the updated value
+assert_eq!(value.load(&storage).unwrap(), new_value);
+
+// Remove the value from storage
+value.remove(&mut storage);
+
+// Check that the value is removed
+assert!(!value.exists(&storage));
+```
 
 ## Usage examples
 
@@ -82,3 +118,7 @@ total += 1;
 
 counter.save(&mut storage, &total).unwrap();
 ```
+
+[`serde`]: https://serde.rs/
+[API docs]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Item.html

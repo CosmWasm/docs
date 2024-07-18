@@ -26,7 +26,7 @@ To construct a container, you need to provide a single byte. This byte is used
 to distinguish between different "root" containers in the same storage space.
 
 ```rust template="storage"
-use cw_storey::containers::Item;
+use cw_storey::containers::{Item, Map};
 
 let item: Item<u32> = Item::new(0); // byte 0 is used as the namespace
 let map: Map<String, Item<u32>> = Map::new(1); // byte 1 is used as the namespace

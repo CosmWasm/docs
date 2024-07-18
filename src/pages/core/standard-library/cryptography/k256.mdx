@@ -29,9 +29,11 @@ pub fn query(
 
     // Verify the signature. On chain!
     let is_valid = deps.api.secp256k1_verify(&message_hash, &signature, &public_key)?;
-    let response = format!("{{ \"is_valid\": {is_valid} }}");
+    let response = to_json_binary(&VerifyResponse {
+        is_valid
+    })?;
 
-    Ok(QueryResponse::new(response.into_bytes()))
+    Ok(response)
 }
 ```
 
@@ -50,9 +52,10 @@ pub fn query(
 
     // Recover the public key. On chain!
     let public_key = deps.api.secp256k1_recover_pubkey(&message_hash, &signature, recovery_id)?;
-    let public_key = HexBinary::from(public_key).to_hex();
-    let response = format!("{{ \"public_key\": \"{public_key}\" }}");
+    let response = to_json_binary(&RecoveryResponse {
+        public_key: public_key.into(),
+    })?;
 
-    Ok(QueryResponse::new(response.into_bytes()))
+    Ok(response)
 }
 ```

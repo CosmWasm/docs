@@ -44,6 +44,16 @@ struct Bls12VerifyMsg {
 }
 
 #[cw_serde]
+struct RecoveryResponse {
+  public_key: HexBinary,
+}
+
+#[cw_serde]
+struct VerifyResponse {
+  is_valid: bool,
+}
+
+#[cw_serde]
 struct ExecuteMsg {}
 
 #[cw_serde]

@@ -2,6 +2,115 @@
 tags: ["storey", "containers"]
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
 
 # Containers
+
+A container is an abstraction that manages how some data should be stored and
+retrieved. Sometimes this is as simple as a single value
+([`Item`](containers/item)), sometimes there's more to it than that.
+
+For most of your needs, you can likely do what you need to with the built-in
+containers:
+
+- [`Item`](containers/item)
+- [`Map`](containers/map)
+- [`Column`](containers/column)
+
+For more advanced use cases, you can build your own containers as described in
+the [_Implementing new containers_](container-impl) section.
+
+# Namespace
+
+To construct a container, you need to provide a single byte. This byte is used
+to distinguish between different "root" containers in the same storage space.
+
+```rust template="storage"
+use cw_storey::containers::Item;
+
+let item: Item<u32> = Item::new(0); // byte 0 is used as the namespace
+let map: Map<String, Item<u32>> = Map::new(1); // byte 1 is used as the namespace
+```
+
+A container will assume it's free to save stuff under the given key (e.g. `A`),
+and any key that starts with that same byte (e.g. `A28F`). In this way, a whole
+namespace is reserved for the container.
+
+<Callout>
+An item will simply store its value under the given byte, while a map will
+store its values under keys that are prefixed with the given byte. How exactly
+the namespace is managed is up to the container implementation.
+</Callout>
+
+To avoid key collisions, you must provide a different byte to each container.
+
+# Composition
+
+Some containers can be composed together to create more complex data structures.
+Right now, the only built-in container that supports composition is the `Map`
+container.
+
+This is an alternative design largely used to achieve the same effect as
+"composite keys" in `cw-storage-plus` (think tuple keys like `(String, u32)`),
+but also make this more flexible - you can put a `Column` or any other container
+inside a `Map`!
+
+Let's compare the two approaches:
+
+<Tabs items={[`cw-storage-plus`, `storey`]} defaultIndex={0}> <Tabs.Tab>
+
+```rust template="storage"
+use cw_storage_plus::Map;
+
+let map: Map<(String, String), u32> = Map::new("m");
+
+map.save(&mut storage, ("foo".to_string(), "bar".to_string()), &42)
+    .unwrap();
+
+assert_eq!(
+    map.load(&storage, ("foo".to_string(), "bar".to_string())),
+    Ok(42)
+);
+```
+
+</Tabs.Tab> <Tabs.Tab>
+
+```rust template="storage"
+use cw_storey::containers::{Map, Item};
+use cw_storey::CwStorage;
+
+let map: Map<String, Map<String, Item<u32>>> = Map::new(0);
+
+map.access(&mut CwStorage(&mut storage))
+    .entry_mut("foo")
+    .entry_mut("bar")
+    .set(&42)
+    .unwrap();
+
+assert_eq!(
+    map.access(&CwStorage(&storage))
+        .entry("foo")
+        .entry("bar")
+        .get()
+        .unwrap(),
+    Some(42)
+);
+```
+
+</Tabs.Tab></Tabs>
+
+It's possible to define custom containers that enable composition similar to
+maps. If done properly, they can be mixed with any other containers, including
+built-in ones.
+
+# Encoding
+
+Types like `Item` or `Column` need a way to encode values in a binary store. If
+you're using the `Item` and `Column` types from `cw-storey`, the
+[MessagePack](https://msgpack.org/) format is used. This is a binary encoding
+that should generally be a storage performance improvement over JSON.
+
+If you need to use a different encoding, you can instead import the
+`Item`/`Column` type from the `storey` crate and specify an alternative
+encoding. A guide to implementing your encoding can be found in the
+[_Alternative encodings_](encodings) section.

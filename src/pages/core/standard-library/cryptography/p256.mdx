@@ -12,6 +12,48 @@ added to CosmWasm.
 
 ## Example
 
-## Signature verification
+### Signature verification
 
-<Callout>TODO: Add example as soon as secp256r1 is properly released</Callout>
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: EcdsaVerifyMsg,
+) -> StdResult<QueryResponse> {
+    let public_key = msg.public_key;
+    let signature = msg.signature;
+    let message_hash = msg.message_hash;
+
+    // Verify the signature. On chain!
+    let is_valid = deps.api.secp256r1_verify(&message_hash, &signature, &public_key)?;
+    let response = to_json_binary(&VerifyResponse {
+        is_valid
+    })?;
+
+    Ok(response)
+}
+```
+
+### Public key recovery
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: EcdsaRecoverMsg,
+) -> StdResult<QueryResponse> {
+    let signature = msg.signature;
+    let message_hash = msg.message_hash;
+    let recovery_id = msg.recovery_id;
+
+    // Recover the public key. On chain!
+    let public_key = deps.api.secp256r1_recover_pubkey(&message_hash, &signature, recovery_id)?;
+    let response = to_json_binary(&RecoveryResponse {
+        public_key: public_key.into(),
+    })?;
+
+    Ok(response)
+}
+```

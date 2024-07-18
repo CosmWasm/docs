@@ -29,9 +29,11 @@ pub fn query(
 
     // Verify the signature. On chain!
     let is_valid = deps.api.ed25519_verify(&message, &signature, &public_key)?;
-    let response = format!("{{ \"is_valid\": {is_valid} }}");
+    let response = to_json_binary(&VerifyResponse {
+        is_valid
+    })?;
 
-    Ok(QueryResponse::new(response.into_bytes()))
+    Ok(response)
 }
 ```
 

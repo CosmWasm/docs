@@ -42,6 +42,8 @@ pub fn query(
 
 ## Verify on G2
 
+Signature verification with public key in G2 (See https://hackmd.io/@benjaminion/bls12-381#Verification in combination with https://hackmd.io/@benjaminion/bls12-381#Swapping-G1-and-G2):
+
 ```rust filename="contract.rs" template="core"
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(

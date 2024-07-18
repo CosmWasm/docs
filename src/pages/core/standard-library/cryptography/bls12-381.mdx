@@ -20,6 +20,40 @@ CosmWasm offers a byte-oriented API for signature verification. This API also
 doesn't care whether the public key is part of the G1 or G2 group (same for the
 other components). They just have to somehow fit together.
 
-<Callout>TODO: Add example as soon as BLS12-381 is properly released</Callout>
+## Verify on G1
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: Bls12VerifyMsg,
+) -> StdResult<QueryResponse> {
+    // Verify the signature. On chain!
+    let msg_hash = deps.api.bls12_381_hash_to_g2(HashFunction::Sha256, &msg.msg, &msg.dst)?;
+    let is_valid = deps.api.bls12_381_pairing_equality(&BLS12_381_G1_GENERATOR, &msg.signature, &msg.pubkey, &msg_hash)?;
+    let response = format!("{{ \"is_valid\": {is_valid} }}");
+
+    Ok(QueryResponse::new(response.into_bytes()))
+}
+```
+
+## Verify on G2
+
+```rust filename="contract.rs" template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: Bls12VerifyMsg,
+) -> StdResult<QueryResponse> {
+    // Verify the signature. On chain!
+    let msg_hash = deps.api.bls12_381_hash_to_g1(HashFunction::Sha256, &msg.msg, &msg.dst)?;
+    let is_valid = deps.api.bls12_381_pairing_equality(&BLS12_381_G2_GENERATOR, &msg.signature, &msg.pubkey, &msg_hash)?;
+    let response = format!("{{ \"is_valid\": {is_valid} }}");
+
+    Ok(QueryResponse::new(response.into_bytes()))
+}
+```
 
 [drand]: https://drand.love/

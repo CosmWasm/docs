@@ -36,6 +36,14 @@ struct Ed25519VerifyMsg {
 }
 
 #[cw_serde]
+struct Bls12VerifyMsg {
+  signature: Binary,
+  pubkey: Binary,
+  msg: Binary,
+  dst: Binary,
+}
+
+#[cw_serde]
 struct ExecuteMsg {}
 
 #[cw_serde]

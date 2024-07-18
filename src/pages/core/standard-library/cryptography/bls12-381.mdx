@@ -55,7 +55,7 @@ pub fn query(
 ) -> StdResult<QueryResponse> {
     // Verify the signature. On chain!
     let msg_hash = deps.api.bls12_381_hash_to_g1(HashFunction::Sha256, &msg.msg, &msg.dst)?;
-    let is_valid = deps.api.bls12_381_pairing_equality(&msg.signature, &BLS12_381_G2_GENERATOR, &msg.pubkey, &msg_hash)?;
+    let is_valid = deps.api.bls12_381_pairing_equality(&msg.signature, &BLS12_381_G2_GENERATOR, &msg_hash, &msg.pubkey)?;
     let response = to_json_binary(&VerifyResponse {
         is_valid
     })?;

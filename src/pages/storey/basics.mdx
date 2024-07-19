@@ -5,3 +5,48 @@ tags: ["storey"]
 import { Callout } from "nextra/components";
 
 # Basics
+
+Storey is an abstraction layer that can be adapted to a binary KV store,
+providing a typed API with a number of conveniences. This abstraction layer
+lives in the [`storey`](https://docs.rs/storey/latest/storey/) crate.
+
+There's also the integration of `storey` with the Cosmos/CosmWasm storage API.
+This integration lives in the
+[`cw-storey`](https://docs.rs/cw-storey/latest/cw_storey/) crate. Since you
+likely came here wanting to build CosmWasm contracts, this is the crate you'll
+be interacting with for fundamental things.
+
+## Containers
+
+Storey provides some tools to build and compose "containers". The
+[_Containers_](containers) section is probably the most relevant for practical
+contract development; it describes storey's built-in containers.
+
+## Keys encoding
+
+`storey` does a lot of key management for you, and doesn't use any particular
+encoding scheme for that. The defacto encoding scheme is a combination of:
+
+- One-byte keys provided to `storey` containers
+- The particular way a given container decides to use that key - it might save
+  something under that key directly, and/or it might append to it. In a way, a
+  container has a whole namespace of keys carved out for it to manage.
+
+## Value encoding
+
+Storey provides the `Encoding` trait, which describes how to serialize and
+deserialize values. While for CosmWasm contracts you'll likely be using the
+default [MessagePack](https://msgpack.org) encoding, you can switch out for
+another one if you want, and you can do that granularly for each container. If
+you need to integrate some other encoding, see the
+[_Alternative encodings_](encodings) section.
+
+## Alternative backends
+
+The `storey` crate can be integrated with other storage backends. This is done
+via the
+[`StorageBackend`](https://docs.rs/storey/latest/storey/storage/trait.StorageBackend.html)
+and
+[`StorageBackendMut`](https://docs.rs/storey/latest/storey/storage/trait.StorageBackendMut.html)
+traits. The process is described in the [_Alternative backends_](backend)
+section.

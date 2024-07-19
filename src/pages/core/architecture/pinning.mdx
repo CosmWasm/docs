@@ -15,6 +15,13 @@ In contrast to the node-specific Least recently used (LRU) memory cache, pinning
 **guarantees** this performance boost across the network. As a consequence wasmd
 can charge discounted gas cost[^1].
 
+<Callout>
+  Pinning is an incredibly valuable tool for chains to optimize gas costs.
+  According to a [case study][neutron-case-study] by one of our subscribers,
+  Neutron, pinning improved the gas cost of their contracts somewhere between 15
+  and 50%!
+</Callout>
+
 ## The caches
 
 CosmWasm has 3 different caches for modules:
@@ -61,7 +68,15 @@ can all be pinned. A permissionless chain might select certain contracts of
 strategic importance and pin them.
 
 The estimated size of the pinned contracts is visible in the [Metrics] struct
-you can access through [Prometheus].
+you can access through [Prometheus]. In order to better estimate which contracts
+are worth pinning, CosmWasm also exports metrics per pinned contract.
+
+These metrics are:
+
+- The contract size
+- The number of times it was loaded from cache
+
+That way you can better estimate which contracts are worth keeping pinned.
 
 ## History
 
@@ -80,6 +95,8 @@ every block.
 [initializepinnedcodes]:
   https://github.com/CosmWasm/wasmd/blob/v0.50.0/x/wasm/keeper/keeper.go#L1011-L1028
 [Prometheus]: https://prometheus.io/
+[neutron-case-study]:
+  https://medium.com/confio/neutron-case-study-optimizing-gas-usage-with-contract-pinning-5970a109c706
 
 [^1]: https://github.com/CosmWasm/wasmd/pull/1799
 [^2]: https://github.com/CosmWasm/cosmwasm/issues/2034

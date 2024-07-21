@@ -162,6 +162,7 @@ events to ease in debugging a deployed instance of a contract.
 ```rust template="storage"
 use cw_storage_plus::Deque;
 use serde::{Serialize, Deserialize};
+use cosmwasm_std::testing::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 struct Log {

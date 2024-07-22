@@ -93,10 +93,10 @@ pub trait Interface {
 
 ## Generic types
 
-`interface` macro does not support generics. Instead you can provide generic
-functionality using the associated types. It's because Sylvia interfaces can be
-implemented only a once per contract, and in such a case associated types are
-semantically correct in Rust.
+The `interface` macro does not support generics. Instead, you can provide
+generic functionality using the associated types. It's because Sylvia interfaces
+can be implemented only once per contract, and in such a case, associated types
+are semantically correct in Rust.
 
 ```rust
 #[interface]

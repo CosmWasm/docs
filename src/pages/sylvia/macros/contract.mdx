@@ -143,3 +143,34 @@ to mention are:
 - If generic types are used as part of the method signature, generated messages
   will require them to fulfill their trait bounds. In most cases it's enough to
   add the `sylvia::types::CustomMsg + \'static` bounds.
+
+## Good practices
+
+### Prefer generic custom types
+
+Although the [`sv::custom`](../attributes/custom) attribute is not mandatory, as
+by default [`contract`](../contract) macro will use
+[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
+type in place of custom types; we recommend that if your contract is meant to be
+chain agnostic, define it with a generic custom message and custom query.
+
+Adding custom generic types will help other developers to use your contract in
+their tests. The
+[`cw_multi_test::App`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html)
+is generic over the custom types, and although in a real blockchain environment
+we would be able to use the contract with custom types not set next to the
+contract with custom types set, Rust type safety does not allow that.
+
+```rust
+pub struct Contract<CMsgT, CQueryT> {
+    ...
+}
+
+#[contract]
+#[sv::custom(msg=CMsgT, query=CQueryT)]
+impl<CMsgT, CQueryT> Contract<CMsgT, CQueryT>
+where
+    CMsgT: 'static + CustomMsg,
+    CQueryT: 'static + CustomQuery,
+{}
+```

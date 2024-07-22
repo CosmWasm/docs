@@ -190,9 +190,7 @@ message.
   sender of the packet.
 </Callout>
 
-{/* TODO: add `template="core"` once async acks are merged */}
-
-```rust filename="ibc.rs"
+```rust filename="ibc.rs" template="core"
 use cw_storage_plus::Map;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -229,7 +227,7 @@ pub fn async_ack(
     Ok(Response::new().add_message(IbcMsg::WriteAcknowledgement {
         packet_sequence,
         channel_id,
-        data: StdAck::success(ack_str.as_bytes()).into(),
+        ack: IbcAcknowledgement::new(StdAck::success(ack_str.as_bytes())),
     }))
 }
 

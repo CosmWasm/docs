@@ -5,19 +5,19 @@
 ### Upload code
 
 You can upload your contract by running the following command. In this example
-we are uploading the `hackatom.wasm` contract.
+we upload the `hackatom.wasm` contract.
 
 ```sh
-wasmd tx wasm store "$DIR/../../../x/wasm/keeper/testdata/hackatom.wasm" \
-  --from validator \
-  --chain-id=testing \
-  --keyring-backend=test
-```
+RESP=$(wasmd tx wasm store "./x/wasm/keeper/testdata/hackatom.wasm" \
+  --from alice \
+  --gas 1500000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -o json \
+  --keyring-backend=test)
 
-You can retrieve the code_id for the uploaded contract with the following
-command:
+sleep 6
 
-```sh
 RESP=$(wasmd q tx $(echo "$RESP"| jq -r '.txhash') -o json)
 CODE_ID=$(echo "$RESP" | jq -r '.events[]| select(.type=="store_code").attributes[]| select(.key=="code_id").value')
 
@@ -27,22 +27,28 @@ echo "* Code id: $CODE_ID"
 
 ### Create a new contract instance
 
-You can instantiate the code uploaded in the previous step with th efollowing
+You can instantiate the code uploaded in the previous step with the following
 command:
 
 ```sh
-wasmd tx wasm instantiate "$CODE_ID" "{}" \
-  --from validator \
-  --no-admin \
+ALICE_ADDR=$(wasmd keys show alice -a --keyring-backend=test)
+BOB_ADDR=$(wasmd keys show bob -a --keyring-backend=test)
+INIT="{\"verifier\":\"$ALICE_ADDR\", \"beneficiary\":\"$BOB_ADDR\"}"
+
+RESP=$(wasmd tx wasm instantiate "$CODE_ID" "$INIT" \
+  --admin="$ALICE_ADDR" \
+  --from alice \
+  --amount="100stake" \
   --label "local0.1.0" \
-  --chain-id=testing \
-   --keyring-backend=test
-```
+  --gas 1000000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -b sync \
+  -o json \
+  --keyring-backend=test)
 
-You can retrieve the contract address for the instantated code with the
-following command:
+sleep 6
 
-```sh
 CONTRACT=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.contracts[-1]')
 
 # Print contract address
@@ -52,18 +58,21 @@ echo "* Contract address: $CONTRACT"
 ### Create a new contract instance with predictable address
 
 ```sh
-wasmd tx wasm instantiate2 "$CODE_ID" "{}" 10 \
-  --from validator \
-  --no-admin \
+RESP=$(wasmd tx wasm instantiate2 "$CODE_ID" "$INIT" 10 \
+  --admin="$ALICE_ADDR" \
+  --from alice \
+  --amount="100stake" \
   --label "local0.1.0" \
-  --chain-id=testing \
-  --keyring-backend=test
-```
+  --fix-msg \
+  --gas 1000000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -b sync \
+  -o json \
+  --keyring-backend=test)
 
-You can retrieve the contract address for the instantated code with the
-following command:
+sleep 6
 
-```sh
 CONTRACT_PREDICTABLE=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.contracts[-1]')
 
 # Print contract address
@@ -75,20 +84,60 @@ echo "* Contract address: $CONTRACT_PREDICTABLE"
 To execute a command on a wasm contract you can run the following commands:
 
 ```sh
-# Define message
+echo "## Execute contract $CONTRACT"
+
 MSG='{"release":{}}'
 
-# Execute message
-wasmd tx wasm execute "$CONTRACT" "$MSG" \
-  --from validator \
-  --chain-id=testing \
-  --keyring-backend=test
+RESP=$(wasmd tx wasm execute "$CONTRACT" "$MSG" \
+  --from alice \
+  --gas 1000000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -b sync \
+  -o json \
+  --keyring-backend=test)
+
+sleep 6
+
+wasmd q tx $(echo "$RESP"| jq -r '.txhash') -o json | jq
 ```
 
 ### Migrate a wasm contract to a new code version
 
 ```sh
-wasmd start
+echo "## Migrate contract"
+echo "### Upload new code"
+
+RESP=$(wasmd tx wasm store "./x/wasm/keeper/testdata/burner.wasm" \
+  --from alice \
+  --gas 1100000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  --node=http://localhost:26657 \
+  -b sync \
+  -o json \
+  --keyring-backend=test)
+
+sleep 6
+
+RESP=$(wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json)
+BURNER_CODE_ID=$(echo "$RESP" | jq -r '.events[] | select(.type=="store_code").attributes[] | select(.key=="code_id").value')
+
+echo "### Migrate to code id: $BURNER_CODE_ID"
+
+DEST_ACCOUNT=$(wasmd keys show bob -a --keyring-backend=test)
+
+RESP=$(wasmd tx wasm migrate "$CONTRACT" "$BURNER_CODE_ID" "{\"payout\": \"$DEST_ACCOUNT\"}" \
+  --from alice \
+  --chain-id=docs-chain-1 \
+  -b sync \
+  -y \
+  -o json \
+  --keyring-backend=test)
+
+sleep 6
+
+wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json | jq
 ```
 
 ### Submit proposal

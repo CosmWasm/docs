@@ -9,16 +9,15 @@ we provide a script to do it quickly.
 Run the following script
 
 ```sh
-#init chain
-wasmd init --chain-id "CHAIN_ID" "MONIKER"
+wasmd init demo --chain-id=docs-chain-1
 
-# add a new key
 wasmd keys add alice --keyring-backend=test
+wasmd keys add bob --keyring-backend=test
 
-# add an account
-wasmd genesis add-genesis-account validator "1000000000000$STAKE,1000000000000$FEE" --keyring-backend=test
+wasmd genesis add-genesis-account alice "1000000000000stake" --keyring-backend=test
+wasmd genesis add-genesis-account bob "1000000000000stake" --keyring-backend=test
 
-wasmd genesis gentx validator "250000000$STAKE" --chain-id="$CHAIN_ID" --amount="250000000$STAKE" --keyring-backend=test
+wasmd genesis gentx alice "250000000stake" --chain-id=docs-chain-1 --amount="250000000stake" --keyring-backend=test
 
 wasmd genesis collect-gentxs
 ```

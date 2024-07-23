@@ -13,11 +13,12 @@ strum = { version = "0.26.2", features = ["derive"] }
 
 [dev-dependencies]
 cw2 = "*"
-cw-storage-plus = { version = "*", features = ["macro"]}
+cw-storage-plus = { version = "*", features = ["macro"] }
 cosmwasm-schema = "*"
-cosmwasm-std = { version = "*", features = ["stargate", "staking", "cosmwasm_2_0"] }
+cosmwasm-std = { version = "*", features = ["stargate", "staking", "cosmwasm_2_1"] }
 sha2 = "0.10.8"
 cosmos-sdk-proto = { version = "0.21.1", default-features = false }                  # Used in IBC code
+ibc = "0.53.0"                                                                       # Used in IBC code
 serde = "*"
 cw-storey = "*"
-schemars = "0.8.21" # Used in entrypoint example
+schemars = "0.8.21"                                                                  # Used in entrypoint example

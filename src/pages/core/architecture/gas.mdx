@@ -30,14 +30,14 @@ In order to meet this target, we execute Argon2 in a test contract ([#1120]).
 This is a CPU and memory intense job that does not call out into the host. At a
 constant gas cost per operation of 1 (pre CosmWasm 1.0), this consumed 96837752
 gas and took 15ms on our CI system. The ideal cost per operation for this system
-is `10**12 / (96837752 / (15 / 1000))`: 154. This is rounded to 150 for
+is `10^12 / (96837752 / (15 / 1000))`: 154. This is rounded to 150 for
 simplicity.
 
 CosmWasm 2.1 update: All gas values were re-evaluated and adjusted to meet the 1
 Teragas/second target mentioned above. A rerun of the Argon2 test contract
 consumed 5270718300 gas with the previous cost of 150, so the operation count
 was `5270718300 / 150 = 35138122`. This took 6ms on our benchmark server, so the
-new cost per operation is `10**12 / (35138122 / (6 / 1000))`: 171. This is
+new cost per operation is `10^12 / (35138122 / (6 / 1000))`: 171. This is
 rounded to 170 for simplicity.
 
 Benchmarking system:
@@ -74,9 +74,9 @@ other implementations don't support integers, and convert them to IEEE-754
 doubles, which has a safe integer range up to about 53 bit (e.g. JavaScript and
 jq).
 
-<sup>1</sup> `(2**64-1) / 10**12`
+<sup>1</sup> `(2^64-1) / 10^12`
 
-<sup>2</sup> `((2**64-1)/30) / 10**12`
+<sup>2</sup> `((2^64-1)/30) / 10^12`
 
 <details>
 

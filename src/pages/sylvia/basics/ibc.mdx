@@ -1,0 +1,25 @@
+---
+tags: ["sylvia", "ibc"]
+---
+
+import { Callout } from "nextra/components";
+
+# IBC
+
+Although Sylvia does not generate any [IBC](../../ibc) related code you can
+define your own [IBC entry points](../../ibc/diy-protocol#Entrypoints) like you
+would in the case of a regular CosmWasm contract.
+
+To access the state, create an instance of the contract like so:
+
+```rust
+let contract = Contract::new();
+
+contract.your_state.load(deps.storage);
+```
+
+or if you decide to define the logic inside the contract or a trait:
+
+```rust
+Contract::new().your_method(deps, env, param1, ..);
+```

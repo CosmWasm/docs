@@ -10,16 +10,87 @@ Sylvia doesn't generate any [IBC](../../ibc) related code, but you can define
 your own [IBC entry points](../../ibc/diy-protocol#Entrypoints) like you would
 in the case of a regular CosmWasm contract.
 
-To access the state, create an instance of the contract like so:
+To access the state in a function, create an instance of the contract like so:
 
 ```rust
-let contract = Contract::new();
+fn on_ibc_channel_open(...) {
+    let contract = Contract::new();
 
-contract.your_state.load(deps.storage);
+    contract.your_state.load(deps.storage);
+}
 ```
 
-or if you decide to define the logic inside the contract or a trait:
+You could also want to define the logic inside the contract:
 
-```rust
-Contract::new().your_method(deps, env, param1, ..);
+```rust {14-23, 32}
+pub struct IbcContract;
+
+#[contract]
+impl IbcContract {
+    pub fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, _ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    pub fn ibc_channel_open(
+        &self,
+        deps: DepsMut,
+        env: Env,
+        msg: IbcChannelOpenMsg,
+    ) -> StdResult<IbcChannelOpenResponse> {
+        // Your logic here
+    }
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_channel_open(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelOpenMsg,
+) -> StdResult<IbcChannelOpenResponse> {
+    IbcContract::new().ibc_channel_open(deps, env, msg)
+}
+```
+
+or inside a trait:
+
+<Callout>
+  Do not use the [`interface`](../macros/interface) macro on this trait.
+</Callout>
+
+```rust {7, 10-11, 19-20}
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_channel_open(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcChannelOpenMsg,
+) -> StdResult<IbcChannelOpenResponse> {
+    IbcContract::new().ibc_channel_open(deps, env, msg)
+}
+
+pub struct IbcContract;
+
+pub trait Ibc {
+    fn ibc_channel_open(
+        &self,
+        deps: DepsMut,
+        env: Env,
+        msg: IbcChannelOpenMsg,
+    ) -> StdResult<IbcChannelOpenResponse>;
+}
+
+impl Ibc for IbcContract {
+    fn ibc_channel_open(
+        &self,
+        deps: DepsMut,
+        env: Env,
+        msg: IbcChannelOpenMsg,
+    ) -> StdResult<IbcChannelOpenResponse> {
+        // Your logic here
+    }
+}
 ```

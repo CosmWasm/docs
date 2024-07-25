@@ -1,6 +1,6 @@
 # Interact via the CLI
 
-## Tx commands
+## Upload
 
 ### Upload code
 
@@ -24,6 +24,42 @@ CODE_ID=$(echo "$RESP" | jq -r '.events[]| select(.type=="store_code").attribute
 # Print code id
 echo "* Code id: $CODE_ID"
 ```
+
+### Query code id metadata
+
+```sh
+wasmd q wasm code-info $CODE_ID -o json | jq
+```
+
+Output:
+
+```json
+{
+  "code_id": "1",
+  "creator": "wasm1zxevglcy90hq49x8vvdckfrgd9ffndxf70ut0z",
+  "data_hash": "3F4CD47C39C57FE1733FB41ED176EEBD9D5C67BAF5DF8A1EEDA1455E758F8514",
+  "instantiate_permission": {
+    "permission": "Everybody",
+    "addresses": []
+  }
+}
+```
+
+- Code ID: This is the reference to the stored WASM code
+- Creator: This is the address of the account that uploaded the code
+- Data hash: This is the checksum of the stored WASM code
+- Instantiate permission: This is the instantiate permission config. It is
+  optional and default value is `Everybody`
+
+### Download code
+
+You can download the code by running the following command:
+
+```sh
+wasmd q wasm code $CODE_ID downloaded_code.wasm
+```
+
+## Instantiation
 
 ### Create a new contract instance
 
@@ -55,6 +91,42 @@ CONTRACT=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.c
 echo "* Contract address: $CONTRACT"
 ```
 
+### Query contract metadata
+
+```sh
+wasmd q wasm contract $CONTRACT -o json | jq
+```
+
+Output:
+
+```json
+{
+  "address": "wasm14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0phg4d",
+  "contract_info": {
+    "code_id": "1",
+    "creator": "wasm1zxevglcy90hq49x8vvdckfrgd9ffndxf70ut0z",
+    "admin": "wasm1zxevglcy90hq49x8vvdckfrgd9ffndxf70ut0z",
+    "label": "local0.1.0",
+    "created": {
+      "block_height": "787",
+      "tx_index": "0"
+    },
+    "ibc_port_id": "",
+    "extension": null
+  }
+}
+```
+
+- Address: This is the address of the contract
+- Code ID: This is the reference to the stored Wasm code
+- Creator: This is the address who initially instantiated the contract
+- Admin: This is the address who can execute migrations. It is optional
+- Label: This is an optional field to give a label to the contract
+- Created: This is the Tx position when the contract was instantiated
+- IBC Port ID: This is the Port ID for [IBC](../../ibc.mdx)
+- Extention: This is is an extension point to store custom metadata within the
+  persistence model
+
 ### Create a new contract instance with predictable address
 
 ```sh
@@ -76,8 +148,28 @@ sleep 6
 CONTRACT_PREDICTABLE=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.contracts[-1]')
 
 # Print contract address
-echo "* Contract address: $CONTRACT_PREDICTABLE"
+echo "* Predictable contract address: $CONTRACT_PREDICTABLE"
 ```
+
+### Query contracts by code id
+
+You can get a list of contracts instantiated from a specific Code ID, by running
+the following command:
+
+```sh
+wasmd q wasm list-contract-by-code $CODE_ID
+```
+
+### Query contracts by creator
+
+You can get a list of contracts instantiated from a specific creator, by running
+the following command:
+
+```sh
+wasmd q wasm list-contracts-by-creator $ALICE_ADDR
+```
+
+## Execution
 
 ### Execute a command on a wasm contract
 
@@ -101,6 +193,14 @@ sleep 6
 
 wasmd q tx $(echo "$RESP"| jq -r '.txhash') -o json | jq
 ```
+
+### Query contract state
+
+```sh
+wasmd query wasm contract-state all "$CONTRACT" -o json | jq -r '.models[0].value' | base64 -d | jq
+```
+
+## Migration
 
 ### Migrate a wasm contract to a new code version
 
@@ -140,124 +240,84 @@ sleep 6
 wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json | jq
 ```
 
-### Submit proposal
+### Query contract history
+
+You can query the history entries for a contract by running the following
+command:
 
 ```sh
-wasmd start
+wasmd q wasm contract-history $CONTRACT -o json | jq
 ```
 
-### Update instantiate config
+Output:
 
-```sh
-wasmd start
-```
-
-### Set contract label
-
-```sh
-wasmd start
+```json
+{
+  "entries": [
+    {
+      "operation": "CONTRACT_CODE_HISTORY_OPERATION_TYPE_INIT",
+      "code_id": "1",
+      "updated": {
+        "block_height": "787",
+        "tx_index": "0"
+      },
+      "msg": {
+        "verifier": "wasm1zxevglcy90hq49x8vvdckfrgd9ffndxf70ut0z",
+        "beneficiary": "wasm1xxt02kmatpk5gwhmkrnpql02mfe0h4zcqvqeg0"
+      }
+    },
+    {
+      "operation": "CONTRACT_CODE_HISTORY_OPERATION_TYPE_MIGRATE",
+      "code_id": "2",
+      "updated": {
+        "block_height": "1718",
+        "tx_index": "0"
+      },
+      "msg": {
+        "payout": "wasm1xxt02kmatpk5gwhmkrnpql02mfe0h4zcqvqeg0"
+      }
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "0"
+  }
+}
 ```
 
 ### Set contract admin
 
+The admin is the only address that can migrate a contract. The admin can be
+updated by the current admin with the following command. In this case, the admin
+is updated from Alice's address to Bob's address.
+
 ```sh
-wasmd start
+wasmd tx wasm set-contract-admin \
+  "$CONTRACT" \
+  "$BOB_ADDR" \
+  --from alice \
+  --keyring-backend=test \
+  --chain-id=docs-chain-1 \
+  -y
 ```
 
 ### Clear contract admin
 
-```sh
-wasmd start
-```
-
-### Clear contract admin
+You can clear the admin address from a contract. This action prevents any
+further migration.
 
 ```sh
-wasmd start
+wasmd tx wasm clear-contract-admin \
+  "$CONTRACT" \
+  --from alice \
+  --keyring-backend=test \
+  --chain-id=docs-chain-1 \
+  -y
 ```
 
-### Grant code upload permissions
+---
 
-```sh
-wasmd start
-```
-
-### Grant contract execute permissions
-
-```sh
-wasmd start
-```
-
-### Grant contract migrate permissions
-
-```sh
-wasmd start
-```
-
-## Query commands
-
-### Query wasm bytecode
-
-```sh
-wasmd start
-```
-
-### Query code id metadata
-
-```sh
-wasmd start
-```
-
-### Query contract metadata
-
-```sh
-wasmd start
-```
-
-### Query contract history
-
-```sh
-wasmd start
-```
-
-### Query contract state
-
-```sh
-wasmd start
-```
-
-### Query libwasmvm version
-
-```sh
-wasmd start
-```
-
-### Query codes
-
-```sh
-wasmd start
-```
-
-### Query contracts by code id
-
-```sh
-wasmd start
-```
-
-### Query contracts by creator
-
-```sh
-wasmd start
-```
-
-### Query parameters
-
-```sh
-wasmd start
-```
-
-### Query pinned contracts
-
-```sh
-wasmd start
-```
+> Proposals Submit proposal Query pinned contracts Permissions Grant code upload
+> permissions Grant contract execute permissions Grant contract migrate
+> permissions Chain permissions Query parameters Update instantiate config Other
+> Query commands Query libwasmvm version

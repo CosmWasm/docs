@@ -24,7 +24,9 @@ We can send messages from Sylvia as we would from any CosmWasm contract.
 Execute messages in Sylvia return the
 [`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html)
 on which we can call the
-[`add_message`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.add_message).
+[`add_message`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.add_message)
+or
+[`add_messages](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.add_messages).
 
 ```rust
 #[sv::msg(exec)]
@@ -57,7 +59,8 @@ fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
 ```
 
 As you see, we can send messages from the Sylvia contract as we would in case of
-a CosmWasm contract.
+a CosmWasm contract. You can check generated messages
+[here](../macros/generated-types/message-types).
 
 Although we could send messages to Sylvia contract in the same way, we recommend
 using the [`ExecutorBuilder`](../types/communication#executorbuilder) and
@@ -123,5 +126,6 @@ let cosmwasm_contract = app
 ```
 
 After that testing will be the same as with any CosmWasm and Sylvia contract.
-Check documentation about testing Sylvia's contract [`here`](../types/multitest)
-and about testing CosmWasm contracts [`here`](../../cw-multi-test).
+Check out the documentation about testing Sylvia's contract
+[`here`](../types/multitest) and about testing CosmWasm contracts
+[`here`](../../cw-multi-test).

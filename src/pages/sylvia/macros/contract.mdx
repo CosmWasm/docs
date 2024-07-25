@@ -143,3 +143,32 @@ to mention are:
 - If generic types are used as part of the method signature, generated messages
   will require them to fulfill their trait bounds. In most cases it's enough to
   add the `sylvia::types::CustomMsg + \'static` bounds.
+
+## Good practices
+
+### Prefer generic custom types
+
+The [`sv::custom`](../attributes/custom) attribute is not mandatory, as by
+default contract macro will use
+[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
+type in place of custom types. It has a downside that the contract always
+expects the
+[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
+custom messages, and it makes testing it in the [MultiTest](../../cw-multi-test)
+environment with different custom messages tricky. We recommend that if your
+contract is meant to be chain agnostic, define it with a generic custom message
+and custom query.
+
+```rust
+pub struct Contract<CMsgT, CQueryT> {
+    ...
+}
+
+#[contract]
+#[sv::custom(msg=CMsgT, query=CQueryT)]
+impl<CMsgT, CQueryT> Contract<CMsgT, CQueryT>
+where
+    CMsgT: 'static + CustomMsg,
+    CQueryT: 'static + CustomQuery,
+{}
+```

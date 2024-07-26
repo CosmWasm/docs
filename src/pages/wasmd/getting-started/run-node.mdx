@@ -1,30 +1,43 @@
+import { Callout } from "nextra/components";
+
 # Run A Node
 
-To review all the details on how to run a node, visit
+For detailed instructions on running a node, please refer to
 [this tutorial](https://tutorials.cosmos.network/tutorials/3-run-node/). Below,
-we provide a script to do it quickly.
+we provide a quick setup script to get your node up and running.
+
+<Callout type="warning">
+  Make sure to remove the `.wasmd` folder before starting this setup. The
+  `.wasmd` folder is usually located in your home directory and contains all the
+  data related to the chain. Leaving it might cause conflicts or errors.
+</Callout>
 
 ## Setup Node
 
-Run the following script
+Run the following script to initialize and configure your node:
 
 ```sh
+# Initialize the node with a moniker (name) and a specific chain ID
 wasmd init demo --chain-id=docs-chain-1
 
+# Add key pairs for alice and bob accounts
 wasmd keys add alice --keyring-backend=test
 wasmd keys add bob --keyring-backend=test
 
+# Add genesis accounts with initial balances
 wasmd genesis add-genesis-account alice "1000000000000stake" --keyring-backend=test
 wasmd genesis add-genesis-account bob "1000000000000stake" --keyring-backend=test
 
+# Create a genesis transaction for the alice account, making alice a validator
 wasmd genesis gentx alice "250000000stake" --chain-id=docs-chain-1 --amount="250000000stake" --keyring-backend=test
 
+# Collect genesis transactions to finalize the genesis file
 wasmd genesis collect-gentxs
 ```
 
 ## Start node
 
-To start the node run:
+To start the node, run the following command:
 
 ```sh
 wasmd start

@@ -2,12 +2,105 @@
 
 ## Upload
 
+In this section, you will upload a WASM contract to the blockchain. This
+involves using the `wasmd tx wasm store` command to upload the contract file,
+and then querying the blockchain to obtain the unique code ID for the uploaded
+contract.
+
 ### Upload code
 
-You can upload your contract by running the following command. In this example
-we upload the `hackatom.wasm` contract.
+You can upload your contract by running the command: `wasmd tx wasm store`. In
+the following example, we upload the `hackatom.wasm` contract:
 
 ```sh
+wasmd tx wasm store "./x/wasm/keeper/testdata/hackatom.wasm" \
+  --from alice \
+  --gas 1500000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -o json \
+  --keyring-backend=test
+```
+
+- `./x/wasm/keeper/testdata/hackatom.wasm` is the path to the WASM file to
+  upload
+- `--from alice` specifies the sender's account, in this case, `alice`
+- `--gas 1500000` sets the gas limit for the transaction
+- `-y` automatically accepts the transaction
+- `--chain-id=docs-chain-1` specifies the chain ID of the blockchain
+- `-o json` outputs the result in JSON format
+- `--keyring-backend=test` specifies the keyring backend to use
+
+The output looks like:
+
+```json
+{
+  "height": "0",
+  "txhash": "57514909E7654EE7A1F90036ABDBDFF0B411C43ECC32315CD7759894337B6C4F",
+  "codespace": "",
+  "code": 0,
+  "data": "",
+  "raw_log": "",
+  "logs": [],
+  "info": "",
+  "gas_wanted": "0",
+  "gas_used": "0",
+  "tx": null,
+  "timestamp": "",
+  "events": []
+}
+```
+
+From this output, we can get the transaction hash `txhash`. Using this hash, we
+can fetch the code ID.
+
+```sh
+wasmd q tx 2C19314D369E7EF3C77CBD1B33E02DB0401619B5C8E1B1E5BD15AB46C3704E96 -o json
+```
+
+Output:
+
+```json
+{
+  ...
+  "events": [
+    ...
+    {
+      "type": "store_code",
+      "attributes": [
+        {
+          "key": "code_checksum",
+          "value": "3f4cd47c39c57fe1733fb41ed176eebd9d5c67baf5df8a1eeda1455e758f8514",
+          "index": true
+        },
+        {
+          "key": "code_id",
+          "value": "1",
+          "index": true
+        },
+        {
+          "key": "msg_index",
+          "value": "0",
+          "index": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+Inside the `store_code` event, you can find the `code_id`. To extract it, you
+can use the following command:
+
+```sh
+RESP=$(wasmd q tx 2C19314D369E7EF3C77CBD1B33E02DB0401619B5C8E1B1E5BD15AB46C3704E96 -o json)
+echo "$RESP" | jq -r '.events[]| select(.type=="store_code").attributes[]| select(.key=="code_id").value'
+```
+
+Below is the full script that uploads the code and fetches the code ID:
+
+```sh
+# Upload the contract
 RESP=$(wasmd tx wasm store "./x/wasm/keeper/testdata/hackatom.wasm" \
   --from alice \
   --gas 1500000 \
@@ -16,19 +109,25 @@ RESP=$(wasmd tx wasm store "./x/wasm/keeper/testdata/hackatom.wasm" \
   -o json \
   --keyring-backend=test)
 
+# Wait for the transaction to be processed
 sleep 6
 
+# Fetch the transaction details
 RESP=$(wasmd q tx $(echo "$RESP"| jq -r '.txhash') -o json)
+
+# Extract the code ID
 CODE_ID=$(echo "$RESP" | jq -r '.events[]| select(.type=="store_code").attributes[]| select(.key=="code_id").value')
 
 # Print code id
 echo "* Code id: $CODE_ID"
 ```
 
-### Query code id metadata
+### Query Code ID Metadata
+
+To query the metadata of a specific code ID, use the following command:
 
 ```sh
-wasmd q wasm code-info $CODE_ID -o json | jq
+wasmd q wasm code-info $CODE_ID -o json
 ```
 
 Output:
@@ -47,30 +146,106 @@ Output:
 
 - Code ID: This is the reference to the stored WASM code
 - Creator: This is the address of the account that uploaded the code
-- Data hash: This is the checksum of the stored WASM code
-- Instantiate permission: This is the instantiate permission config. It is
-  optional and default value is `Everybody`
+- Data Hash: This is the checksum of the stored WASM code
+- Instantiate Permission: This is the instantiate permission configuration. It
+  is optional, and the default value is `Everybody`, which means everybody can
+  create an instance of the uploaded WASM code
 
 ### Download code
 
-You can download the code by running the following command:
+You can download the code associated with a specific code ID by running the
+following command:
 
 ```sh
 wasmd q wasm code $CODE_ID downloaded_code.wasm
 ```
 
+This command retrieves the WASM code from the blockchain and saves it to a file
+named `downloaded_code.wasm`.
+
 ## Instantiation
+
+In this section, you will create a new instance of the uploaded WASM contract.
+This involves using the `wasmd tx wasm instantiate` command to instantiate the
+contract, and then querying the blockchain to obtain the contract's address.
 
 ### Create a new contract instance
 
-You can instantiate the code uploaded in the previous step with the following
-command:
+First, set up the addresses for the accounts involved in the contract using
+`wasmd keys show` command:
 
 ```sh
+# Retrieve the address of Alice's account
+ALICE_ADDR=$(wasmd keys show alice -a --keyring-backend=test)
+
+# Retrieve the address of Bob's account
+BOB_ADDR=$(wasmd keys show bob -a --keyring-backend=test)
+
+# Define init parameters fo the contract
+INIT="{\"verifier\":\"$ALICE_ADDR\", \"beneficiary\":\"$BOB_ADDR\"}"
+```
+
+Run the following command to instantiate the contract:
+
+```sh
+wasmd tx wasm instantiate "$CODE_ID" "$INIT" \
+  --admin="$ALICE_ADDR" \
+  --from alice \
+  --amount="100stake" \
+  --label "local0.1.0" \
+  --gas 1000000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -o json \
+  --keyring-backend=test
+```
+
+- `wasmd tx wasm instantiate "$CODE_ID" "$INIT"` instantiates the contract using
+  the specified code ID and initial parameters
+- `--admin="$ALICE_ADDR"` specifies Alice as the admin who can later update the
+  contract
+- `--from alice` specifies Alice as the sender of the transaction
+- `--amount="100stake"`: Sends `100 stake` to the contract upon instantiation
+- `--label "local0.1.0"` assigns a label to this contract instance for easy
+  identification
+- `--gas 1000000` sets the gas limit for the transaction
+- `-y` automatically accepts the transaction without prompting for confirmation
+- `--chain-id=docs-chain-1` specifies the chain ID of the blockchain
+- `-o json` outputs the result in JSON format
+- `--keyring-backend=test` specifies the keyring backend to use
+
+### Query the Contract Address
+
+To retrieve the address of the newly instantiated contract you can use
+`wasmd query wasm list-contract-by-code` command:
+
+```sh
+wasmd query wasm list-contract-by-code "$CODE_ID" -o json
+```
+
+The output lists all contracts instantiated from the specified code ID:
+
+```json
+{
+  "contracts": [
+    "wasm1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrss5maay"
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "0"
+  }
+}
+```
+
+Below is the full script that combines all the steps:
+
+```sh
+# Set up addresses
 ALICE_ADDR=$(wasmd keys show alice -a --keyring-backend=test)
 BOB_ADDR=$(wasmd keys show bob -a --keyring-backend=test)
 INIT="{\"verifier\":\"$ALICE_ADDR\", \"beneficiary\":\"$BOB_ADDR\"}"
 
+# Instantiate the contract
 RESP=$(wasmd tx wasm instantiate "$CODE_ID" "$INIT" \
   --admin="$ALICE_ADDR" \
   --from alice \
@@ -79,22 +254,25 @@ RESP=$(wasmd tx wasm instantiate "$CODE_ID" "$INIT" \
   --gas 1000000 \
   -y \
   --chain-id=docs-chain-1 \
-  -b sync \
   -o json \
   --keyring-backend=test)
 
+# Wait for the transaction to be processed
 sleep 6
 
+# Query the contract address
 CONTRACT=$(wasmd query wasm list-contract-by-code "$CODE_ID" -o json | jq -r '.contracts[-1]')
 
-# Print contract address
+# Print the contract address
 echo "* Contract address: $CONTRACT"
 ```
 
-### Query contract metadata
+### Query Contract Metadata
+
+To query the metadata of a specific contract, use the following command:
 
 ```sh
-wasmd q wasm contract $CONTRACT -o json | jq
+wasmd q wasm contract $CONTRACT -o json
 ```
 
 Output:
@@ -117,15 +295,28 @@ Output:
 }
 ```
 
-- Address: This is the address of the contract
-- Code ID: This is the reference to the stored Wasm code
-- Creator: This is the address who initially instantiated the contract
-- Admin: This is the address who can execute migrations. It is optional
-- Label: This is an optional field to give a label to the contract
-- Created: This is the Tx position when the contract was instantiated
-- IBC Port ID: This is the Port ID for [IBC](../../ibc.mdx)
+- Address: This is the address of the contract on the blockchain. It uniquely
+  identifies the contract and is used for interacting with it.
+- Code ID: This is the reference to the stored WASM code from which the contract
+  was instantiated.
+- Creator: This is the blockchain address of the account that initially
+  instantiated the contract. It indicates who created the contract instance.
+- Admin: This is the address of the account that has administrative privileges
+  over the contract, such as the ability to execute migrations. This field is
+  optional and can be set during instantiation.
+- Label: This is an optional field used to give a human-readable label to the
+  contract. It helps in identifying the contract instance, especially when
+  multiple instances of the same code are deployed.
+- Created: This section provides details about the transaction in which the
+  contract was instantiated, including the block height at which the contract
+  was created and the index of the transaction within the block.
+- IBC Port ID: This is the Port ID for Inter-Blockchain Communication
+  [IBC](../../ibc.mdx). If the contract is set up to interact with other
+  blockchains via IBC, this field will contain the relevant port ID.
 - Extention: This is is an extension point to store custom metadata within the
   persistence model
+
+## Instantiation with Predictable Address
 
 ### Create a new contract instance with predictable address
 

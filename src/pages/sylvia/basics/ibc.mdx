@@ -10,19 +10,10 @@ Sylvia doesn't generate any [IBC](../../ibc) related code, but you can define
 your own [IBC entry points](../../ibc/diy-protocol#Entrypoints) like you would
 in the case of a regular CosmWasm contract.
 
-To access the state in a function, create an instance of the contract like so:
+You can define the logic inside the contract and call the method from the entry
+point.
 
-```rust
-fn on_ibc_channel_open(...) {
-    let contract = Contract::new();
-
-    contract.your_state.load(deps.storage);
-}
-```
-
-You could also want to define the logic inside the contract:
-
-```rust {14-23, 32}
+```rust {14-21, 32, 30}
 pub struct IbcContract;
 
 #[contract]
@@ -56,13 +47,10 @@ pub fn ibc_channel_open(
 }
 ```
 
-or inside a trait:
+You can also define a trait for the IBC methods and implement it for on the
+contract.
 
-<Callout>
-  Do not use the [`interface`](../macros/interface) macro on this trait.
-</Callout>
-
-```rust {7, 10-11, 19-20}
+```rust {7, 10, 12-13, 21-22}
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_open(
     deps: DepsMut,
@@ -94,3 +82,7 @@ impl Ibc for IbcContract {
     }
 }
 ```
+
+Remember not to use the interface attribute for this trait. Sylvia does not
+handle IBC entry points, and there is no point in generating helpers around
+them.

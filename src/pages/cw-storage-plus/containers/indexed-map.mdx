@@ -112,9 +112,10 @@ Here's what happens step-by-step
   [`UniqueIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.UniqueIndex.html),
   it's your responsibility to ensure that the index you've built has unique
   keys. If you have two users with the same handle, the index will be
-  overwritten and only contain the last user. Be careful!
-  
-  If you need to store a key that is not unique, you'll want to use a [`MultiIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.MultiIndex.html) - see [*Lookup by country*](#lookup-by-country).
+  overwritten and only contain the last user. Be careful! If you need to store a
+  key that is not unique, you'll want to use a
+  [`MultiIndex`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.MultiIndex.html)
+  - see [*Lookup by country*](#lookup-by-country).
 </Callout>
 
 <Callout>

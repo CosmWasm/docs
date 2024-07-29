@@ -17,8 +17,7 @@ An example for the latter is the [Nois protocol]. It provides a proxy contract
 that handles all the IBC logic for you. We will later cover how to implement
 your own IBC protocol.
 
-[ICS20]:
-  https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md
+[ICS20]: https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md
 [Nois protocol]: https://docs.nois.network/dapp_devs/use_nois_randomness.html
 
 ## Example: `IbcMsg::Transfer`
@@ -65,10 +64,8 @@ The `memo` is an optional field that can be used to attach a message to the
 transfer. It is often used for additional functionality like
 [packet-forward-middleware] or IBC Callbacks.
 
-[packet-forward-middleware]:
-  https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware
-[Cosmos Developer Portal]:
-  https://tutorials.cosmos.network/tutorials/6-ibc-dev/#understand-ibc-denoms
+[packet-forward-middleware]: https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware
+[Cosmos Developer Portal]: https://tutorials.cosmos.network/tutorials/6-ibc-dev/#understand-ibc-denoms
 
 ## ADR-8: IBC Callbacks
 
@@ -81,10 +78,8 @@ triggers callbacks when a packet is received.
 
 IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks].
 
-[adr-8]:
-  https://github.com/cosmos/ibc-go/blob/main/docs/architecture/adr-008-app-caller-cbs.md
-[ibc-hooks]:
-  https://github.com/cosmos/ibc-apps/blob/main/modules/ibc-hooks/README.md
+[adr-8]: https://github.com/cosmos/ibc-go/blob/main/docs/architecture/adr-008-app-caller-cbs.md
+[ibc-hooks]: https://github.com/cosmos/ibc-apps/blob/main/modules/ibc-hooks/README.md
 
 <Callout>
   To receive callbacks, the chain needs to support IBC Callbacks for the message
@@ -108,8 +103,7 @@ JSON. One is a builder type for the `IbcMsg::Transfer` type which provides a
 type-safe way to generate the complete `IbcMsg::Transfer`, the other is a helper
 type [`IbcCallbackRequest`] that just generates the JSON for the `memo` field:
 
-[`IbcCallbackRequest`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcCallbackRequest.html
+[`IbcCallbackRequest`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcCallbackRequest.html
 
 <Tabs items={['TransferMsgBuilder (recommended)', 'IbcCallbackRequest']}>
     <Tabs.Tab>
@@ -183,14 +177,10 @@ contract:
   - [`IbcTimeoutCallbackMsg`] if the packet timed out
 - `ibc_destination_callback`, receiving an [`IbcDestinationCallbackMsg`]
 
-[`IbcSourceCallbackMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcSourceCallbackMsg.html
-[`IbcAckCallbackMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcAckCallbackMsg.html
-[`IbcTimeoutCallbackMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcTimeoutCallbackMsg.html
-[`IbcDestinationCallbackMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcDestinationCallbackMsg.html
+[`IbcSourceCallbackMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcSourceCallbackMsg.html
+[`IbcAckCallbackMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcAckCallbackMsg.html
+[`IbcTimeoutCallbackMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcTimeoutCallbackMsg.html
+[`IbcDestinationCallbackMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcDestinationCallbackMsg.html
 
 #### Source Callback
 
@@ -352,8 +342,7 @@ sure that the transfer was successful, that the receiver of the funds is your
 contract and the denomination is what you want to receive. This requires some
 knowledge about the [packet format].
 
-[packet format]:
-  https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md#data-structures
+[packet format]: https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md#data-structures
 
 #### Error handling
 

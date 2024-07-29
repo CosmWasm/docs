@@ -6,86 +6,120 @@ import { Callout } from "nextra/components";
 
 # `Deque`
 
-A `Deque` imitates a traditional double-ended queue. This collection is designed
-for efficient pushes and pops from either the beginning or end, but not for
-insertions/deletions from the middle. It can easily serve as a queue or stack.
+A `Deque` is a container that imitates a traditional double-ended queue. It's
+designed for efficient pushes and pops from either the beginning or end, making
+it suitable for use as a queue or stack. However, it's not optimized for
+insertions or deletions from the middle.
 
-The main operations available here are [`push_back`], [`push_front`],
+<Callout>More information can be found in the [API docs].</Callout>
+
+## Deque operations
+
+The main operations available for a `Deque` are [`push_back`], [`push_front`],
 [`pop_back`], and [`pop_front`]. It is also possible to check the [`len`]gth of
 the deque, [`get`] an element by index, and [`iter`]ate over the elements.
 
-[`push_back`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
-[`push_front`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
-[`pop_back`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
-[`pop_front`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
-[`len`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len
-[`get`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get
-[`iter`]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter
+[`push_back`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
+[`push_front`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
+[`pop_back`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
+[`pop_front`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
+[`len`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len
+[`get`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get
+[`iter`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter
+
+- `push_back`: Adds an element to the end of the deque. O(1) time complexity.
+- `push_front`: Adds an element to the beginning of the deque. O(1) time
+  complexity.
+- `pop_back`: Removes and returns the last element. Returns `None` if the deque
+  is empty. O(1) time complexity.
+- `pop_front`: Removes and returns the first element. Returns `None` if the
+  deque is empty. O(1) time complexity.
+- `len`: Returns the number of elements in the deque. O(1) time complexity.
+- `is_empty`: Returns `true` if the deque contains no elements. O(1) time
+  complexity.
+- `get`: Retrieves an element by index. Returns `None` if the index is out of
+  bounds. O(1) time complexity.
+- `front`: Returns a reference to the first element without removing it. Returns
+  `None` if the deque is empty.
+- `back`: Returns a reference to the last element without removing it. Returns
+  `None` if the deque is empty.
+- `iter`: Returns an iterator over the elements of the deque.
 
 <Callout type="warning">
-  The maximum capacity of a `Deque` is `u32::MAX - 1` elements. Trying to push
-  more elements is considered Undefined Behavior💀.
+  The maximum capacity of a `Deque` is `u32::MAX - 1` elements. Attempting to
+  push more elements is considered Undefined Behavior.
 </Callout>
 
-More information can be found in the
-[API docs](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html).
+## Deque lifecycle
 
-## Examples
+Creating a `Deque` doesn't immediately commit anything to storage. To add
+elements to the deque, you need to use the `push_back` or `push_front` methods.
 
-### Pushing and popping
+Values in a `Deque` must implement the `Serialize` and `Deserialize` traits from
+the [`serde`] crate to be stored.
+
+### Lifecycle example
 
 ```rust template="storage"
 use cw_storage_plus::Deque;
 
+// Create a new deque. It doesn't exist in storage yet.
 let deque: Deque<u32> = Deque::new("d");
+assert_eq!(deque.len(&storage).unwrap(), 0);
 
+// Add elements to the deque
 deque.push_back(&mut storage, &2).unwrap();
 deque.push_back(&mut storage, &3).unwrap();
 deque.push_front(&mut storage, &1).unwrap();
 
-// at this point, we have [1, 2, 3]
+// Check the length
+assert_eq!(deque.len(&storage).unwrap(), 3);
 
+// Remove elements
 assert_eq!(deque.pop_back(&mut storage).unwrap(), Some(3));
 assert_eq!(deque.pop_front(&mut storage).unwrap(), Some(1));
-assert_eq!(deque.pop_back(&mut storage).unwrap(), Some(2));
-assert_eq!(deque.pop_back(&mut storage).unwrap(), None);
+
+// Check the final state
+assert_eq!(deque.len(&storage).unwrap(), 1);
+assert_eq!(deque.get(&storage, 0).unwrap(), Some(2));
 ```
 
-### Checking length
+## Usage examples
+
+### Using Deque as a queue
 
 ```rust template="storage"
 use cw_storage_plus::Deque;
 
-let deque: Deque<u32> = Deque::new("d");
+let queue: Deque<String> = Deque::new("q");
 
-assert_eq!(deque.len(&storage).unwrap(), 0);
+// Enqueue elements
+queue.push_back(&mut storage, &"first".to_string()).unwrap();
+queue.push_back(&mut storage, &"second".to_string()).unwrap();
 
-deque.push_back(&mut storage, &1).unwrap();
-deque.push_back(&mut storage, &2).unwrap();
-
-assert_eq!(deque.len(&storage).unwrap(), 2);
+// Dequeue elements
+assert_eq!(queue.pop_front(&mut storage).unwrap(), Some("first".to_string()));
+assert_eq!(queue.pop_front(&mut storage).unwrap(), Some("second".to_string()));
+assert_eq!(queue.pop_front(&mut storage).unwrap(), None);
 ```
 
-### Getting an element by index
+### Using Deque as a stack
 
 ```rust template="storage"
 use cw_storage_plus::Deque;
 
-let deque: Deque<u32> = Deque::new("d");
+let stack: Deque<u32> = Deque::new("s");
 
-deque.push_back(&mut storage, &1).unwrap();
-deque.push_back(&mut storage, &2).unwrap();
+// Push elements
+stack.push_back(&mut storage, &1).unwrap();
+stack.push_back(&mut storage, &2).unwrap();
+stack.push_back(&mut storage, &3).unwrap();
 
-assert_eq!(deque.get(&storage, 0).unwrap(), Some(1));
-assert_eq!(deque.get(&storage, 1).unwrap(), Some(2));
-assert_eq!(deque.get(&storage, 2).unwrap(), None);
+// Pop elements
+assert_eq!(stack.pop_back(&mut storage).unwrap(), Some(3));
+assert_eq!(stack.pop_back(&mut storage).unwrap(), Some(2));
+assert_eq!(stack.pop_back(&mut storage).unwrap(), Some(1));
+assert_eq!(stack.pop_back(&mut storage).unwrap(), None);
 ```
 
 ### Iterating over elements
@@ -95,14 +129,60 @@ use cw_storage_plus::Deque;
 
 let deque: Deque<u32> = Deque::new("d");
 
+deque.push_back(&mut storage, &1).unwrap();
 deque.push_back(&mut storage, &2).unwrap();
 deque.push_back(&mut storage, &3).unwrap();
-deque.push_front(&mut storage, &1).unwrap();
 
-let mut iter = deque.iter(&storage).unwrap();
-
-assert_eq!(iter.next(), Some(Ok(1)));
-assert_eq!(iter.next(), Some(Ok(2)));
-assert_eq!(iter.next(), Some(Ok(3)));
-assert_eq!(iter.next(), None);
+let sum: u32 = deque.iter(&storage).unwrap().map(|r| r.unwrap()).sum();
+assert_eq!(sum, 6);
 ```
+
+### Maintaining a log store
+
+It is possible to use a `Deque` to maintain a store of log events or transaction
+records. This is useful when you want to keep a history of production level
+events to ease in debugging a deployed instance of a contract.
+
+```rust template="storage"
+use cw_storage_plus::Deque;
+use serde::{Serialize, Deserialize};
+use cosmwasm_std::testing::*;
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+struct Log {
+    block_height: u64,
+    sender_addr: String,
+    event: String,
+}
+
+// Initialize the Deque for storing logs
+let logs: Deque<Log> = Deque::new("logs");
+
+// Simulating contract execution context
+let env = mock_env();
+let info = mock_info("sender", &[]);
+let event = "funds_transferred".to_string();
+
+// Add a new log entry
+logs.push_front(
+    &mut storage,
+    &Log {
+        block_height: env.block.height,
+        sender_addr: info.sender.to_string(),
+        event: event.clone(),
+    },
+).unwrap();
+
+// Optionally, limit the number of stored logs
+const MAX_LOGS: u32 = 100;
+if logs.len(&storage).unwrap() > MAX_LOGS {
+    logs.pop_back(&mut storage).unwrap();
+}
+
+// Retrieve the most recent log
+let latest_log = logs.get(&storage, 0).unwrap().unwrap();
+assert_eq!(latest_log.event, "funds_transferred");
+```
+
+[`serde`]: https://serde.rs/
+[API docs]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html

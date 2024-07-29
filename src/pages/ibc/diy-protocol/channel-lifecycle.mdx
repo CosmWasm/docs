@@ -22,10 +22,8 @@ is encoded in the [`IbcOrder`] enum. In an ordered channel, packets must be
 processed by the receiving chain in the order in which they were sent. In an
 unordered channel, packets are processed in the order they arrive.
 
-[`IbcOrder`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcOrder.html
-[ICS 004 specification]:
-  https://github.com/cosmos/ibc/tree/main/spec/core/ics-004-channel-and-packet-semantics#channel-lifecycle-management
+[`IbcOrder`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcOrder.html
+[ICS 004 specification]: https://github.com/cosmos/ibc/tree/main/spec/core/ics-004-channel-and-packet-semantics#channel-lifecycle-management
 [IBC channel docs]: https://ibc.cosmos.network/main/ibc/overview#channels
 
 ## Establishing a channel
@@ -48,8 +46,7 @@ of the steps:
 3. `ibc_channel_connect` on chain A with `IbcChannelConnectMsg::OpenAck`
 4. `ibc_channel_connect` on chain B with `IbcChannelConnectMsg::OpenConfirm`
 
-[hermes]:
-  https://hermes.informal.systems/tutorials/local-chains/add-a-new-relay-path.html#3-channel-identifiers
+[hermes]: https://hermes.informal.systems/tutorials/local-chains/add-a-new-relay-path.html#3-channel-identifiers
 
 ### Channel open
 
@@ -189,8 +186,7 @@ it. The version is used to ensure that both chains are running the protocol that
 the other one expects. You can also return `None` if you just want to accept the
 counterparty version.
 
-[`IbcChannelOpenMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
+[`IbcChannelOpenMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
 
 #### Permissions
 
@@ -418,8 +414,7 @@ const CHANNEL: Item<ChannelInfo> = Item::new(0);
   </Tabs.Tab>
 </Tabs>
 
-[`IbcChannelConnectMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelConnectMsg.html
+[`IbcChannelConnectMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelConnectMsg.html
 
 ## Closing a channel
 
@@ -452,5 +447,4 @@ In this entrypoint, you can handle the closing process as you see fit. This can
 involve cleaning up any storage related to the channel or simply returning an
 error to prevent the channel from closing.
 
-[`IbcChannelCloseMsg`]:
-  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelCloseMsg.html
+[`IbcChannelCloseMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelCloseMsg.html

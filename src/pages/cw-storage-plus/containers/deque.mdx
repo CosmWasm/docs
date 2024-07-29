@@ -18,48 +18,32 @@ insertions or deletions from the middle.
 The main operations available for a `Deque` are [`push_back`], [`push_front`],
 [`pop_back`], and [`pop_front`]. It is also possible to check the [`len`]gth of
 the deque, [`get`] an element by index, and [`iter`]ate over the elements.
-{/* Links to make the above operations clickable */} [`push_back`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
-[`push_front`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
-[`pop_back`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
-[`pop_front`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
-[`len`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len
-[`get`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get
-[`iter`]:
-https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter
+
+[`push_back`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
+[`push_front`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
+[`pop_back`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
+[`pop_front`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
+[`len`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len
+[`get`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get
+[`iter`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter
 
 - `push_back`: Adds an element to the end of the deque. O(1) time complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back)
 - `push_front`: Adds an element to the beginning of the deque. O(1) time
   complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front)
 - `pop_back`: Removes and returns the last element. Returns `None` if the deque
   is empty. O(1) time complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back)
 - `pop_front`: Removes and returns the first element. Returns `None` if the
   deque is empty. O(1) time complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front)
 - `len`: Returns the number of elements in the deque. O(1) time complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len)
 - `is_empty`: Returns `true` if the deque contains no elements. O(1) time
   complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.is_empty)
 - `get`: Retrieves an element by index. Returns `None` if the index is out of
   bounds. O(1) time complexity.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get)
 - `front`: Returns a reference to the first element without removing it. Returns
   `None` if the deque is empty.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.front)
 - `back`: Returns a reference to the last element without removing it. Returns
   `None` if the deque is empty.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.back)
 - `iter`: Returns an iterator over the elements of the deque.
-  [Source](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter)
 
 <Callout type="warning">
   The maximum capacity of a `Deque` is `u32::MAX - 1` elements. Attempting to
@@ -201,5 +185,4 @@ assert_eq!(latest_log.event, "funds_transferred");
 ```
 
 [`serde`]: https://serde.rs/
-[API docs]:
-  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html
+[API docs]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html

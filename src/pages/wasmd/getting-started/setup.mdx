@@ -1,0 +1,42 @@
+import { Callout } from "nextra/components";
+
+# Set Up Your Local Environment
+
+## Install Go
+
+To build and install Wasmd, Go is required. If you haven't installed Go yet, you
+can set it up by visiting the
+[Go download and install page](https://go.dev/doc/install).
+
+<Callout>The latest version of wasmd requires `go version v1.21`.</Callout>
+
+## Set Up Wasmd
+
+Clone wasmd repository
+
+```sh
+git clone https://github.com/CosmWasm/wasmd.git && cd wasmd
+```
+
+Select the most stable version
+
+```sh
+git checkout v0.52.0 # replace the v0.52.0 with the most stable version
+```
+
+Install wasmd
+
+```sh
+make install
+```
+
+You can verify the version of Wasmd you have once it is installed:
+
+```sh
+wasmd version
+```
+
+<Callout type="warning">
+  Running a node on Windows OS is not supported yet. You can build a wasmd
+  client for Windows using `make build-windows-client`.
+</Callout>

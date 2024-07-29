@@ -1,6 +1,7 @@
 {
   "index": "Welcome",
   "core": "CosmWasm Core",
+  "wasmd": "Wasmd",
   "ibc": "IBC",
   "sylvia": "Sylvia",
   "storey": "Storey",

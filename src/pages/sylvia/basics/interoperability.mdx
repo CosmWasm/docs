@@ -41,13 +41,73 @@ fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
 }
 ```
 
+We can also use the generated
+[`WasmMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.WasmMsg.html)
+to construct the
+[`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html)
+and expect reply.
+
+<Callout>
+  Learn more about replies [here](../../core/entrypoints/reply).
+</Callout>
+
+```rust {1, 24-33, 36-45}
+const SUBMSG_ID: u64 = 1;
+
+pub struct ReplyContract {
+    remote: Item<Remote<'static, Contract>>,
+}
+
+#[entry_points]
+#[contract]
+impl ReplyContract {
+    pub fn new() -> Self {
+        Self {
+            remote: Item::new("remote"),
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx, remote_addr: Addr) -> StdResult<Response> {
+        self.remote
+            .save(ctx.deps.storage, &Remote::new(remote_addr))?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        let msg = self
+            .remote
+            .load(ctx.deps.storage)?
+            .executor()
+            .contract_exec()?
+            .build();
+
+        let sub_msg = SubMsg::reply_on_success(msg, SUBMSG_ID);
+        let resp = Response::new().add_submessage(sub_msg);
+        Ok(resp)
+    }
+
+    #[sv::msg(reply)]
+    fn reply(&self, ctx: ReplyCtx, reply: Reply) -> StdResult<Response> {
+        match reply.id {
+            SUBMSG_ID => {
+                // Your logic here
+                Ok(Response::new())
+            }
+            _ => Err(StdError::generic_err("Invalid reply id")),
+        }
+    }
+}
+```
+
 Query messages can also be sent through the
 [`query_wasm_smart`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.QuerierWrapper.html#method.query_wasm_smart)
 method. We can access the
 [`Deps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html)
 through the [`QueryCtx`](../types/context).
 
-```rust
+```rust {5-7}
 #[sv::msg(query)]
 fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
     let remote = self.remote.load(ctx.deps.storage)?;

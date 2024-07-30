@@ -6,17 +6,16 @@ import { Callout, Tabs } from "nextra/components";
 
 # Generated message types
 
-Sylvia macros generate CosmWasm messages from methods marked with
-[`sv::msg`](../../attributes/msg) attributes.
+Sylvia macros generate CosmWasm messages from methods marked with [`sv::msg`](../../attributes/msg)
+attributes.
 
-Messages are generated either as struct, for instantiate and migrate, or enum in
-case of the rest of the types.
+Messages are generated either as struct, for instantiate and migrate, or enum in case of the rest of
+the types.
 
-Each message's implementation contains a `dispatch` method. Calling the
-`msg.dispatch(...)` method on a struct message forwards the message's fields to
-the single method as arguments, i.e. structure's fields become the method's
-arguments. For the enum messages, the respective method will be called depending
-on the enum variant. This is described in the example below
+Each message's implementation contains a `dispatch` method. Calling the `msg.dispatch(...)` method
+on a struct message forwards the message's fields to the single method as arguments, i.e.
+structure's fields become the method's arguments. For the enum messages, the respective method will
+be called depending on the enum variant. This is described in the example below
 
 ## Contract messages
 
@@ -66,8 +65,7 @@ impl CounterContract {
 }
 ```
 
-generates the following messages for every respective
-[entrypoint](../../../core/entrypoints):
+generates the following messages for every respective [entrypoint](../../../core/entrypoints):
 
 <Tabs items={['InstantiateMsg', 'ExecMsg', 'QueryMsg', 'SudoMsg', 'MigrateMsg']} defaultIndex={0}>
   <Tabs.Tab>
@@ -265,20 +263,16 @@ generates the following messages for every respective
 </Tabs>
 
 <Callout>
-  Notice that the method parameters are used as fields of appropriate messages
-  and their variants.
+  Notice that the method parameters are used as fields of appropriate messages and their variants.
 </Callout>
 
-The [`contract`](../contract) macro also generates wrapper messages for exec,
-query and sudo. Their goal is to wrap respective messages, like `ExecMsg`, from
-both the contract and interfaces implemented on it, which are used as the main
-messages of the contract.
+The [`contract`](../contract) macro also generates wrapper messages for exec, query and sudo. Their
+goal is to wrap respective messages, like `ExecMsg`, from both the contract and interfaces
+implemented on it, which are used as the main messages of the contract.
 
 <Callout>
-  Use `ContractExecMsg`/`ContractQueryMsg`/`ContractSudoMsg` in hand made entry
-  points and in
-  [`write_api!`](https://docs.rs/cosmwasm-schema/latest/cosmwasm_schema/macro.write_api.html)
-  macro.
+  Use `ContractExecMsg`/`ContractQueryMsg`/`ContractSudoMsg` in hand made entry points and in
+  [`write_api!`](https://docs.rs/cosmwasm-schema/latest/cosmwasm_schema/macro.write_api.html) macro.
 </Callout>
 
 <Tabs items={['ContractExecMsg', 'ContractQueryMsg', 'ContractSudoMsg']} defaultIndex={0}>
@@ -394,22 +388,19 @@ messages of the contract.
 </Tabs>
 
 We mark the wrapper message with the
-[`serde(untagged)`](https://serde.rs/enum-representations.html#untagged)
-attribute to drop the wrapping variant names so that serialization matches one
-done for the regular CosmWasm messages.
+[`serde(untagged)`](https://serde.rs/enum-representations.html#untagged) attribute to drop the
+wrapping variant names so that serialization matches one done for the regular CosmWasm messages.
 
-The interface variants use
-`<interface::sv::Api as sylvia::types::InterfaceApi>::Sudo`, which is an
-accessor meant to simplify the API while using generics in the
-contract/interface.
+The interface variants use `<interface::sv::Api as sylvia::types::InterfaceApi>::Sudo`, which is an
+accessor meant to simplify the API while using generics in the contract/interface.
 
-Lastly, in dispatch, there is a const block. Its goal is to provide compile time
-validation that none of the messages overlap between a contract and interfaces.
+Lastly, in dispatch, there is a const block. Its goal is to provide compile time validation that
+none of the messages overlap between a contract and interfaces.
 
 ## Interface messages
 
-The generation done by [`interface`](../interface) macro is much simpler, as
-Sylvia generates just three types of messages.
+The generation done by [`interface`](../interface) macro is much simpler, as Sylvia generates just
+three types of messages.
 
 We will use the below example interface to generate the messages:
 
@@ -569,16 +560,14 @@ And the three generated messages:
   </Tabs.Tab>
 </Tabs>
 
-Although interface messages are almost the same as contract ones, some slight
-differences exist.
+Although interface messages are almost the same as contract ones, some slight differences exist.
 
-Notice that the messages are prefixed with the interfaces name:
-`InterfaceSudoMsg`, while in case of the contract the name was just `SudoMsg`.
-This prefix is required. Otherwise, `ContractSudoMsg` variants names would
-overlap during the schema generation, and all but one would be lost. However, a
-simplified alias is generated for them, so it's possible to access them like,
-e.g., `SudoMsg`. The same rule applies to the exec and query messages.
+Notice that the messages are prefixed with the interfaces name: `InterfaceSudoMsg`, while in case of
+the contract the name was just `SudoMsg`. This prefix is required. Otherwise, `ContractSudoMsg`
+variants names would overlap during the schema generation, and all but one would be lost. However, a
+simplified alias is generated for them, so it's possible to access them like, e.g., `SudoMsg`. The
+same rule applies to the exec and query messages.
 
-Since multiple contracts might use these messages, the `dispatch` is generic
-over the `ContractT` type implementing the interface. The error type returned in
-the `dispatch` is the associated type defined on the interface.
+Since multiple contracts might use these messages, the `dispatch` is generic over the `ContractT`
+type implementing the interface. The error type returned in the `dispatch` is the associated type
+defined on the interface.

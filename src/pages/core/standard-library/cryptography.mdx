@@ -6,22 +6,20 @@ import { Callout } from "nextra/components";
 
 # Cryptography
 
-CosmWasm offers cryptographic primitives that are implemented as VM intrinsics.
-This means that they are more efficient than implementations in contract code
-could be, saving you gas and code size. In some cases they are also _impossible_
-to implement in contract code, since some of them require a random intermediate
-value and randomness is generally not exposed to contracts to ensure
+CosmWasm offers cryptographic primitives that are implemented as VM intrinsics. This means that they
+are more efficient than implementations in contract code could be, saving you gas and code size. In
+some cases they are also _impossible_ to implement in contract code, since some of them require a
+random intermediate value and randomness is generally not exposed to contracts to ensure
 deterministic execution.
 
-In the sidebar, you can find all the supported algorithms/curves along with
-documentation about them.
+In the sidebar, you can find all the supported algorithms/curves along with documentation about
+them.
 
 ## Gas costs
 
 <Callout>
-  Note that these values are in CosmWasm Gas (which is not equivalent to Cosmos
-  SDK Gas; rather, CosmWasm Gas is eventually converted to Cosmos SDK Gas). For
-  more info on gas, [check this page].
+  Note that these values are in CosmWasm Gas (which is not equivalent to Cosmos SDK Gas; rather,
+  CosmWasm Gas is eventually converted to Cosmos SDK Gas). For more info on gas, [check this page].
 </Callout>
 
 ### secp256k1
@@ -62,23 +60,21 @@ You can also check these numbers in the [source code].
 
 ## Note on hash functions
 
-You'll notice that CosmWasm does not implement any hash functions as native
-functions, and we intend to keep it that way. The reasoning for that is:
+You'll notice that CosmWasm does not implement any hash functions as native functions, and we intend
+to keep it that way. The reasoning for that is:
 
-- Hash functions are pretty much always cheap in terms of execution cost _and_
-  code size
-- There are way too many hash functions out there, adding one would open the
-  floodgates where we would have to add more
-  - SHA-3 family, Keccak256, cSHAKE256, BLAKE2, BLAKE3, SHA-2 family,
-    KangarooTwelve, etc. (and this is just a small sample set to drive the point
-    home)
-- Benchmarking and pricing functions (and keeping those up-to-date) correctly is
-  a lot of work
+- Hash functions are pretty much always cheap in terms of execution cost _and_ code size
+- There are way too many hash functions out there, adding one would open the floodgates where we
+  would have to add more
+  - SHA-3 family, Keccak256, cSHAKE256, BLAKE2, BLAKE3, SHA-2 family, KangarooTwelve, etc. (and this
+    is just a small sample set to drive the point home)
+- Benchmarking and pricing functions (and keeping those up-to-date) correctly is a lot of work
 - We want to keep the API surface as small as possible for ease of maintainance
 
-Keep in mind that, thanks to Wasm being our execution environment, contract
-execution is quite fast. In most cases the perceived need to move hashing into a
-host function is premature optimization and not actually needed.
+Keep in mind that, thanks to Wasm being our execution environment, contract execution is quite fast.
+In most cases the perceived need to move hashing into a host function is premature optimization and
+not actually needed.
 
 [check this page]: ../architecture/gas
-[source code]: https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L62-L101
+[source code]:
+  https://github.com/CosmWasm/cosmwasm/blob/main/packages/vm/src/environment.rs#L62-L101

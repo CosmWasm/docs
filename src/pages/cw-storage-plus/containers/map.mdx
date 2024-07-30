@@ -6,22 +6,21 @@ import { Callout } from "nextra/components";
 
 # `Map`
 
-A `Map` is a key-value store. Unlike the raw storage backend, the keys and
-values of a map are typed.
+A `Map` is a key-value store. Unlike the raw storage backend, the keys and values of a map are
+typed.
 
 ## Keys
 
 The key type has to implement the
-[`PrimaryKey`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.PrimaryKey.html)
-trait. Most commonly, the key is simply a `String` or
-[`Addr`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Addr.html).
-Other types include binary strings (`Vec<u8>`, `[u8; N]`, `&[u8]`), numerical
-types, or even tuples, which can be used to create composite keys.
+[`PrimaryKey`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.PrimaryKey.html) trait.
+Most commonly, the key is simply a `String` or
+[`Addr`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Addr.html). Other types include
+binary strings (`Vec<u8>`, `[u8; N]`, `&[u8]`), numerical types, or even tuples, which can be used
+to create composite keys.
 
 <Callout>
-  Unlike values, keys do **not** need to implement anything like
-  `serde::Serialize` or `serde::Deserialize`. Key encoding is handled by the
-  `PrimaryKey` trait.
+  Unlike values, keys do **not** need to implement anything like `serde::Serialize` or
+  `serde::Deserialize`. Key encoding is handled by the `PrimaryKey` trait.
 </Callout>
 
 ## Values
@@ -32,13 +31,12 @@ The values, as usual, are serialized as JSON and must implement the
 
 ## Operations
 
-Similar to an [`Item`](./item), a `Map` defines methods like `load`, `save`, and
-`may_load`. The difference is that `Map`'s methods take a key as an argument.
+Similar to an [`Item`](./item), a `Map` defines methods like `load`, `save`, and `may_load`. The
+difference is that `Map`'s methods take a key as an argument.
 
-Most _CosmWasm_-enabled chains will enable iteration. If they do, it is possible
-to iterate over the entries in a map using methods like
-[`keys`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.keys)
-or
+Most _CosmWasm_-enabled chains will enable iteration. If they do, it is possible to iterate over the
+entries in a map using methods like
+[`keys`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.keys) or
 [`range`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Map.html#method.range).
 
 <Callout>
@@ -153,14 +151,13 @@ assert_eq!(alices_balances, vec![("osmo".to_string(), 200), ("uusd".to_string(),
 
 As seen here, the order of keys isn't always lexicographic.
 
-If you need to rely on iteration order in maps with composite keys, here's how
-things work: under the hood, every component of a composite key is
-length-prefixed except for the last one. If you're only iterating over the last
-component, you can expect things to be ordered lexicographically. For non-final
-components, shorter strings will always come before longer ones.
+If you need to rely on iteration order in maps with composite keys, here's how things work: under
+the hood, every component of a composite key is length-prefixed except for the last one. If you're
+only iterating over the last component, you can expect things to be ordered lexicographically. For
+non-final components, shorter strings will always come before longer ones.
 
-In the example, note how `"bob"` (a non-last component) comes before `"alice"`.
-Also note how once we lock the first component to `"alice"`, entries are ordered
-lexicographically by the second component.
+In the example, note how `"bob"` (a non-last component) comes before `"alice"`. Also note how once
+we lock the first component to `"alice"`, entries are ordered lexicographically by the second
+component.
 
 </Callout>

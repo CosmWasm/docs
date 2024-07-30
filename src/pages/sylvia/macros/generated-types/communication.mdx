@@ -6,17 +6,13 @@ import { Callout, Tabs } from "nextra/components";
 
 # Generated communication helpers
 
-Sylvia exposes types to ease communication between contracts. Currently there
-are two types:
+Sylvia exposes types to ease communication between contracts. Currently there are two types:
 
-- [`BoundQuerier`](../../types/communication#boundquerier) - for sending query
-  messages,
-- [`ExecutorBuilder`](../../types/communication#executorbuilder) - for building
-  execute messages.
+- [`BoundQuerier`](../../types/communication#boundquerier) - for sending query messages,
+- [`ExecutorBuilder`](../../types/communication#executorbuilder) - for building execute messages.
 
-The [`contract`](../contract) and [`interface`](../interface) expand these types
-by generating and implementing traits with methods representing execute and
-query methods
+The [`contract`](../contract) and [`interface`](../interface) expand these types by generating and
+implementing traits with methods representing execute and query methods
 
 Examples in the following paragraphs are generated from the below contract:
 
@@ -46,11 +42,10 @@ impl CounterContract {
 
 ## Query helpers
 
-Sylvia macros generate a `Querier` trait that mirrors all of the methods marked
-with the [`sv::msg(query)`](../../attributes/msg.mdx) attribute. This trait is
-then implemented on the [`BoundQuerier`](../../types/communication#boundquerier)
-type. Implementation of each method constructs the appropriate message and sends
-it to the contract.
+Sylvia macros generate a `Querier` trait that mirrors all of the methods marked with the
+[`sv::msg(query)`](../../attributes/msg.mdx) attribute. This trait is then implemented on the
+[`BoundQuerier`](../../types/communication#boundquerier) type. Implementation of each method
+constructs the appropriate message and sends it to the contract.
 
 ```rust
 pub trait Querier {
@@ -68,11 +63,10 @@ impl<'a, C: sylvia::cw_std::CustomQuery> Querier
 
 ## Executor helpers
 
-Sylvia macros generate an `Executor` trait that mirrors all of the methods
-marked with the [`sv::msg(exec)`](../../attributes/msg.mdx) attribute. This
-trait is then implemented on the
-[`ExecutorBuilder`](../../types/communication#executorbuilder) type.
-Implementation of each method constructs the appropriate message and returns the
+Sylvia macros generate an `Executor` trait that mirrors all of the methods marked with the
+[`sv::msg(exec)`](../../attributes/msg.mdx) attribute. This trait is then implemented on the
+[`ExecutorBuilder`](../../types/communication#executorbuilder) type. Implementation of each method
+constructs the appropriate message and returns the
 [`ExecutorBuilder`](../../types/communication#executorbuilder) generic over
 [`ReadyExecutorBuilderState`](https://docs.rs/sylvia/latest/sylvia/types/struct.ReadyExecutorBuilderState.html).
 

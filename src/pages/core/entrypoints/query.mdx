@@ -6,16 +6,15 @@ import { Callout } from "nextra/components";
 
 # Query
 
-In the previous section we talked about the [`execute` endpoint]. The `query` endpoint
-is actually pretty similar to its sibling `execute`, but with one key difference:
-The storage is only accessible immutably.
+In the previous section we talked about the [`execute` endpoint]. The `query` endpoint is actually pretty
+similar to its sibling `execute`, but with one key difference: The storage is only accessible immutably.
 
 This means you can only _read_ from the storage but not _write_ to it.
 
 ## Properly defining a message
 
-When defining a message for queries, you always return some value. To properly
-document these return values, you'll want to define them in your schema.
+When defining a message for queries, you always return some value. To properly document these return
+values, you'll want to define them in your schema.
 
 This is where the `cosmwasm_schema::QueryResponses` derive macro comes in.
 
@@ -40,9 +39,8 @@ enum CustomQueryMsg {
 }
 ```
 
-The macro then defines the required code to document the responses in your code
-properly so you can easily generate, for example, TypeScript types for your
-contract clients.
+The macro then defines the required code to document the responses in your code properly so you can
+easily generate, for example, TypeScript types for your contract clients.
 
 ## Definition
 

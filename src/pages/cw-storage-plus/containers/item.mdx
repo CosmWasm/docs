@@ -6,33 +6,31 @@ import { Callout } from "nextra/components";
 
 # `Item`
 
-An `Item` is a container that contains a single value that is potentially stored
-in some storage identified by a unique key.
+An `Item` is a container that contains a single value that is potentially stored in some storage
+identified by a unique key.
 
 <Callout>More information can be found in the [API docs].</Callout>
 
 ## Item lifecycle
 
-Just creating an `Item` does not commit anything to storage yet. In order to
-actually store a value into a storage, you need to call the `save` method.
+Just creating an `Item` does not commit anything to storage yet. In order to actually store a value
+into a storage, you need to call the `save` method.
 
-At the moment, values are serialized to the underlying storage in the JSON
-format. Your value must implement the `Serialize` and `Deserialize` traits from
-the [`serde`] crate in order to be stored.
+At the moment, values are serialized to the underlying storage in the JSON format. Your value must
+implement the `Serialize` and `Deserialize` traits from the [`serde`] crate in order to be stored.
 
 <Callout>
-  This is an implementation detail that may change in the future. You should
-  always use the provided API methods to interact with the storage.
+  This is an implementation detail that may change in the future. You should always use the provided
+  API methods to interact with the storage.
 </Callout>
 
 ### Loading existing values
 
 `cw-storage-plus` provides you with two functions for loading an `Item`:
 
-- `load` - which will return an error if the `Item` is empty or if
-  deserialization fails.
-- `may_load` - which will return `Ok(None)` if the `Item` is empty, and an error
-  if deserialization fails.
+- `load` - which will return an error if the `Item` is empty or if deserialization fails.
+- `may_load` - which will return `Ok(None)` if the `Item` is empty, and an error if deserialization
+  fails.
 
 ### Lifecycle example
 
@@ -102,9 +100,8 @@ assert_eq!(cfg_storage.load(&storage).unwrap(), cfg);
 
 ### Default values
 
-Sometimes you might like to read a value, but if it may have never been set, you
-want to provide a default. This is a common pattern for counters or other
-numeric values.
+Sometimes you might like to read a value, but if it may have never been set, you want to provide a
+default. This is a common pattern for counters or other numeric values.
 
 ```rust template="storage"
 use cw_storage_plus::Item;

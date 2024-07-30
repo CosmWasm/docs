@@ -6,12 +6,11 @@ import { Callout } from "nextra/components";
 
 # IBC
 
-Sylvia doesn't generate any [IBC](../../ibc) related code, but you can define
-your own [IBC entry points](../../ibc/diy-protocol#Entrypoints) like you would
-in the case of a regular CosmWasm contract.
+Sylvia doesn't generate any [IBC](../../ibc) related code, but you can define your own
+[IBC entry points](../../ibc/diy-protocol#Entrypoints) like you would in the case of a regular
+CosmWasm contract.
 
-You can define the logic inside the contract and call the method from the entry
-point.
+You can define the logic inside the contract and call the method from the entry point.
 
 ```rust {14-21, 32, 30}
 pub struct IbcContract;
@@ -47,8 +46,7 @@ pub fn ibc_channel_open(
 }
 ```
 
-You can also define a trait for the IBC methods and implement it for on the
-contract.
+You can also define a trait for the IBC methods and implement it for on the contract.
 
 ```rust {7, 10, 12-13, 21-22}
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -83,6 +81,5 @@ impl Ibc for IbcContract {
 }
 ```
 
-Remember not to use the interface attribute for this trait. Sylvia does not
-handle IBC entry points, and there is no point in generating helpers around
-them.
+Remember not to use the interface attribute for this trait. Sylvia does not handle IBC entry points,
+and there is no point in generating helpers around them.

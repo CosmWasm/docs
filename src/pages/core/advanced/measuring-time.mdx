@@ -6,23 +6,21 @@ import { Callout } from "nextra/components";
 
 # Measuring time
 
-Accessing the current time is useful in a lot of different contexts but time is
-hard. It is hard to coordinate, hard to keep in sync, and this gets worse in
-distributed settings such as blockchains.
+Accessing the current time is useful in a lot of different contexts but time is hard. It is hard to
+coordinate, hard to keep in sync, and this gets worse in distributed settings such as blockchains.
 
-In CosmWasm, we solve this by passing you some information about the blockchain
-you are running on whenever an entrypoint is invoked.
+In CosmWasm, we solve this by passing you some information about the blockchain you are running on
+whenever an entrypoint is invoked.
 
-In each of the entrypoints, you get a parameter of the type `Env` and this
-struct contains the field `block`. The struct contained in this field has a
-bunch of different information about the current state of the blockchain you are
-running on.
+In each of the entrypoints, you get a parameter of the type `Env` and this struct contains the field
+`block`. The struct contained in this field has a bunch of different information about the current
+state of the blockchain you are running on.
 
 > The documentation about the `BlockInfo` struct can be [found here]
 
-The timestamp contained in this struct can be safely used in your program as the
-source of the current time. Well, kinda. It won't be 100% matching the current
-time, as it is the timestamp of the block we are currently operating on.
+The timestamp contained in this struct can be safely used in your program as the source of the
+current time. Well, kinda. It won't be 100% matching the current time, as it is the timestamp of the
+block we are currently operating on.
 
 But you can rely on this timestamp to have the following properties:
 

@@ -4,25 +4,22 @@ tags: ["core", "architecture"]
 
 # Transactions
 
-Every contract invocation is wrapped into a transaction. If you know about
-transactions in SQL databases, you can consider them as the same basic concept.
-You execute multiple operations in a single transaction, and if one of them
-fails, the whole transaction is rolled back.
+Every contract invocation is wrapped into a transaction. If you know about transactions in SQL
+databases, you can consider them as the same basic concept. You execute multiple operations in a
+single transaction, and if one of them fails, the whole transaction is rolled back.
 
-In our case, these operations are invocations of contract entrypoints. If one of
-the invocations in the chain fails, the whole transaction is usually rolled
-back. Failing in this context means that the contract entrypoint returns an
-error or panics.
+In our case, these operations are invocations of contract entrypoints. If one of the invocations in
+the chain fails, the whole transaction is usually rolled back. Failing in this context means that
+the contract entrypoint returns an error or panics.
 
 ## Preventing rollbacks in case of failure
 
-If you don't want your entire transaction to be rolled back in case of a
-failure, you can use the `reply_on` field in the message you send. Set the field
-to one of the following values and instead of rolling back the transaction, you
-will receive a message containing the error:
+If you don't want your entire transaction to be rolled back in case of a failure, you can use the
+`reply_on` field in the message you send. Set the field to one of the following values and instead
+of rolling back the transaction, you will receive a message containing the error:
 
 - `ReplyOn::Always`
 - `ReplyOn::Error`
 
-That way you can handle the error and decide what to do next, whether you want
-to propagate the error, retry the operation, ignore it, etc.
+That way you can handle the error and decide what to do next, whether you want to propagate the
+error, retry the operation, ignore it, etc.

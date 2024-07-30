@@ -6,8 +6,8 @@ import { Callout } from "nextra/components";
 
 # Interface
 
-Use the [`interface`](https://docs.rs/sylvia/latest/sylvia/attr.interface.html)
-macro to abstract semantical parts of your contracts.
+Use the [`interface`](https://docs.rs/sylvia/latest/sylvia/attr.interface.html) macro to abstract
+semantical parts of your contracts.
 
 <Callout>Use `interface` macro only on Rust traits.</Callout>
 
@@ -39,27 +39,25 @@ pub trait Interface {
 
 As mentioned earlier `interface` macro is used attached to the Rust traits.
 
-We define the `Error` associated type. Thanks to that, future contracts
-implementing this interface will be able to assign their error type to it and
-have wider range of errors than the `StdError`.
+We define the `Error` associated type. Thanks to that, future contracts implementing this interface
+will be able to assign their error type to it and have wider range of errors than the `StdError`.
 
 <Callout>
-  `Error` associated type is the only mandatory thing to be defined for the
-  `interface` macro.
+  `Error` associated type is the only mandatory thing to be defined for the `interface` macro.
 </Callout>
 
-Then we can define our messages signatures. We do that by marking the methods
-with the [`sv::msg`](../attributes/msg) attribute.
+Then we can define our messages signatures. We do that by marking the methods with the
+[`sv::msg`](../attributes/msg) attribute.
 
 ## Custom types
 
-You can construct your interface to work with some specific custom types with
-the [`sv::custom`](../attributes/custom) attribute. Use of `sv::custom`
-restricts the interface to work with the predefined custom types.
+You can construct your interface to work with some specific custom types with the
+[`sv::custom`](../attributes/custom) attribute. Use of `sv::custom` restricts the interface to work
+with the predefined custom types.
 
-If you want to allow the users to use the interface with their own specified
-custom types, you can declare `ExecC` and `QueryC` associated types, where
-`ExecC` specifies the `CustomMsg` and `QueryC` the `CustomQuery`.
+If you want to allow the users to use the interface with their own specified custom types, you can
+declare `ExecC` and `QueryC` associated types, where `ExecC` specifies the `CustomMsg` and `QueryC`
+the `CustomQuery`.
 
 ```rust
 use cosmwasm_schema::cw_serde;
@@ -87,16 +85,13 @@ pub trait Interface {
 }
 ```
 
-<Callout>
-  Remember to pass the associated types to context and `Response` types.
-</Callout>
+<Callout>Remember to pass the associated types to context and `Response` types.</Callout>
 
 ## Generic types
 
-The `interface` macro does not support generics. Instead, you can provide
-generic functionality using the associated types. It's because Sylvia interfaces
-can be implemented only once per contract, and in such a case, associated types
-are semantically correct in Rust.
+The `interface` macro does not support generics. Instead, you can provide generic functionality
+using the associated types. It's because Sylvia interfaces can be implemented only once per
+contract, and in such a case, associated types are semantically correct in Rust.
 
 ```rust
 #[interface]

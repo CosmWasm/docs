@@ -59,18 +59,18 @@ impl CounterContract {
 }
 ```
 
-The `entry_points` macro scans for [`sv::msg`](../attributes/msg) attributes. By
-default it generates: instantiate, exec, and query entry points.
+The `entry_points` macro scans for [`sv::msg`](../attributes/msg) attributes. By default it
+generates: instantiate, exec, and query entry points.
 
 ## Custom types
 
-You can construct your entry points to work with some specific custom types with
-the [`sv::custom`](../attributes/custom).
+You can construct your entry points to work with some specific custom types with the
+[`sv::custom`](../attributes/custom).
 
 ## Generic types
 
-CosmWasm entry points cannot be generic. We are thus forced to provide concrete
-types to be used in place of generic types used in the contract.
+CosmWasm entry points cannot be generic. We are thus forced to provide concrete types to be used in
+place of generic types used in the contract.
 
 ```rust
 use std::marker::PhantomData;
@@ -121,12 +121,11 @@ where
 }
 ```
 
-We do that by adding parantheses after the `entry_points` macro and passing
-`generics` attribute with concrete types passed in brackets.
+We do that by adding parantheses after the `entry_points` macro and passing `generics` attribute
+with concrete types passed in brackets.
 
 <Callout>
-  Remember to pass the types in the order reflecting the order of generics
-  defined on the contract.
+  Remember to pass the types in the order reflecting the order of generics defined on the contract.
 </Callout>
 
 If the contract uses generic custom types we have to do some more work.
@@ -135,9 +134,9 @@ If the contract uses generic custom types we have to do some more work.
 #[cfg_attr(not(feature = "library"), entry_points(generics<Empty, Empty>, custom(msg=SvCustomMsg, query=SvCustomQuery)))]
 ```
 
-After coma we have to pass another parameter `custom`, and in the paranthesis
-specify which types should be used in place of custom message and custom query.
-The syntax reflects one used in the [`custom`](../attributes/custom).
+After coma we have to pass another parameter `custom`, and in the paranthesis specify which types
+should be used in place of custom message and custom query. The syntax reflects one used in the
+[`custom`](../attributes/custom).
 
-This is required as, for at least now, Sylvia is unable to determine which
-concrete types are supposed to be used in place of generic custom types.
+This is required as, for at least now, Sylvia is unable to determine which concrete types are
+supposed to be used in place of generic custom types.

@@ -1,4 +1,11 @@
 {
   "proseWrap": "always",
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "overrides": [
+    {
+      "files": "*.js",
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"]
+      }
+    }
+  ]
 }

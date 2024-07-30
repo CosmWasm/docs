@@ -6,9 +6,8 @@ import { Callout } from "nextra/components";
 
 # Library feature
 
-In the ecosystem, there is the convention to gate the entrypoints of your
-contract behind a compile-time feature. The feature is conventionally called
-`library`.
+In the ecosystem, there is the convention to gate the entrypoints of your contract behind a
+compile-time feature. The feature is conventionally called `library`.
 
 So instead of doing this:
 
@@ -39,19 +38,19 @@ pub fn instantiate(
 ```
 
 <Callout>
-  You can see this in action in the [`cw-plus` contracts]. Here is an example in
-  the [`cw4-stake` contract].
+  You can see this in action in the [`cw-plus` contracts]. Here is an example in the [`cw4-stake`
+  contract].
 </Callout>
 
-The rationale behind this is that currently using `#[entry_point]` exports
-special symbols from the binary, and these symbols **must** be unique.
+The rationale behind this is that currently using `#[entry_point]` exports special symbols from the
+binary, and these symbols **must** be unique.
 
-That means if you have two `instantiate` endpoints annotated with
-`#[entry_point]` _somewhere_ in your project (that includes all your
-dependencies!), your contract will fail to compile.
+That means if you have two `instantiate` endpoints annotated with `#[entry_point]` _somewhere_ in
+your project (that includes all your dependencies!), your contract will fail to compile.
 
-Using this library feature will enable developers to use your contract as a
-dependency and reuse your code.
+Using this library feature will enable developers to use your contract as a dependency and reuse
+your code.
 
 [`cw-plus` contracts]: https://github.com/CosmWasm/cw-plus
-[`cw4-stake` contract]: https://github.com/CosmWasm/cw-plus/blob/48bec694521655d5b3e688c51e4185f740ea4640/contracts/cw4-stake/Cargo.toml#L22-L24
+[`cw4-stake` contract]:
+  https://github.com/CosmWasm/cw-plus/blob/48bec694521655d5b3e688c51e4185f740ea4640/contracts/cw4-stake/Cargo.toml#L22-L24

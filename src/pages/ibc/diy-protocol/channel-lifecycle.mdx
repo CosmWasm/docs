@@ -6,55 +6,54 @@ import { Callout, Tabs } from "nextra/components";
 
 # Channel lifecycle
 
-A channel is a connection between two IBC ports that allows them to send packets
-to each other. In this section, we will cover how to establish a channel and how
-to close it. Since a channel is a connection between two ports, it can connect
-two chain modules, two contracts, or a module and a contract.
+A channel is a connection between two IBC ports that allows them to send packets to each other. In
+this section, we will cover how to establish a channel and how to close it. Since a channel is a
+connection between two ports, it can connect two chain modules, two contracts, or a module and a
+contract.
 
 <Callout>
-  For the sake of readability, we will assume that both ends of the channel are
-  *contracts* in the following explanation. For more general information about
-  the channel lifecycle, see the [ICS 004 specification] or [IBC channel docs].
+  For the sake of readability, we will assume that both ends of the channel are *contracts* in the
+  following explanation. For more general information about the channel lifecycle, see the [ICS 004
+  specification] or [IBC channel docs].
 </Callout>
 
-Each channel also has an order that can be either `Ordered` or `Unordered`. This
-is encoded in the [`IbcOrder`] enum. In an ordered channel, packets must be
-processed by the receiving chain in the order in which they were sent. In an
-unordered channel, packets are processed in the order they arrive.
+Each channel also has an order that can be either `Ordered` or `Unordered`. This is encoded in the
+[`IbcOrder`] enum. In an ordered channel, packets must be processed by the receiving chain in the
+order in which they were sent. In an unordered channel, packets are processed in the order they
+arrive.
 
 [`IbcOrder`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcOrder.html
-[ICS 004 specification]: https://github.com/cosmos/ibc/tree/main/spec/core/ics-004-channel-and-packet-semantics#channel-lifecycle-management
+[ICS 004 specification]:
+  https://github.com/cosmos/ibc/tree/main/spec/core/ics-004-channel-and-packet-semantics#channel-lifecycle-management
 [IBC channel docs]: https://ibc.cosmos.network/main/ibc/overview#channels
 
 ## Establishing a channel
 
-To send packets between two chains, you need to establish a channel between
-them. This process involves two calls per chain. Once the channel is
-established, you can start sending packets through it, which we will cover in
-the next section. To initiate the channel creation, you can use a relayer binary
-such as [hermes] to perform the handshake between the two endpoints. Returning
-an error from one of the calls will cause the channel handshake to fail.
+To send packets between two chains, you need to establish a channel between them. This process
+involves two calls per chain. Once the channel is established, you can start sending packets through
+it, which we will cover in the next section. To initiate the channel creation, you can use a relayer
+binary such as [hermes] to perform the handshake between the two endpoints. Returning an error from
+one of the calls will cause the channel handshake to fail.
 
-In the following, we will refer to the two chains we want to connect as chain A
-and B. The handshake starts on chain A.
+In the following, we will refer to the two chains we want to connect as chain A and B. The handshake
+starts on chain A.
 
-We will take a closer look at the handshake process, but here is a brief summary
-of the steps:
+We will take a closer look at the handshake process, but here is a brief summary of the steps:
 
 1. `ibc_channel_open` on chain A with `IbcChannelOpenMsg::OpenInit`
 2. `ibc_channel_open` on chain B with `IbcChannelOpenMsg::OpenTry`
 3. `ibc_channel_connect` on chain A with `IbcChannelConnectMsg::OpenAck`
 4. `ibc_channel_connect` on chain B with `IbcChannelConnectMsg::OpenConfirm`
 
-[hermes]: https://hermes.informal.systems/tutorials/local-chains/add-a-new-relay-path.html#3-channel-identifiers
+[hermes]:
+  https://hermes.informal.systems/tutorials/local-chains/add-a-new-relay-path.html#3-channel-identifiers
 
 ### Channel open
 
-When the channel creation is started by the relayer, the first call to the
-contract is made on chain A. This call is made to the `ibc_channel_open`
-entrypoint with the `IbcChannelOpenMsg::OpenInit` variant. Then the same
-entrypoint is called on chain B with the `IbcChannelOpenMsg::OpenTry` variant.
-See the following example and the [`IbcChannelOpenMsg`] documentation.
+When the channel creation is started by the relayer, the first call to the contract is made on chain
+A. This call is made to the `ibc_channel_open` entrypoint with the `IbcChannelOpenMsg::OpenInit`
+variant. Then the same entrypoint is called on chain B with the `IbcChannelOpenMsg::OpenTry`
+variant. See the following example and the [`IbcChannelOpenMsg`] documentation.
 
 <Tabs items={['StoragePlus', 'Storey']}>
   <Tabs.Tab>
@@ -180,34 +179,29 @@ const IBC_APP_VERSION: &str = "my-protocol-v1";
   </Tabs.Tab>
 </Tabs>
 
-In the example above, we return the same version we expect from the
-counterparty, but you can return a different version if the counterparty accepts
-it. The version is used to ensure that both chains are running the protocol that
-the other one expects. You can also return `None` if you just want to accept the
-counterparty version.
+In the example above, we return the same version we expect from the counterparty, but you can return
+a different version if the counterparty accepts it. The version is used to ensure that both chains
+are running the protocol that the other one expects. You can also return `None` if you just want to
+accept the counterparty version.
 
 [`IbcChannelOpenMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelOpenMsg.html
 
 #### Permissions
 
-Opening a channel is generally a permissionless process, so make sure to keep
-that in mind when implementing the entrypoints. In the examples above, we only
-allow a single channel per contract instance and always make sure not to
-overwrite an existing channel. Note that we already save the channel in
-`ibc_channel_open`. This causes overlapping channel openings to fail the channel
-handshake. The drawback is that the contract can only connect to that one
-channel, so if the handshake fails, the contract cannot connect to another
-channel.
+Opening a channel is generally a permissionless process, so make sure to keep that in mind when
+implementing the entrypoints. In the examples above, we only allow a single channel per contract
+instance and always make sure not to overwrite an existing channel. Note that we already save the
+channel in `ibc_channel_open`. This causes overlapping channel openings to fail the channel
+handshake. The drawback is that the contract can only connect to that one channel, so if the
+handshake fails, the contract cannot connect to another channel.
 
-You can add additional checks to ensure that the channel is connecting to the
-correct counterparty or use a map to keep track of multiple channels connecting
-to different counterparties.
+You can add additional checks to ensure that the channel is connecting to the correct counterparty
+or use a map to keep track of multiple channels connecting to different counterparties.
 
-You can also be more restrictive and only allow the contract itself to initiate
-the channel creation handshake. This can be done by adding a state item to the
-contract that is only set to true before the contract sends the message to
-initiate the handshake and immediately set to false in the `ibc_channel_open`
-entrypoint.
+You can also be more restrictive and only allow the contract itself to initiate the channel creation
+handshake. This can be done by adding a state item to the contract that is only set to true before
+the contract sends the message to initiate the handshake and immediately set to false in the
+`ibc_channel_open` entrypoint.
 
 <details>
   <summary>Advanced example: Contract initiating the handshake on its own</summary>
@@ -312,19 +306,17 @@ pub const ALLOW_CHANNEL_OPENING: Item<bool> = Item::new("allow_opening");
 const IBC_APP_VERSION: &str = "my-protocol-v1";
 ```
 
-As you can see, the contract itself sends the message to initialize the channel
-handshake in this example. Please note that the rest of the handshake still
-needs to be done by a relayer.
+As you can see, the contract itself sends the message to initialize the channel handshake in this
+example. Please note that the rest of the handshake still needs to be done by a relayer.
 
 </details>
 
 ### Channel connect
 
-After the `OpenTry` variant is called on chain B, the relayer calls the
-`ibc_channel_connect` entrypoint, first with the `IbcChannelConnectMsg::OpenAck`
-variant on chain A, then the `IbcChannelConnectMsg::OpenConfirm` variant on
-chain B. The full data this entrypoint receives can be seen in the
-[`IbcChannelConnectMsg`] documentation. Here is more example code:
+After the `OpenTry` variant is called on chain B, the relayer calls the `ibc_channel_connect`
+entrypoint, first with the `IbcChannelConnectMsg::OpenAck` variant on chain A, then the
+`IbcChannelConnectMsg::OpenConfirm` variant on chain B. The full data this entrypoint receives can
+be seen in the [`IbcChannelConnectMsg`] documentation. Here is more example code:
 
 <Tabs items={['StoragePlus', 'Storey']}>
   <Tabs.Tab>
@@ -414,16 +406,16 @@ const CHANNEL: Item<ChannelInfo> = Item::new(0);
   </Tabs.Tab>
 </Tabs>
 
-[`IbcChannelConnectMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelConnectMsg.html
+[`IbcChannelConnectMsg`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelConnectMsg.html
 
 ## Closing a channel
 
-Similarly to opening a channel, closing a channel involves a handshake process.
-However, this time the process only involves one call per chain. The relayer
-initiates the process by calling the `ibc_channel_close` entrypoint with the
-`IbcChannelCloseMsg::CloseInit` variant on chain A, followed by the same
-entrypoint with the `IbcChannelCloseMsg::CloseConfirm` on chain B. The full data
-can be seen in the [`IbcChannelCloseMsg`] documentation. Here is an example:
+Similarly to opening a channel, closing a channel involves a handshake process. However, this time
+the process only involves one call per chain. The relayer initiates the process by calling the
+`ibc_channel_close` entrypoint with the `IbcChannelCloseMsg::CloseInit` variant on chain A, followed
+by the same entrypoint with the `IbcChannelCloseMsg::CloseConfirm` on chain B. The full data can be
+seen in the [`IbcChannelCloseMsg`] documentation. Here is an example:
 
 ```rust filename="ibc.rs" template="core"
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -437,14 +429,13 @@ pub fn ibc_channel_close(
 ```
 
 <Callout type="warning">
-  While closing channels is something that is possible in IBC, you should think
-  carefully about whether you want to allow it in your protocol. In many cases,
-  it might be better to keep the channel open and return an error when someone
-  tries to close it.
+  While closing channels is something that is possible in IBC, you should think carefully about
+  whether you want to allow it in your protocol. In many cases, it might be better to keep the
+  channel open and return an error when someone tries to close it.
 </Callout>
 
-In this entrypoint, you can handle the closing process as you see fit. This can
-involve cleaning up any storage related to the channel or simply returning an
-error to prevent the channel from closing.
+In this entrypoint, you can handle the closing process as you see fit. This can involve cleaning up
+any storage related to the channel or simply returning an error to prevent the channel from closing.
 
-[`IbcChannelCloseMsg`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelCloseMsg.html
+[`IbcChannelCloseMsg`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.IbcChannelCloseMsg.html

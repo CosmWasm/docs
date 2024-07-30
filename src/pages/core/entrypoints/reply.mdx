@@ -8,30 +8,28 @@ import { Callout } from "nextra/components";
 
 The `reply` endpoint is another special one.
 
-It relates to CosmWasm's actor model which dictates how you call other contracts
-and interact with them.
+It relates to CosmWasm's actor model which dictates how you call other contracts and interact with
+them.
 
 <Callout>
-  If you are not familiar with the actor model, you can find out more about it
-  on [its own page].
+  If you are not familiar with the actor model, you can find out more about it on [its own page].
 </Callout>
 
-This endpoint gets invoked when you receive a response to a message you sent out
-over the chain. The reply parameter then allows you to inspect and work with the
-response that was produced.
+This endpoint gets invoked when you receive a response to a message you sent out over the chain. The
+reply parameter then allows you to inspect and work with the response that was produced.
 
 ## Request a reply
 
-To request a reply, you need to use the `reply_on` field in the message you send
-and set it to one of the following values:
+To request a reply, you need to use the `reply_on` field in the message you send and set it to one
+of the following values:
 
 - `ReplyOn::Always`
 - `ReplyOn::Error`
 - `ReplyOn::Success`
 
 <Callout>
-  The `reply_on` value has an impact on when a transaction is cancelled. For
-  more info, check the page about [transactions].
+  The `reply_on` value has an impact on when a transaction is cancelled. For more info, check the
+  page about [transactions].
 </Callout>
 
 ```rust filename="contract.rs" template="core"

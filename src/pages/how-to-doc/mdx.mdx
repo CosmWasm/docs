@@ -4,12 +4,10 @@ tags: ["tutorial"]
 
 # MDX
 
-With Nextra, all your `.md` and `.mdx` files under the pages directory will be
-rendered with [MDX](https://mdxjs.com/about), it's an advanced Markdown format
-with React component support.
+With Nextra, all your `.md` and `.mdx` files under the pages directory will be rendered with
+[MDX](https://mdxjs.com/about), it's an advanced Markdown format with React component support.
 
-You can use import and use React components inside your Markdown files like
-this:
+You can use import and use React components inside your Markdown files like this:
 
 ```mdx filename="example.mdx"
 import { Callout } from "nextra/components";
@@ -17,10 +15,9 @@ import { Callout } from "nextra/components";
 **Markdown With React Components**
 
 <Callout emoji="✅">
-  **MDX** (the library), at its core, transforms MDX (the syntax) to JSX. It
-  receives an MDX string and outputs a _JSX string_. It does this by parsing the
-  MDX document to a syntax tree and then generates a JSX document from that
-  tree.
+  **MDX** (the library), at its core, transforms MDX (the syntax) to JSX. It receives an MDX string
+  and outputs a _JSX string_. It does this by parsing the MDX document to a syntax tree and then
+  generates a JSX document from that tree.
 </Callout>
 ```
 
@@ -130,15 +127,15 @@ You can use \`content\` to wrap inline code content like: `let x = 1`.
 
 ## Blockquote
 
-> Where some people measure progress in answers-right per test or tests-passed
-> per year, we are more interested in Sistine-Chapel-Ceilings per Lifetime.
+> Where some people measure progress in answers-right per test or tests-passed per year, we are more
+> interested in Sistine-Chapel-Ceilings per Lifetime.
 >
 > — Alan Kay, A Personal Computer for Children of All Ages
 
 Nested quotes:
 
-> > Where some people measure progress in answers-right per test or tests-passed
-> > per year, we are more interested in Sistine-Chapel-Ceilings per Lifetime.
+> > Where some people measure progress in answers-right per test or tests-passed per year, we are
+> > more interested in Sistine-Chapel-Ceilings per Lifetime.
 > >
 > > — Alan Kay, A Personal Computer for Children of All Ages
 >
@@ -164,6 +161,4 @@ React components and Markdown can be **mixed together**, for instance:
 
 Renders:
 
-> <Callout>
->   Give [**Nextra**](https://github.com/shuding/nextra) a star!
-> </Callout>
+> <Callout>Give [**Nextra**](https://github.com/shuding/nextra) a star!</Callout>

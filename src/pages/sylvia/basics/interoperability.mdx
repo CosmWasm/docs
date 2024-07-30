@@ -6,24 +6,21 @@ import { Callout, Tabs } from "nextra/components";
 
 # Interoperability
 
-<Callout>
-  Sylvia contracts are fully interoperable with classical CosmWasm contracts.
-</Callout>
+<Callout>Sylvia contracts are fully interoperable with classical CosmWasm contracts.</Callout>
 
-Sylvia macros expand into a regular CosmWasm code. Because of that, we can test
-and communicate with Sylvia contracts like we would with any CosmWasm contract.
+Sylvia macros expand into a regular CosmWasm code. Because of that, we can test and communicate with
+Sylvia contracts like we would with any CosmWasm contract.
 
-Sylvia exposes, however additional QoL utilities like
-[`Remote`](../types/communication#remote) and [`MultiTest`](../types/multitest)
-helpers, which we recommend using alongside the Sylvia contracts.
+Sylvia exposes, however additional QoL utilities like [`Remote`](../types/communication#remote) and
+[`MultiTest`](../types/multitest) helpers, which we recommend using alongside the Sylvia contracts.
 
 ## Communication
 
 We can send messages from Sylvia as we would from any CosmWasm contract.
 
 Execute messages in Sylvia return the
-[`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html)
-on which we can call the
+[`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html) on which we can
+call the
 [`add_message`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.add_message)
 or
 [`add_messages`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.add_messages).
@@ -42,14 +39,10 @@ fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
 ```
 
 We can also use the generated
-[`WasmMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.WasmMsg.html)
-to construct the
-[`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html)
-and expect reply.
+[`WasmMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.WasmMsg.html) to construct the
+[`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html) and expect reply.
 
-<Callout>
-  Learn more about replies [here](../../core/entrypoints/reply).
-</Callout>
+<Callout>Learn more about replies [here](../../core/entrypoints/reply).</Callout>
 
 ```rust {1, 24-33, 36-45}
 const SUBMSG_ID: u64 = 1;
@@ -104,8 +97,8 @@ impl ReplyContract {
 Query messages can also be sent through the
 [`query_wasm_smart`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.QuerierWrapper.html#method.query_wasm_smart)
 method. We can access the
-[`Deps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html)
-through the [`QueryCtx`](../types/context).
+[`Deps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html) through the
+[`QueryCtx`](../types/context).
 
 ```rust {5-7}
 #[sv::msg(query)]
@@ -118,30 +111,25 @@ fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
 }
 ```
 
-As you see, we can send messages from the Sylvia contract as we would in case of
-a CosmWasm contract. You can check generated messages
-[here](../macros/generated-types/message-types).
+As you see, we can send messages from the Sylvia contract as we would in case of a CosmWasm
+contract. You can check generated messages [here](../macros/generated-types/message-types).
 
-Although we could send messages to Sylvia contract in the same way, we recommend
-using the [`ExecutorBuilder`](../types/communication#executorbuilder) and
-[`BoundQuerier`](../types/communication#boundquerier) which wraps construction
-of the messages.
+Although we could send messages to Sylvia contract in the same way, we recommend using the
+[`ExecutorBuilder`](../types/communication#executorbuilder) and
+[`BoundQuerier`](../types/communication#boundquerier) which wraps construction of the messages.
 
 <Callout>
-  You can learn more about these helpers in the
-  [`communication`](../types/communication) section.
+  You can learn more about these helpers in the [`communication`](../types/communication) section.
 </Callout>
 
 ## Testing
 
-We test Sylvia contract with MultiTest the same way we would test the classical
-CosmWasm contracts, except we use the [`sylvia::App`](../types/multitest#app) in
-place of
-[`cw_multi_test::App`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html).
-This type provides all the API as the MultiTest counterpart, exposing the
-underlying object but adding support for using the Sylvia-generated helpers. It
-can also be used to simulate the execution of standard CosmWasm contracts as
-well
+We test Sylvia contract with MultiTest the same way we would test the classical CosmWasm contracts,
+except we use the [`sylvia::App`](../types/multitest#app) in place of
+[`cw_multi_test::App`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html). This
+type provides all the API as the MultiTest counterpart, exposing the underlying object but adding
+support for using the Sylvia-generated helpers. It can also be used to simulate the execution of
+standard CosmWasm contracts as well
 
 ```rust
 use sylvia::multitest::App;
@@ -150,15 +138,13 @@ let app = App::<BasicMtApp<Empty, Empty>>::default();
 ```
 
 <Callout>
-  We must provide the full type for the [`App`](../types/multitest#app), as Rust
-  cannot deduce it here.
+  We must provide the full type for the [`App`](../types/multitest#app), as Rust cannot deduce it
+  here.
 </Callout>
 
 We can access the underlying
-[`cw_multi_test::App`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html)
-via
-[`app_mut`](https://docs.rs/sylvia/latest/sylvia/multitest/struct.App.html#method.app_mut)
-to
+[`cw_multi_test::App`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html) via
+[`app_mut`](https://docs.rs/sylvia/latest/sylvia/multitest/struct.App.html#method.app_mut) to
 [`store_code`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.store_code)
 of the CosmWasm contract.
 
@@ -185,7 +171,6 @@ let cosmwasm_contract = app
     .unwrap();
 ```
 
-After that testing will be the same as with any CosmWasm and Sylvia contract.
-Check out the documentation about testing Sylvia's contract
-[`here`](../types/multitest) and about testing CosmWasm contracts
-[`here`](../../cw-multi-test).
+After that testing will be the same as with any CosmWasm and Sylvia contract. Check out the
+documentation about testing Sylvia's contract [`here`](../types/multitest) and about testing
+CosmWasm contracts [`here`](../../cw-multi-test).

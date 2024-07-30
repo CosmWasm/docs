@@ -4,15 +4,13 @@ tags: ["ibc", "entrypoints"]
 
 # Build your own protocol
 
-In the following sections, we will guide you through the process of building
-your own IBC protocol. We will cover how to establish a channel between two
-chains, send and receive packets and how to handle timeouts and
-acknowledgements.
+In the following sections, we will guide you through the process of building your own IBC protocol.
+We will cover how to establish a channel between two chains, send and receive packets and how to
+handle timeouts and acknowledgements.
 
 ## Entrypoints
 
-To get an IBC-enabled contract, you need to implement a few IBC-specific
-entrypoints.
+To get an IBC-enabled contract, you need to implement a few IBC-specific entrypoints.
 
 Three for the channel lifecycle:
 
@@ -76,7 +74,6 @@ pub fn ibc_packet_timeout(
 }
 ```
 
-We will explain what these are for in the next sections, but it is important to
-understand that you need to implement **all** of these entrypoints to get a
-working IBC contract. You can always return errors in some of them if that makes
-sense for your protocol, but you need to have them all.
+We will explain what these are for in the next sections, but it is important to understand that you
+need to implement **all** of these entrypoints to get a working IBC contract. You can always return
+errors in some of them if that makes sense for your protocol, but you need to have them all.

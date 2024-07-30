@@ -17,8 +17,8 @@ List of macros supporting the `sv::msg` attribute:
 - [`entry_points`](../macros/entry-points)
 
 <Callout>
-  [`interface`](../macros/interface) macro supports the `sv::msg` attribute only
-  with `exec`, `query` or `sudo` value.
+  [`interface`](../macros/interface) macro supports the `sv::msg` attribute only with `exec`,
+  `query` or `sudo` value.
 </Callout>
 
 ## Usage
@@ -75,20 +75,19 @@ impl CounterContract {
 ```
 
 Notice that each message type has its context type, like
-[`InstantiateCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.InstantiateCtx.html).
-You are required to use the appropriate type. Otherwise, the dispatch will fail
-to compile.
+[`InstantiateCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.InstantiateCtx.html). You are
+required to use the appropriate type. Otherwise, the dispatch will fail to compile.
 
 Each message type except for `query` expects the result type generic over
 [`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html).
 
 ## Aliasing
 
-It is possible to use aliases for types in message signatures. In case of
-`query` return type it requires however additional action. Due to
+It is possible to use aliases for types in message signatures. In case of `query` return type it
+requires however additional action. Due to
 [`QueryResponses`](https://docs.rs/cosmwasm-schema/latest/cosmwasm_schema/derive.QueryResponses.html)
-macro derive on generated `query` message, we have to explicitly provide the
-return type, as the macro wouldn't be able to deduce that from the alias.
+macro derive on generated `query` message, we have to explicitly provide the return type, as the
+macro wouldn't be able to deduce that from the alias.
 
 ```rust
     #[sv::msg(query, resp=SomeResponse)]

@@ -75,8 +75,8 @@ impl CounterContract {
 We define our messages signatures by marking the appropriate methods with the
 [`sv::msg`](../attributes/msg) attribute.
 
-The `impl` block must contain the attributeless `new` method for the generated
-`dispatch` to work properly.
+The `impl` block must contain the attributeless `new` method for the generated `dispatch` to work
+properly.
 
 ## Custom types
 
@@ -85,10 +85,10 @@ You can construct your contract to work with some specific custom types with the
 
 ## Generic types
 
-Sylvia contracts can be reused as a state by other contracts. This way you could
-expand functionality of one contract with another one. In such a case you might
-want to present a possibility for the user to use it with types that suits their
-purpose. You can do that by defining generics on your contract.
+Sylvia contracts can be reused as a state by other contracts. This way you could expand
+functionality of one contract with another one. In such a case you might want to present a
+possibility for the user to use it with types that suits their purpose. You can do that by defining
+generics on your contract.
 
 ```rust
 use std::marker::PhantomData;
@@ -133,31 +133,26 @@ where
 }
 ```
 
-This is a standard way to create generic structs in Rust. Two important things
-to mention are:
+This is a standard way to create generic structs in Rust. Two important things to mention are:
 
-- Rust will complain that generics used in method signatures are unused. You
-  have to create a `std::marker::PhantomData` field to silence this error. In
-  case a contract uses multiple generic types, simply wrap them in a tuple
-  `PhantomData<(T1, T2)>`.
-- If generic types are used as part of the method signature, generated messages
-  will require them to fulfill their trait bounds. In most cases it's enough to
-  add the `sylvia::types::CustomMsg + \'static` bounds.
+- Rust will complain that generics used in method signatures are unused. You have to create a
+  `std::marker::PhantomData` field to silence this error. In case a contract uses multiple generic
+  types, simply wrap them in a tuple `PhantomData<(T1, T2)>`.
+- If generic types are used as part of the method signature, generated messages will require them to
+  fulfill their trait bounds. In most cases it's enough to add the
+  `sylvia::types::CustomMsg + \'static` bounds.
 
 ## Good practices
 
 ### Prefer generic custom types
 
-The [`sv::custom`](../attributes/custom) attribute is not mandatory, as by
-default contract macro will use
-[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
-type in place of custom types. It has a downside that the contract always
-expects the
-[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
-custom messages, and it makes testing it in the [MultiTest](../../cw-multi-test)
-environment with different custom messages tricky. We recommend that if your
-contract is meant to be chain agnostic, define it with a generic custom message
-and custom query.
+The [`sv::custom`](../attributes/custom) attribute is not mandatory, as by default contract macro
+will use [`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) type in place
+of custom types. It has a downside that the contract always expects the
+[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) custom messages, and
+it makes testing it in the [MultiTest](../../cw-multi-test) environment with different custom
+messages tricky. We recommend that if your contract is meant to be chain agnostic, define it with a
+generic custom message and custom query.
 
 ```rust
 pub struct Contract<CMsgT, CQueryT> {

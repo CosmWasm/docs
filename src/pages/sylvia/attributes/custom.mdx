@@ -6,8 +6,7 @@ import { Callout } from "nextra/components";
 
 # `sv::custom` attribute
 
-Use `sv::custom` if you want to use a custom message and/or query in your
-contract.
+Use `sv::custom` if you want to use a custom message and/or query in your contract.
 
 ## Macros
 
@@ -60,8 +59,7 @@ impl CounterContract {
 
 <Callout>
   Types passed as parameters have to implement
-  [`CustomMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.CustomMsg.html)
-  and
+  [`CustomMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.CustomMsg.html) and
   [`CustomQuery`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.CustomQuery.html)
   respectively.
 </Callout>
@@ -99,6 +97,6 @@ pub trait SomeInterface {
 ```
 
 <Callout>
-  It's also possible to define custom types for the interface using associated
-  types. We cover it in the [`interface`](../macros/interface) macro section.
+  It's also possible to define custom types for the interface using associated types. We cover it in
+  the [`interface`](../macros/interface) macro section.
 </Callout>

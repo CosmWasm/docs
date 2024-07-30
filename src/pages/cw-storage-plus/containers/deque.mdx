@@ -6,57 +6,58 @@ import { Callout } from "nextra/components";
 
 # `Deque`
 
-A `Deque` is a container that imitates a traditional double-ended queue. It's
-designed for efficient pushes and pops from either the beginning or end, making
-it suitable for use as a queue or stack. However, it's not optimized for
-insertions or deletions from the middle.
+A `Deque` is a container that imitates a traditional double-ended queue. It's designed for efficient
+pushes and pops from either the beginning or end, making it suitable for use as a queue or stack.
+However, it's not optimized for insertions or deletions from the middle.
 
 <Callout>More information can be found in the [API docs].</Callout>
 
 ## Deque operations
 
-The main operations available for a `Deque` are [`push_back`], [`push_front`],
-[`pop_back`], and [`pop_front`]. It is also possible to check the [`len`]gth of
-the deque, [`get`] an element by index, and [`iter`]ate over the elements.
+The main operations available for a `Deque` are [`push_back`], [`push_front`], [`pop_back`], and
+[`pop_front`]. It is also possible to check the [`len`]gth of the deque, [`get`] an element by
+index, and [`iter`]ate over the elements.
 
-[`push_back`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
-[`push_front`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
-[`pop_back`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
-[`pop_front`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
+[`push_back`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_back
+[`push_front`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.push_front
+[`pop_back`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_back
+[`pop_front`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.pop_front
 [`len`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.len
 [`get`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.get
 [`iter`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.Deque.html#method.iter
 
 - `push_back`: Adds an element to the end of the deque. O(1) time complexity.
-- `push_front`: Adds an element to the beginning of the deque. O(1) time
+- `push_front`: Adds an element to the beginning of the deque. O(1) time complexity.
+- `pop_back`: Removes and returns the last element. Returns `None` if the deque is empty. O(1) time
   complexity.
-- `pop_back`: Removes and returns the last element. Returns `None` if the deque
-  is empty. O(1) time complexity.
-- `pop_front`: Removes and returns the first element. Returns `None` if the
-  deque is empty. O(1) time complexity.
+- `pop_front`: Removes and returns the first element. Returns `None` if the deque is empty. O(1)
+  time complexity.
 - `len`: Returns the number of elements in the deque. O(1) time complexity.
-- `is_empty`: Returns `true` if the deque contains no elements. O(1) time
+- `is_empty`: Returns `true` if the deque contains no elements. O(1) time complexity.
+- `get`: Retrieves an element by index. Returns `None` if the index is out of bounds. O(1) time
   complexity.
-- `get`: Retrieves an element by index. Returns `None` if the index is out of
-  bounds. O(1) time complexity.
-- `front`: Returns a reference to the first element without removing it. Returns
-  `None` if the deque is empty.
-- `back`: Returns a reference to the last element without removing it. Returns
-  `None` if the deque is empty.
+- `front`: Returns a reference to the first element without removing it. Returns `None` if the deque
+  is empty.
+- `back`: Returns a reference to the last element without removing it. Returns `None` if the deque
+  is empty.
 - `iter`: Returns an iterator over the elements of the deque.
 
 <Callout type="warning">
-  The maximum capacity of a `Deque` is `u32::MAX - 1` elements. Attempting to
-  push more elements is considered Undefined Behavior.
+  The maximum capacity of a `Deque` is `u32::MAX - 1` elements. Attempting to push more elements is
+  considered Undefined Behavior.
 </Callout>
 
 ## Deque lifecycle
 
-Creating a `Deque` doesn't immediately commit anything to storage. To add
-elements to the deque, you need to use the `push_back` or `push_front` methods.
+Creating a `Deque` doesn't immediately commit anything to storage. To add elements to the deque, you
+need to use the `push_back` or `push_front` methods.
 
-Values in a `Deque` must implement the `Serialize` and `Deserialize` traits from
-the [`serde`] crate to be stored.
+Values in a `Deque` must implement the `Serialize` and `Deserialize` traits from the [`serde`] crate
+to be stored.
 
 ### Lifecycle example
 
@@ -139,9 +140,9 @@ assert_eq!(sum, 6);
 
 ### Maintaining a log store
 
-It is possible to use a `Deque` to maintain a store of log events or transaction
-records. This is useful when you want to keep a history of production level
-events to ease in debugging a deployed instance of a contract.
+It is possible to use a `Deque` to maintain a store of log events or transaction records. This is
+useful when you want to keep a history of production level events to ease in debugging a deployed
+instance of a contract.
 
 ```rust template="storage"
 use cw_storage_plus::Deque;

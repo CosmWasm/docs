@@ -6,12 +6,10 @@ import { Callout } from "nextra/components";
 
 # `sv::messages` attribute
 
-Use `sv::messages` to expand your contract functionality with the Sylvia
-interface.
+Use `sv::messages` to expand your contract functionality with the Sylvia interface.
 
 <Callout>
-  The `sv::messages` attribute expects that the trait is implemented on the
-  contract type.
+  The `sv::messages` attribute expects that the trait is implemented on the contract type.
 </Callout>
 
 ## Macros
@@ -84,16 +82,15 @@ pub mod contract {
 ```
 
 <Callout>
-  Single `sv::messages` attribute corresponds to a single interface implemented
-  on a contract. If multiple interfaces are implemented, add this attribute for
-  each of them.
+  Single `sv::messages` attribute corresponds to a single interface implemented on a contract. If
+  multiple interfaces are implemented, add this attribute for each of them.
 </Callout>
 
 ### Module/Interface name mismatch
 
-In most cases, the only parameter the `sv::messages` expects is a path to the
-interface, in this case `crate::interface`. Sylvia macros can deduce the
-interface's name if it is simply an UpperCamelCase version of the module name.
+In most cases, the only parameter the `sv::messages` expects is a path to the interface, in this
+case `crate::interface`. Sylvia macros can deduce the interface's name if it is simply an
+UpperCamelCase version of the module name.
 
 If the interface name differs from the module name, use the syntax below:
 
@@ -104,15 +101,14 @@ If the interface name differs from the module name, use the syntax below:
 ### Custom types
 
 It's possible to implement an interface using
-[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html)
-instead of custom types used in the contract.
+[`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) instead of custom
+types used in the contract.
 
-In such a case, we must inform Sylvia to convert the types in the `dispatch`
-methods.
+In such a case, we must inform Sylvia to convert the types in the `dispatch` methods.
 
 ```rust
 #[sv::messages(crate::interface: custom(msg, query))]
 ```
 
-The order of `msg` and `query` doesn't matter, and the attribute accepts either
-`msg`, `query` or both.
+The order of `msg` and `query` doesn't matter, and the attribute accepts either `msg`, `query` or
+both.

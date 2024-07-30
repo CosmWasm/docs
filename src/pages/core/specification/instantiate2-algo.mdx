@@ -6,25 +6,22 @@ import { Callout } from "nextra/components";
 
 # Instantiate2 algorithm
 
-With the instantiate2 algorithm you can create a contract address in a
-predictable and deterministic way. The underlying algorithm is rather simple.
+With the instantiate2 algorithm you can create a contract address in a predictable and deterministic
+way. The underlying algorithm is rather simple.
 
 We use SHA-256 as the underlying hashing algorithm.
 
 You need to provide the following inputs:
 
-- Checksum: This is the checksum of the contract code (the Wasm module, for
-  example). This _has_ to be a SHA-256 hash
-- Creator: This is the canonicalized address of the user instantiating the
-  contract
-- Salt: This is some byte string allowing you to distinguish multiple
-  instantiations of the same contract by the same creator; this parameter has to
-  be under 64 bytes in length
+- Checksum: This is the checksum of the contract code (the Wasm module, for example). This _has_ to
+  be a SHA-256 hash
+- Creator: This is the canonicalized address of the user instantiating the contract
+- Salt: This is some byte string allowing you to distinguish multiple instantiations of the same
+  contract by the same creator; this parameter has to be under 64 bytes in length
 - Message: This is usually unused. CosmWasm sets this to an empty byte string
 
 <Callout>
-  Make sure you convert all the integers into their *big-endian* byte
-  representation!
+  Make sure you convert all the integers into their *big-endian* byte representation!
 </Callout>
 
 ```rust filename="instantiate2.rs" template="instantiate-spec"

@@ -1,0 +1,57 @@
+---
+tags: ["sylvia", "attributes"]
+---
+
+import { Callout } from "nextra/components";
+
+# `sv::attr` attribute
+
+Use `sv::attr` to forward an external attribute to the generated message variant.
+
+## Macros
+
+List of macros supporting the `sv::attr` attribute:
+
+- [`contract`](../macros/contract)
+- [`interface`](../macros/interface)
+
+## Usage
+
+Use the `sv::attr` above any of the methods marked with
+[`#[sv::msg(exec|sudo|query)]`](../attributes/msg) attribute.
+
+```rust {19}
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdResult};
+use sylvia::types::{ExecCtx, InstantiateCtx};
+
+pub struct ReplyContract;
+
+#[contract]
+impl ReplyContract {
+    pub fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    #[sv::attr(serde(rename = "execute"))]
+    fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+}
+```
+
+The [`contract`](../macros/contract) and [`interface`](../macros/interface) macros will decorate the
+message variant with the attribute provided in `sv::attr`.
+
+```rust {2}
+pub enum ExecMsg {
+    #[serde(rename = "execute")]
+    Exec {},
+}
+```

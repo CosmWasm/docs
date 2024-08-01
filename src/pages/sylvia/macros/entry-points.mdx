@@ -127,16 +127,3 @@ with concrete types passed in brackets.
 <Callout>
   Remember to pass the types in the order reflecting the order of generics defined on the contract.
 </Callout>
-
-If the contract uses generic custom types we have to do some more work.
-
-```rust
-#[cfg_attr(not(feature = "library"), entry_points(generics<Empty, Empty>, custom(msg=SvCustomMsg, query=SvCustomQuery)))]
-```
-
-After coma we have to pass another parameter `custom`, and in the paranthesis specify which types
-should be used in place of custom message and custom query. The syntax reflects one used in the
-[`custom`](../attributes/custom).
-
-This is required as, for at least now, Sylvia is unable to determine which concrete types are
-supposed to be used in place of generic custom types.

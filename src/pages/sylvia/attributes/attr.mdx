@@ -25,10 +25,10 @@ use sylvia::contract;
 use sylvia::cw_std::{Response, StdResult};
 use sylvia::types::{ExecCtx, InstantiateCtx};
 
-pub struct ReplyContract;
+pub struct MyContract;
 
 #[contract]
-impl ReplyContract {
+impl Contract {
     pub fn new() -> Self {
         Self
     }

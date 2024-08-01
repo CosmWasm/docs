@@ -4,5 +4,6 @@
   "message": "Message",
   "msg": "Msg",
   "override-entry-point": "Override_entry_point",
-  "attr": "Attribute forwarding"
+  "attr": "Attr",
+  "msg_attr": "MsgAttr"
 }

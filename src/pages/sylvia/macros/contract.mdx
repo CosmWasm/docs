@@ -6,13 +6,18 @@ import { Callout } from "nextra/components";
 
 # Contract
 
-Use the `contract` macro to generate contract messages
+Use the [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) macro to generate
+contract messages
 
-<Callout>Use `contract` macro only on top of struct impl blocks</Callout>
+<Callout>
+  Use [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) macro only on top of
+  struct impl blocks
+</Callout>
 
 ## Attributes
 
-List of attributes supported by `contract` macro:
+List of attributes supported by
+[`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) macro:
 
 - [`custom`](../attributes/custom)
 - [`error`](../attributes/error)
@@ -141,6 +146,31 @@ This is a standard way to create generic structs in Rust. Two important things t
 - If generic types are used as part of the method signature, generated messages will require them to
   fulfill their trait bounds. In most cases it's enough to add the
   `sylvia::types::CustomMsg + \'static` bounds.
+
+## Forwarding attributes to fields
+
+The [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) macro can forward
+attributes to the fields of the messages.
+
+```rust {5}
+#[sv::msg(instantiate)]
+fn instantiate(
+    &self,
+    ctx: InstantiateCtx,
+    #[serde(default)] value: String,
+) -> StdResult<Response> {
+    Ok(Response::new())
+}
+```
+
+The output of the above code will be:
+
+```rust {2}
+pub struct InstantiateMsg {
+    #[serde(default)]
+    pub value: String,
+}
+```
 
 ## Good practices
 

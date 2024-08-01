@@ -377,8 +377,7 @@ The command will return a JSON object similar to the following:
 }
 ```
 
-- "contracts": This array contains the addresses of the contracts instantiated from the specified
-  Code ID. In this example, there are two contracts associated with the Code ID.
+In this example, there are two contracts associated with the Code ID.
 
 ### Query contracts by creator
 
@@ -402,18 +401,15 @@ The command will return a JSON object similar to the following:
 }
 ```
 
-- "contract_addresses": This array contains the addresses of the contracts instantiated by the
-  specified creator. In this example, there are two contracts associated with Bob's address
+In this example, there are no contract addresses associated with Bob's address.
 
 ## Execution
 
-Executing a command on a WASM contract involves sending a transaction that includes specific
-instructions (or messages) to the contract. This process allows you to interact with the contract,
-triggering predefined functions and operations defined within its code.
+Executing a command on a WASM contract involves sending a message to the contract.
 
 ### Execute a command on a wasm contract
 
-First, you define the message you want to send to the contract. In this example we want to call the
+First, we have to define the message to send to the contract. In this example we want to call the
 release function of the contract:
 
 ```sh
@@ -441,7 +437,7 @@ wasmd tx wasm execute "$CONTRACT" "$MSG" \
 - `-o json` outputs the result in JSON format
 - `--keyring-backend=test` specifies the keyring backend to use
 
-By querying the transaction using the `txhash`, we can check the events emited by the contract. The
+By querying the transaction using the `txhash`, we can check the events emitted by the contract. The
 output will look similar to the following:
 
 ```json
@@ -493,7 +489,7 @@ output will look similar to the following:
 }
 ```
 
-Events are logs emitted by the contract during its execution, providing detailed information about
+`Events` are logs emitted by the contract during its execution, providing detailed information about
 the actions performed and the resulting state changes.
 
 Below is the full script that combines all the steps for executing a command on a WASM contract and
@@ -524,7 +520,7 @@ wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json | jq
 To query the state of a WASM contract, you can use the following command.
 
 ```sh
-wasmd query wasm contract-state all "$CONTRACT" -o json | jq -r '.models[0].value' | base64 -d | jq
+wasmd query wasm contract-state all "$CONTRACT" -o json
 ```
 
 The output will look similar to this:
@@ -544,7 +540,7 @@ The output will look similar to this:
 }
 ```
 
-- `"models"` contains key-value pairs representing the state data of the contract base64-encoded.
+`Models` are key-value pairs representing the state data of the contract base64-encoded.
 
 We can decode the contract state using the following command:
 
@@ -731,7 +727,7 @@ following:
 }
 ```
 
-Each entry provides details about a specific operation performed on the contract. Entry Fields:
+Each `entry` provides details about a specific operation performed on the contract. Entry Fields:
 
 - `"operation"` is the type of operation performed, such as initialization or migration.
 - `"code_id"` is the code ID associated with the operation.
@@ -741,10 +737,7 @@ Each entry provides details about a specific operation performed on the contract
 ### Set contract admin
 
 The admin is the only address that can migrate a contract. The admin can be updated by the current
-admin with the following command. In this case, the admin is updated from Alice's address to Bob's
-address.
-
-Run the following command to update the contract admin:
+admin with the following command:
 
 ```sh
 wasmd tx wasm set-contract-admin \

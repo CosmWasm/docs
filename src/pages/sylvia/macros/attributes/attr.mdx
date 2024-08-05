@@ -17,8 +17,8 @@ List of macros supporting the `sv::attr` attribute:
 
 ## Usage
 
-Use the `sv::attr` above any of the methods marked with
-[`#[sv::msg(exec|sudo|query)]`](../attributes/msg) attribute.
+Use the `sv::attr` above any of the methods marked with [`#[sv::msg(exec|sudo|query)]`](msg)
+attribute.
 
 ```rust {19}
 use sylvia::contract;
@@ -46,8 +46,8 @@ impl Contract {
 }
 ```
 
-The [`contract`](../macros/contract) and [`interface`](../macros/interface) macros will decorate the
-message variant with the attribute provided in `sv::attr`.
+The [`contract`](../contract) and [`interface`](../interface) macros will decorate the message
+variant with the attribute provided in `sv::attr`.
 
 ```rust {2}
 pub enum ExecMsg {

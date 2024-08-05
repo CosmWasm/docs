@@ -19,11 +19,11 @@ contract messages
 List of attributes supported by
 [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) macro:
 
-- [`custom`](../attributes/custom)
-- [`error`](../attributes/error)
-- [`message`](../attributes/message)
-- [`msg`](../attributes/msg)
-- [`override_entry_point`](../attributes/override-entry-point)
+- [`custom`](attributes/custom)
+- [`error`](attributes/error)
+- [`message`](attributes/message)
+- [`msg`](attributes/msg)
+- [`override_entry_point`](attributes/override-entry-point)
 
 ## Usage
 
@@ -78,7 +78,7 @@ impl CounterContract {
 ```
 
 We define our messages signatures by marking the appropriate methods with the
-[`sv::msg`](../attributes/msg) attribute.
+[`sv::msg`](attributes/msg) attribute.
 
 The `impl` block must contain the attributeless `new` method for the generated `dispatch` to work
 properly.
@@ -86,7 +86,7 @@ properly.
 ## Custom types
 
 You can construct your contract to work with some specific custom types with the
-[`sv::custom`](../attributes/custom).
+[`sv::custom`](attributes/custom).
 
 ## Generic types
 
@@ -176,9 +176,9 @@ pub struct InstantiateMsg {
 
 ### Prefer generic custom types
 
-The [`sv::custom`](../attributes/custom) attribute is not mandatory, as by default contract macro
-will use [`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) type in place
-of custom types. It has a downside that the contract always expects the
+The [`sv::custom`](attributes/custom) attribute is not mandatory, as by default contract macro will
+use [`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) type in place of
+custom types. It has a downside that the contract always expects the
 [`Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) custom messages, and
 it makes testing it in the [MultiTest](../../cw-multi-test) environment with different custom
 messages tricky. We recommend that if your contract is meant to be chain agnostic, define it with a

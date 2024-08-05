@@ -65,11 +65,11 @@ In the first two lines, we see the usage of two macros:
   point collision.
 
 - [`contract`](../macros/contract) - Parses every method inside the `impl` block marked with the
-  [`[sv::msg(...)]`](../attributes/msg) attribute and create proper messages and utilities like
-  helpers for [`MultiTest`](../../cw-multi-test).
+  [`[sv::msg(...)]`](../macros/attributes/msg) attribute and create proper messages and utilities
+  like helpers for [`MultiTest`](../../cw-multi-test).
 
-This simple example also has the [`sv::msg(...)`](../attributes/msg) attributes. Sylvia macros
-distinguish the if message should be generated from the marked method and of what type.
+This simple example also has the [`sv::msg(...)`](../macros/attributes/msg) attributes. Sylvia
+macros distinguish the if message should be generated from the marked method and of what type.
 
 CosmWasm contract requires the `instantiate` message, and it is mandatory to specify it for the
 [`contract`](../macros/contract) macro. We have to provide it with the proper context type:

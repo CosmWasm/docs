@@ -103,3 +103,28 @@ pub trait Interface {
     fn interface_exec(&self, ctx: ExecCtx, param: Self::MyType) -> StdResult<Response>;
 }
 ```
+
+## Forwarding attributes to fields
+
+The [`interface`](https://docs.rs/sylvia/latest/sylvia/attr.interface.html) macro can forward
+attributes to the fields of the messages.
+
+```rust {5}
+#[sv::msg(exec)]
+fn exec(
+    &self,
+    ctx: ExecCtx,
+    #[serde(default)] value: String,
+) -> Result<Response, Self::Error>;
+```
+
+The output of the above code will be:
+
+```rust {3}
+pub enum MyInterfaceExecMsg {
+    Exec {
+        #[serde(default)]
+        value: String,
+    },
+}
+```

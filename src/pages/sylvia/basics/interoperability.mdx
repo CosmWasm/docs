@@ -25,7 +25,30 @@ call the
 or
 [`add_messages`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.add_messages).
 
-```rust
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust {3, 8, 13}
+#[sv::msg(exec)]
+fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
+    let remote = self
+        .remote
+        .access(&CwStorage(ctx.deps.storage))
+        .get()?
+        .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
+    let msg = WasmMsg::Execute {
+        contract_addr: remote.to_string(),
+        msg: to_json_binary(&ExternalExecMsg::Increment {})?,
+        funds: vec![],
+    };
+    Ok(Response::new().add_message(msg))
+}
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust {3-4, 9}
 #[sv::msg(exec)]
 fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
     let remote = self.remote.load(ctx.deps.storage)?;
@@ -38,13 +61,75 @@ fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
 }
 ```
 
+  </Tabs.Tab>
+</Tabs>
+
 We can also use the generated
 [`WasmMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.WasmMsg.html) to construct the
 [`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html) and expect reply.
 
 <Callout>Learn more about replies [here](../../core/entrypoints/reply).</Callout>
 
-```rust {1, 24-33, 36-45}
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust {1, 18-20, 26-36, 42-48}
+const SUBMSG_ID: u64 = 1;
+
+pub struct ReplyContract {
+    remote: Item<Remote<'static, Contract>>,
+}
+
+#[entry_points]
+#[contract]
+impl ReplyContract {
+    pub fn new() -> Self {
+        Self {
+            remote: Item::new(0),
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx, remote_addr: Addr) -> StdResult<Response> {
+        self.remote
+            .access(&mut CwStorage(ctx.deps.storage))
+            .set(&Remote::new(remote_addr))?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        let msg = self
+            .remote
+            .access(&mut CwStorage(ctx.deps.storage))
+            .get()?
+            .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?
+            .executor()
+            .contract_exec()?
+            .build();
+
+        let sub_msg = SubMsg::reply_on_success(msg, SUBMSG_ID);
+        let resp = Response::new().add_submessage(sub_msg);
+        Ok(resp)
+    }
+
+    #[sv::msg(reply)]
+    fn reply(&self, ctx: ReplyCtx, reply: Reply) -> StdResult<Response> {
+        match reply.id {
+            SUBMSG_ID => {
+                // Your logic here
+                Ok(Response::new())
+            }
+            _ => Err(StdError::generic_err("Invalid reply id")),
+        }
+    }
+}
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust {1, 18-20, 25-34, 39-45}
 const SUBMSG_ID: u64 = 1;
 
 pub struct ReplyContract {
@@ -94,11 +179,35 @@ impl ReplyContract {
 }
 ```
 
+  </Tabs.Tab>
+</Tabs>
+
 Query messages can also be sent through the
 [`query_wasm_smart`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.QuerierWrapper.html#method.query_wasm_smart)
 method. We can access the
 [`Deps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html) through the
 [`QueryCtx`](../types/context).
+
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust {5-7}
+#[sv::msg(query)]
+fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
+    let remote = self
+        .remote
+        .access(&CwStorage(ctx.deps.storage))
+        .get()?
+        .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
+
+    ctx.deps
+        .querier
+        .query_wasm_smart(remote, &ExternalQueryMsg::Count {})
+}
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
 
 ```rust {5-7}
 #[sv::msg(query)]
@@ -110,6 +219,9 @@ fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
         .query_wasm_smart(remote, &ExternalQueryMsg::Count {})
 }
 ```
+
+  </Tabs.Tab>
+</Tabs>
 
 As you see, we can send messages from the Sylvia contract as we would in case of a CosmWasm
 contract. You can check generated messages [here](../macros/generated-types/message-types).

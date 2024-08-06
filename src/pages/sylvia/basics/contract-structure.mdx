@@ -2,25 +2,109 @@
 tags: ["sylvia"]
 ---
 
+import { Callout, Tabs } from "nextra/components";
+
 # Contract structure
 
 Sylvia contracts are designed using the actor model. An actor is a contract struct that can store a
 state and define a behavior.
 
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust
+use cw_storey::containers::Item;
+
+pub struct CounterContract { pub count: Item<u64>, }
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
 ```rust
 use sylvia::cw_storage_plus::Item;
 
-pub struct CounterContract {
-    pub count: Item<u64>,
-}
+pub struct CounterContract { pub count: Item<u64>, }
 ```
 
+  </Tabs.Tab>
+</Tabs>
+
 In Sylvia we keep the state accessors as part of the contract definition. The accessors are
-[`cw_storage_plus`](../../cw-storage-plus) primitives.
+[`storey`](../../storey) or [`cw_storage_plus`](../../cw-storage-plus) primitives.
 
 Let's take a look at the behavior implementation.
 
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
 ```rust
+use cosmwasm_schema::cw_serde;
+use cw_storey::CwStorage;
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdError, StdResult};
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+#[cw_serde]
+pub struct CountResponse {
+    pub count: u64,
+}
+
+#[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self {
+            count: Item::new(0),
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        self.count
+            .access(&mut CwStorage(ctx.deps.storage))
+            .set(&0)?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn increment(&self, ctx: ExecCtx) -> StdResult<Response> {
+        let mut storage = CwStorage(ctx.deps.storage);
+        let mut accessor = self.count.access(&mut storage);
+        let count = accessor
+            .get()?
+            .ok_or_else(|| StdError::generic_err("Count not instantiated yet"))?;
+        accessor.set(&(count + 1))?;
+
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn count(&self, ctx: QueryCtx) -> StdResult<CountResponse> {
+        let count = self
+            .count
+            .access(&CwStorage(ctx.deps.storage))
+            .get()?
+            .ok_or_else(|| StdError::generic_err("Count not instantiated yet"))?;
+        Ok(CountResponse { count })
+    }
+}
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust
+use cosmwasm_schema::cw_serde;
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdError, StdResult};
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+#[cw_serde]
+pub struct CountResponse {
+    pub count: u64,
+}
+
 #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
 #[contract]
 impl CounterContract {
@@ -53,12 +137,14 @@ impl CounterContract {
 }
 ```
 
+  </Tabs.Tab>
+</Tabs>
+
 In the first two lines, we see the usage of two macros:
 
-- [`entry_points`](https://docs.rs/sylvia/latest/sylvia/attr.entry_points.html) - Generates entry
-  points of the contract. By default it will generate `instantiate`, `execute` and `query` entry
-  points. The other ones, `migrate`, `reply`, and `sudo`, are generated if a behavior related to
-  them is defined in the `impl` block.
+- [`entry_points`](../macros/entry-points) - Generates entry points of the contract. By default it
+  will generate `instantiate`, `execute` and `query` entry points. The other ones, `migrate`,
+  `reply`, and `sudo`, are generated if a behavior related to them is defined in the `impl` block.
 
   This macro is wrapped in `cfg_attr` statement to be compiled only if `library` feature flag is not
   enabled. This way, other users who might want to use this contract in theirs won't get an entry
@@ -92,7 +178,7 @@ queries should never mutate the state. This is not the case for the
 [`ExecCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecCtx.html) and `InstantiateCtx`
 which exposes the [`DepsMut`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.DepsMut.html).
 
-Fell free expanding the macro now and seeing what Sylvia generates. It might be overwhelming, as
+Feel free expanding the macro now and seeing what Sylvia generates. It might be overwhelming, as
 there will be a lot of things generated that seem not relevant to our code, so for the bare minimum,
 check the `InstantiateMsg` and its `impl` block.
 

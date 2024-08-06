@@ -39,6 +39,17 @@ Let's take a look at the behavior implementation.
   <Tabs.Tab>
 
 ```rust
+use cosmwasm_schema::cw_serde;
+use cw_storey::CwStorage;
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdError, StdResult};
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+#[cw_serde]
+pub struct CountResponse {
+    pub count: u64,
+}
+
 #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
 #[contract]
 impl CounterContract {
@@ -84,6 +95,16 @@ impl CounterContract {
   <Tabs.Tab>
 
 ```rust
+use cosmwasm_schema::cw_serde;
+use sylvia::contract;
+use sylvia::cw_std::{Response, StdError, StdResult};
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+#[cw_serde]
+pub struct CountResponse {
+    pub count: u64,
+}
+
 #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
 #[contract]
 impl CounterContract {
@@ -157,7 +178,7 @@ queries should never mutate the state. This is not the case for the
 [`ExecCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecCtx.html) and `InstantiateCtx`
 which exposes the [`DepsMut`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.DepsMut.html).
 
-Fell free expanding the macro now and seeing what Sylvia generates. It might be overwhelming, as
+Feel free expanding the macro now and seeing what Sylvia generates. It might be overwhelming, as
 there will be a lot of things generated that seem not relevant to our code, so for the bare minimum,
 check the `InstantiateMsg` and its `impl` block.
 

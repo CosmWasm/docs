@@ -18,10 +18,10 @@ Use the `entry_points` macro to generate entry points of your contract.
 
 List of attributes supported by `entry_points` macro:
 
-- [`custom`](../attributes/custom)
-- [`error`](../attributes/error)
-- [`msg`](../attributes/msg)
-- [`override_entry_point`](../attributes/override-entry-point)
+- [`custom`](attributes/custom)
+- [`error`](attributes/error)
+- [`msg`](attributes/msg)
+- [`override_entry_point`](attributes/override-entry-point)
 
 ## Usage
 
@@ -59,13 +59,13 @@ impl CounterContract {
 }
 ```
 
-The `entry_points` macro scans for [`sv::msg`](../attributes/msg) attributes. By default it
-generates: instantiate, exec, and query entry points.
+The `entry_points` macro scans for [`sv::msg`](attributes/msg) attributes. By default it generates:
+instantiate, exec, and query entry points.
 
 ## Custom types
 
 You can construct your entry points to work with some specific custom types with the
-[`sv::custom`](../attributes/custom).
+[`sv::custom`](attributes/custom).
 
 ## Generic types
 

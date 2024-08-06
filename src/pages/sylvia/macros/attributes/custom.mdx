@@ -12,9 +12,9 @@ Use `sv::custom` if you want to use a custom message and/or query in your contra
 
 List of macros supporting the `sv::custom` attribute:
 
-- [`contract`](../macros/contract)
-- [`interface`](../macros/interface)
-- [`entry_points`](../macros/entry-points)
+- [`contract`](../contract)
+- [`interface`](../interface)
+- [`entry_points`](../entry-points)
 
 ## Usage
 
@@ -64,7 +64,7 @@ impl CounterContract {
   respectively.
 </Callout>
 
-`sv::custom` works the same in the case of the `interface` macro.
+`sv::custom` works the same in the case of the [`interface`](../interface) macro.
 
 ```rust
 use cosmwasm_schema::cw_serde;
@@ -98,5 +98,5 @@ pub trait SomeInterface {
 
 <Callout>
   It's also possible to define custom types for the interface using associated types. We cover it in
-  the [`interface`](../macros/interface) macro section.
+  the [`interface`](../interface) macro section.
 </Callout>

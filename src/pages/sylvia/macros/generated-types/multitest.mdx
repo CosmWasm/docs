@@ -364,7 +364,7 @@ the reference to the [`App`](../../types/multitest#app).
     }
     ```
 
-    The proxy trait declares methods marked with the [`sv::msg`](../../attributes/msg) attribute, and found in the contract impl block
+    The proxy trait declares methods marked with the [`sv::msg`](../attributes/msg) attribute, and found in the contract impl block
 
     The trait is then implemented on the [`Proxy`](../../types/multitest#proxy) generic over the contract type. Implementation of the methods instantiates appropriate messages and sends them to the [`App`](../../types/multitest#app)
     so that we don't have to do it manually.

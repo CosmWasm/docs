@@ -12,13 +12,12 @@ Use `sv::msg_attr` to forward an external attribute to the generated message.
 
 List of macros supporting the `sv::msg_attr` attribute:
 
-- [`contract`](../macros/contract)
-- [`interface`](../macros/interface)
+- [`contract`](../contract)
+- [`interface`](../interface)
 
 ## Usage
 
-Use the `sv::msg_attr` above any of the methods marked with [`#[sv::msg(..)]`](attributes/msg)
-attribute.
+Use the `sv::msg_attr` above any of the methods marked with [`#[sv::msg(..)]`](msg) attribute.
 
 ```rust {19}
 use sylvia::contract;
@@ -43,8 +42,8 @@ impl MyContract {
 }
 ```
 
-The [`contract`](../macros/contract) and [`interface`](../macros/interface) macros will decorate the
-message with the attributes/macros provided in `sv::msg_attr`.
+The [`contract`](../contract) and [`interface`](../interface) macros will decorate the message with
+the attributes/macros provided in `sv::msg_attr`.
 
 ```rust {8, 10-11}
 #[derive(

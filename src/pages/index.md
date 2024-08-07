@@ -6,11 +6,10 @@ The [x/wasm module](https://github.com/CosmWasm/wasmd/tree/main/x/wasm), the roo
 [Cosmos SDK](https://docs.cosmos.network/) module enabling smart contracts to execute on the Wasm virtual machine.
 It is a bridge between Cosmos chain and the [WasmWM](https://github.com/CosmWasm/wasmvm) executing the smart contracts.
 CosmWasm itself is the whole ecosystem built around it with a mission to make smart contracts development easy and reliable.
-The focuses of the CosmWasm platform are security, performance, and interoperability. CosmWasm is the only smart contracts
-platform for public blockchains that has been heavily adopted outside the EVM world.
+The focuses of the CosmWasm platform are security, performance, and interoperability.
 
-We chose to target a Rust programming language as a Smart Contract development stack, as it has the best Wasm compiler on the
-market so far. As of today, we do not provide bindings to help write Smart Contracts in another stack that compiles to Wasm,
+We chose to target a Rust programming language as a smart contract development stack, as it has the best Wasm compiler on the
+market so far. As of today, we do not provide bindings to help write smart contracts in another stack that compiles to Wasm,
 and we don't support that.
 
 Here is where to find CosmWasm in the whole Cosmos stack:

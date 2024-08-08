@@ -61,10 +61,15 @@ mod users {
     }
 }
 
+fn advance_height(env: &mut Env, blocks: u64) {
+    env.block.height += blocks;
+}
+
 #[test]
 fn doctest() {
     #[allow(unused_variables, unused_mut)]
     let mut storage = cosmwasm_std::testing::MockStorage::new();
+    let mut env = cosmwasm_std::testing::mock_env();
 
     let users = cw_storage_plus::IndexedMap::<Addr, _, _>::new(
         "uu",

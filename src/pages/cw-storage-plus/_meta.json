@@ -1,6 +1,4 @@
 {
   "basics": "Basics",
-  "containers": "Containers",
-  "snapshots": "Snapshots",
-  "multi-indexes": "Multi index collections"
+  "containers": "Containers"
 }

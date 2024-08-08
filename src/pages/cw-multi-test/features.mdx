@@ -4,23 +4,30 @@ tags: ["multitest", "features"]
 
 # Features
 
-## Functionalities
+All **`MultiTest`** features a listed in the following table. The **"Default implementation"**
+column indicates whether the feature has a default implementation in **`MultiTest`** that simulates
+the functionality of the real blockchain as closely as possible. In cases where **`MultiTest`** does
+not have a default implementation for the feature, users may provide their own, using `AppBuilder`'s
+function listed in **"AppBuilder constructor"** column. Names of **`MultiTest`** feature flags
+required to enable specific functionality are provided in the column **"Feature flag"**.
 
-| Functionality | Impl    | Feature    | AppBuilder          | Testing purpose                             |
-| ------------- | ------- | ---------- | ------------------- | ------------------------------------------- |
-| Block         | **YES** |            | `with_block`        | Operations on blocks.                       |
-| API           | **YES** |            | `with_api`          | Access to CosmWasm API.                     |
-| Storage       | **YES** |            | `with_storage`      | Access to storage.                          |
-| Bank          | **YES** |            | `with_bank`         | Interactions with **Bank** module.          |
-| Staking       | **YES** | `staking`  | `with_staking`      | Interactions with **Staking** module.       |
-| Distribution  | **YES** | `staking`  | `with_distribution` | Interactions with **Distribution** module.  |
-| Governance    | **NO**  |            | `with_gov`          | Interactions with **Governance** module.    |
-| Stargate      | **NO**  | `stargate` | `with_stargate`     | Operations with <br/>Stargate/Any messages. |
-| Wasm          | **YES** |            | `with_wasm`         | Interactions with **Wasm** module.          |
-| Custom        | **NO**  |            | `new_custom`        | Operations on custom module.                |
-| IBC           | **NO**  | `stargate` | `with_ibc`          | Inter-blockchain communication operations.  |
+| Feature      | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor | Functionality                                      |
+| ------------ | :------------------------: | :--------------: | -------------------------- | -------------------------------------------------- |
+| Block        |          **YES**           |                  | `with_block`               | Operations on blocks.                              |
+| API          |          **YES**           |                  | `with_api`                 | Access to CosmWasm API.                            |
+| Storage      |          **YES**           |                  | `with_storage`             | Access to storage.                                 |
+| Bank         |          **YES**           |                  | `with_bank`                | Interactions with **Bank** module.                 |
+| Staking      |          **YES**           |    `staking`     | `with_staking`             | Interactions with **Staking** module.              |
+| Distribution |          **YES**           |    `staking`     | `with_distribution`        | Interactions with **Distribution** module.         |
+| Governance   |           **NO**           |                  | `with_gov`                 | Interactions with **Governance** module.           |
+| Stargate     |           **NO**           |    `stargate`    | `with_stargate`            | Operations using `Stargate` and/or `Any` messages. |
+| Wasm         |          **YES**           |                  | `with_wasm`                | Interactions with **Wasm** module.                 |
+| Custom       |           **NO**           |                  | `new_custom`               | Operations using custom module.                    |
+| IBC          |           **NO**           |    `stargate`    | `with_ibc`                 | Inter-blockchain communication operations.         |
 
-## Feature flags
+## Feature flags summary
+
+The following table summarizes all the feature flags supported by **`MultiTest`**.
 
 | Feature flag   | Description                                                                                                                           |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |

@@ -19,7 +19,10 @@ for testing complex smart contract interactions and operations involving various
 
 The most valuable advantage of using **`MultiTest`** is that it allows testing and debugging of
 smart contracts with access to the Rust source code, eliminating the need to run a complete
-blockchain node to begin designing the smart contract functionality.
+blockchain node to begin designing the smart contract functionality. Additionally, **`MultiTest`**
+enables the execution of tests significantly faster than on a real blockchain, as it bypasses the
+overhead associated with network consensus and block production. This results in a more efficient
+development cycle, allowing for quicker iterations and faster identification of issues.
 
 While **`MultiTest`** is a blockchain **SIMULATOR**, it may happen, that the behavior of the real
 blockchain might slightly differ in some edge cases. We strongly encourage you to [file an issue]

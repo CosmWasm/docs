@@ -4,23 +4,23 @@ tags: ["multitest", "features"]
 
 # Features
 
-## Functionalities
+| Feature      | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor | Functionality                                      |
+| ------------ | :------------------------: | :--------------: | -------------------------- | -------------------------------------------------- |
+| Block        |          **YES**           |                  | `with_block`               | Operations on blocks.                              |
+| API          |          **YES**           |                  | `with_api`                 | Access to CosmWasm API.                            |
+| Storage      |          **YES**           |                  | `with_storage`             | Access to storage.                                 |
+| Bank         |          **YES**           |                  | `with_bank`                | Interactions with **Bank** module.                 |
+| Staking      |          **YES**           |    `staking`     | `with_staking`             | Interactions with **Staking** module.              |
+| Distribution |          **YES**           |    `staking`     | `with_distribution`        | Interactions with **Distribution** module.         |
+| Governance   |           **NO**           |                  | `with_gov`                 | Interactions with **Governance** module.           |
+| Stargate     |           **NO**           |    `stargate`    | `with_stargate`            | Operations using `Stargate` and/or `Any` messages. |
+| Wasm         |          **YES**           |                  | `with_wasm`                | Interactions with **Wasm** module.                 |
+| Custom       |           **NO**           |                  | `new_custom`               | Operations using custom module.                    |
+| IBC          |           **NO**           |    `stargate`    | `with_ibc`                 | Inter-blockchain communication operations.         |
 
-| Functionality | Impl    | Feature    | AppBuilder          | Testing purpose                             |
-| ------------- | ------- | ---------- | ------------------- | ------------------------------------------- |
-| Block         | **YES** |            | `with_block`        | Operations on blocks.                       |
-| API           | **YES** |            | `with_api`          | Access to CosmWasm API.                     |
-| Storage       | **YES** |            | `with_storage`      | Access to storage.                          |
-| Bank          | **YES** |            | `with_bank`         | Interactions with **Bank** module.          |
-| Staking       | **YES** | `staking`  | `with_staking`      | Interactions with **Staking** module.       |
-| Distribution  | **YES** | `staking`  | `with_distribution` | Interactions with **Distribution** module.  |
-| Governance    | **NO**  |            | `with_gov`          | Interactions with **Governance** module.    |
-| Stargate      | **NO**  | `stargate` | `with_stargate`     | Operations with <br/>Stargate/Any messages. |
-| Wasm          | **YES** |            | `with_wasm`         | Interactions with **Wasm** module.          |
-| Custom        | **NO**  |            | `new_custom`        | Operations on custom module.                |
-| IBC           | **NO**  | `stargate` | `with_ibc`          | Inter-blockchain communication operations.  |
+## Feature flags summary
 
-## Feature flags
+The following table summarizes all the feature flags supported by **`MultiTest`**.
 
 | Feature flag   | Description                                                                                                                           |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |

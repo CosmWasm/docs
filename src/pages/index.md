@@ -5,7 +5,7 @@ tags: ["intro"]
 The [x/wasm module](https://github.com/CosmWasm/wasmd/tree/main/x/wasm), the root of CosmWasm, is a
 [Cosmos SDK](https://docs.cosmos.network/) module enabling smart contracts to execute on the
 [Wasmer](https://wasmer.io/) virtual machine. It is a bridge between Cosmos chain and the
-[WasmWM](https://github.com/CosmWasm/wasmvm) executing the smart contracts. CosmWasm itself is the
+[WasmVM](https://github.com/CosmWasm/wasmvm) executing the smart contracts. CosmWasm itself is the
 whole ecosystem built around it with a mission to make smart contracts development easy and
 reliable. The focuses of the CosmWasm platform are security, performance, and interoperability.
 
@@ -18,9 +18,9 @@ Here is where to find CosmWasm in the whole Cosmos stack:
 ```mermaid
 erDiagram
     "Cosmos SDK" ||--|| BFT: Uses
-    "Cosmos SDK" ||--|| "CosmWasm Wasm/WasmWM": Includes
+    "Cosmos SDK" ||--|| "CosmWasm Wasm/WasmVM": Includes
     "Cosmos SDK" ||--o{ "Custom Module" : Includes
-    "Wasm/WasmWM" ||--o{ "CoscWasm Smart Contract": Executes
+    "Wasm/WasmVM" ||--o{ "CosmWasm Smart Contract": Executes
 
 ```
 

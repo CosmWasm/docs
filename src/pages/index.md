@@ -29,7 +29,7 @@ instance has its unique address on the chain, and it can act just like any other
 easy to implement communication between two smart contracts on the same chain. CosmWasm standard
 library provides simple utilities to communicate with non-CosmWasm modules on the chain. That
 includes common Cosmos modules like bank or staking and any custom module unique for a particular
-chain. Finally, CosmWasm is build around the [IBC](https://www.ibcprotocol.dev/) and provides a
+chain. Finally, CosmWasm is built around the [IBC](https://www.ibcprotocol.dev/) and provides a
 simple API to communicate with other chains and contracts using IBC-based protocols
 
 This documentation already covers most of the stack. Still, some parts are a work in progress. If

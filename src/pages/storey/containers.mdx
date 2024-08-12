@@ -43,6 +43,32 @@ container.
 
 To avoid key collisions, you must provide a different byte to each container.
 
+# Accessor
+
+Every container has a corresponding "accessor" type that is used to perform all read/write
+operations.
+
+To get the accessor of a top-level container, the [`access` method] must be called. It takes a
+reference to a storage backend.
+
+```rust template="storage"
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+let item: Item<u32> = Item::new(0);
+
+item.access(&mut CwStorage(&mut storage))
+    .set(&42)
+    .unwrap();
+
+assert_eq!(
+    item.access(&CwStorage(&storage))
+        .get()
+        .unwrap(),
+    Some(42)
+);
+```
+
 # Composition
 
 Some containers can be composed together to create more complex data structures. Right now, the only
@@ -108,3 +134,6 @@ This is a binary encoding that should generally be a storage performance improve
 If you need to use a different encoding, you can instead import the `Item`/`Column` type from the
 `storey` crate and specify an alternative encoding. A guide to implementing your encoding can be
 found in the [_Alternative encodings_](encodings) section.
+
+[`access` method]:
+  https://docs.rs/cw-storey/latest/cw_storey/containers/type.Item.html#method.access

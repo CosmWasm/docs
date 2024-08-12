@@ -5,3 +5,87 @@ tags: ["storey", "containers"]
 import { Callout } from "nextra/components";
 
 # Item
+
+An [`Item`] is the simplest container. It stores a single value at a specific key.
+
+An `Item` that's never been `set` is empty, and will return `None` upon a `get`.
+
+<Callout>
+For a more in-depth look at the `Item` container, check out the [API documentation].
+</Callout>
+
+## Usage examples
+
+### Saving an admin address
+
+```rust template="storage"
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+let admin: Item<String> = Item::new(0);
+let mut cw_storage = CwStorage(&mut storage);
+let mut access = admin.access(&mut cw_storage);
+
+assert_eq!(
+    admin.access(&cw_storage).get().unwrap(),
+    None,
+);
+
+admin.access(&mut cw_storage)
+    .set(&String::from("some_address"))
+    .unwrap();
+
+assert_eq!(
+    admin.access(&cw_storage).get().unwrap(),
+    Some(String::from("some_address")),
+);
+```
+
+### Maintaining a config structure
+
+```rust template="storage"
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+#[cw_serde]
+struct Config {
+    admin: String,
+    interest_rate: Decimal,
+}
+
+let item: Item<Config> = Item::new(0);
+let mut cw_storage = CwStorage(&mut storage);
+let mut access = item.access(&mut cw_storage);
+
+let cfg = Config {
+    admin: "some_address".to_string(),
+    interest_rate: Decimal::percent(5),
+};
+
+access.set(&cfg).unwrap();
+assert_eq!(access.get().unwrap(), Some(cfg));
+```
+
+### Default values
+
+Sometimes you might like to read a value, but if it may have never been set, you want to provide a
+default. This is a common pattern for counters or other numeric values.
+
+```rust template="storage"
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+let counter: Item<u32> = Item::new(0);
+let mut cw_storage = CwStorage(&mut storage);
+let mut access = counter.access(&mut cw_storage);
+
+let mut total = access.get().unwrap().unwrap_or(0);
+
+assert_eq!(total, 0);
+total += 1;
+
+access.set(&total).unwrap();
+```
+
+[`Item`]: https://docs.rs/cw-storey/latest/cw_storey/containers/type.Item.html
+[API documentation]: https://docs.rs/cw-storey/latest/cw_storey/containers/type.Item.html

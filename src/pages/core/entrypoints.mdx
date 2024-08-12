@@ -8,8 +8,8 @@ import { Callout } from "nextra/components";
 
 Entrypoints are where your contract can be called from the outside world. You can equate that to
 your `main` function in C, Rust, Java, etc.  
-However, there is one _small_ difference: In CosmWasm, you have multiple of these entrypoints, each
-one different from the last.
+However, there is one _small_ difference: In CosmWasm, you have multiple entrypoints, each one
+different from the last.
 
 In this section we want to give you a quick overview over all the entrypoints and when they are
 called.
@@ -36,8 +36,8 @@ use it when needed!"
 <Callout>
   When defining an entrypoint, it is important to use the correct types for the parameters and
   return type. Incorrect types will cause errors when trying to call the contract.
-  <br /> In the following sections we will take a look at all possible entrypoints, including the
-  correct function signature.
+  <br /> In the following sections we will take a look at all possible entrypoints, including the correct
+  function signature.
 </Callout>
 
 <Callout>
@@ -69,7 +69,7 @@ your own types.
 
 ### Predefined types
 
-#### `Deps`/`DepsMut`
+#### [`Deps`]/[`DepsMut`]
 
 These structs provide you access to the:
 
@@ -81,7 +81,7 @@ The big difference is that `DepsMut` gives you _mutable_ access to the storage. 
 deliberate since you, for example, can't mutate the state in the `query` endpoint. Instead of
 relying on runtime errors, this is made _irrepresentable_ through Rust's type system.
 
-#### `Env`
+#### [`Env`]
 
 This struct provides you with some information of the current state of the environment your contract
 is executed in.
@@ -89,7 +89,7 @@ is executed in.
 The information provided is, for example, the block height, chain ID, transaction info, etc.
 Basically anything you'd ever want to know about the current state of the execution environment!
 
-#### `MessageInfo`
+#### [`MessageInfo`]
 
 This struct isn't provided to every endpoint, only to a select few.
 
@@ -114,7 +114,8 @@ struct CustomInstantiateMsg {
 
 <Callout>
   This macro actually just expands into a bunch of `derive` attributes.
-  We provide this simply for your convenience, otherwise you'd have to keep track of all of these derives yourself.
+  We provide this simply for your convenience, otherwise you'd have to keep track of all of these derives 
+  yourself if you want the full suite of conveniences `cosmwasm-std` has to offer.
 
   <details>
     <summary>Without `#[cw_serde]`</summary>
@@ -136,3 +137,8 @@ struct CustomInstantiateMsg {
 
   </details>
 </Callout>
+
+[`Deps`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html
+[`DepsMut`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.DepsMut.html
+[`Env`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Env.html`
+[`MessageInfo`]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.MessageInfo.html

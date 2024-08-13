@@ -65,7 +65,7 @@ assert_eq!(
     None
 );
 
-// Before/at the current block, the price was 81%
+// Before/at the current block, the price was 0.81
 assert_eq!(
     price
         .may_load_at_height(&storage, ("OSMO", "ATOM"), env.block.height - 49)
@@ -79,7 +79,7 @@ assert_eq!(
     Some(Decimal::percent(81))
 );
 
-// After the current block, the price will come up as 92%
+// After the current block, the price will come up as 0.92
 assert_eq!(
     price
         .may_load_at_height(&storage, ("OSMO", "ATOM"), env.block.height + 1)

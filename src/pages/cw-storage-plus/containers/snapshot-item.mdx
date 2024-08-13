@@ -37,6 +37,8 @@ There are currently 3 built-in strategies, although in the future this might be 
   metadata
 </Callout>
 
+Let's say we want to keep a history of prices for a specific trading pair.
+
 ```rust template="storage"
 use cw_storage_plus::{SnapshotItem, Strategy};
 
@@ -66,7 +68,7 @@ assert_eq!(
     None
 );
 
-// Before/at the current block, the price was 81%
+// Before/at the current block, the price was 0.81
 assert_eq!(
     price
         .may_load_at_height(&storage, env.block.height - 49)
@@ -80,7 +82,7 @@ assert_eq!(
     Some(Decimal::percent(81))
 );
 
-// After the current block, the price will come up as 92%
+// After the current block, the price will come up as 0.92
 assert_eq!(
     price
         .may_load_at_height(&storage, env.block.height + 1)

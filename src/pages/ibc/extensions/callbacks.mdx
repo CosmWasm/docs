@@ -12,7 +12,8 @@ problem, the [ADR-8 specification][adr-8] was created. On the source chain, it p
 when an IBC packet was acknowledged or timed out. On the destination chain, it triggers callbacks
 when a packet is received.
 
-IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks].
+IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks] that works not just for ICS20
+transfers, but any message that supports the required interface.
 
 [adr-8]: https://github.com/cosmos/ibc-go/blob/main/docs/architecture/adr-008-app-caller-cbs.md
 [ibc-hooks]: https://github.com/cosmos/ibc-apps/blob/main/modules/ibc-hooks/README.md

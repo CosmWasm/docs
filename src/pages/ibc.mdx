@@ -4,13 +4,14 @@ tags: ["ibc"]
 
 # Introduction
 
-IBC is a protocol that allows different blockchains to communicate with each other. It is a standard
-that defines how blockchains can send and receive messages to each other. This allows for the
-creation of a network of blockchains that can interact with each other.
+IBC is a standard that defines how blockchains can send and receive messages to each other. This
+allows for the creation of a network of blockchains that can interact with each other.
 
 You can use the IBC protocol as a building block to create your own custom protocols on top of it,
 but you can also use existing protocols like the [ICS-20 token transfer protocol]. In the following sections,
-we will explain how both of these work.
+we will explain how both of these work. Using CosmWasm for this gives you a key advantage over writing
+a custom Cosmos SDK module in Go: you can easily deploy and upgrade your contract without having to go
+through a full chain upgrade (on multiple chains, mind you).
 
 [ICS-20 token transfer protocol]:
   https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md

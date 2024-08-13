@@ -4,73 +4,13 @@ tags: ["ibc", "ics20", "entrypoints"]
 
 import { Callout, Tabs } from "nextra/components";
 
-# Using existing protocols
+# ADR-8: IBC Callbacks
 
-The easiest way to use IBC is to use an already existing protocol. These protocols can either be
-implemented by the chain itself or by another contract.
-
-One example for the former is the `IbcMsg::Transfer` message, which causes an [ICS20] transfer. This
-message is included in the CosmWasm standard library. It causes the chain's IBC transfer module to
-send tokens to another chain.
-
-An example for the latter is the [Nois protocol]. It provides a proxy contract that handles all the IBC
-logic for you. We will later cover how to implement your own IBC protocol.
-
-[ICS20]: https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md
-[Nois protocol]: https://docs.nois.network/dapp_devs/use_nois_randomness.html
-
-## Example: `IbcMsg::Transfer`
-
-To initiate an ICS20 transfer, you need to attach an `IbcMsg::Transfer` message to your contract
-response like this:
-
-```rust template="execute"
-// construct the transfer message
-let msg = IbcMsg::Transfer {
-    channel_id: "channel-0".to_string(),
-    to_address: "cosmos1exampleaddress".to_string(),
-    amount: Coin::new(123u128, "ucoin"),
-    timeout: env.block.time.plus_seconds(60).into(),
-    memo: None,
-};
-
-// attach the message and return the response
-Ok(Response::new().add_message(msg))
-```
-
-Sending this message causes an IBC transfer of the given `amount` from your contract to the
-destination chain at the other end of the given channel.
-
-The `channel_id` is the identifier of the channel you want to use for the transfer. Which channel
-that should be depends on the source and destination chain. You can find out the correct channel ID
-using a [block explorer](https://www.mintscan.io/cosmos/relayers).
-
-The `to_address` is the address on the _destination chain_ that should receive the tokens.
-
-The `amount` is the number and denomination of tokens to send. On the destination chain, the same
-amount will be received, but the denomination will be of the form `ibc/HASH`, where `HASH` is a
-SHA256 hash uniquely identifying the channel and the source chain denomination. To learn more about
-this, take a look at the [Cosmos Developer Portal].
-
-The `timeout` can either be a timestamp or a block height, as measured on the destination chain. It
-is used to prevent the transfer from being stuck in limbo if the destination chain does not receive
-the packet.
-
-The `memo` is an optional field that can be used to attach a message to the transfer. It is often
-used for additional functionality like [packet-forward-middleware] or IBC Callbacks.
-
-[packet-forward-middleware]:
-  https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware
-[Cosmos Developer Portal]:
-  https://tutorials.cosmos.network/tutorials/6-ibc-dev/#understand-ibc-denoms
-
-## ADR-8: IBC Callbacks
-
-When you send an ICS20 transfer as described above, you do not get any feedback on whether the
-transfer was successful or not and the destination does not get informed of its newfound wealth. To
-solve this problem, the [ADR-8 specification][adr-8] was created. On the source chain, it provides
-callbacks when an IBC packet was acknowledged or timed out. On the destination chain, it triggers
-callbacks when a packet is received.
+When you send an [ICS20](../ics20) transfer, you do not get any feedback on whether the transfer was
+successful or not and the destination does not get informed of its newfound wealth. To solve this
+problem, the [ADR-8 specification][adr-8] was created. On the source chain, it provides callbacks
+when an IBC packet was acknowledged or timed out. On the destination chain, it triggers callbacks
+when a packet is received.
 
 IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks].
 
@@ -81,7 +21,7 @@ IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks].
   To receive callbacks, the chain needs to support IBC Callbacks for the message type.
 </Callout>
 
-### Enabling IBC Callbacks for a message
+## Enabling IBC Callbacks for a message
 
 You need to explicitly opt-in to IBC Callbacks for each message. In order to do this, you need to
 add some metadata to the message, including who should receive the callbacks.
@@ -159,7 +99,7 @@ Please take a look at the `IbcCallbackRequest` docs for more information.
   called.
 </Callout>
 
-### Receiving IBC Callbacks
+## Receiving IBC Callbacks
 
 To receive callbacks, you need to implement two new entrypoints in your contract:
 
@@ -177,7 +117,7 @@ To receive callbacks, you need to implement two new entrypoints in your contract
 [`IbcDestinationCallbackMsg`]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.IbcDestinationCallbackMsg.html
 
-#### Source Callback
+### Source Callback
 
 The `ibc_source_callback` entrypoint is called when the packet was either acknowledged or timed out.
 You can use this to update your contract state, release locked funds or trigger other actions.
@@ -215,21 +155,21 @@ pub fn ibc_source_callback(
 }
 ```
 
-##### Acknowledgement
+#### Acknowledgement
 
 When the packet was acknowledged, you will receive the `Acknowledgement(IbcAckCallbackMsg)` variant
 of `IbcSourceCallbackMsg`. This means that the packet was successfully received and processed by the
 application on the destination chain. The message contains the original packet data, the
 acknowledgement and the address of the relayer.
 
-##### Timeout
+#### Timeout
 
 When the packet timed out, you will receive the `Timeout(IbcTimeoutCallbackMsg)` variant of
 `IbcSourceCallbackMsg`. This means that the packet was not delivered to the destination chain in
 time (e.g. because no relayer picked it up or the chain is stopped). The message contains the
 original packet data and the address of the relayer who told you about the timeout.
 
-#### Destination Callback
+### Destination Callback
 
 The `ibc_destination_callback` entrypoint is called when a packet was acknowledged on the
 destination chain. The shape of an acknowledgement is protocol specific and usually contains both
@@ -332,7 +272,7 @@ knowledge about the [packet format].
 [packet format]:
   https://github.com/cosmos/ibc/blob/main/spec/app/ics-020-fungible-token-transfer/README.md#data-structures
 
-#### Error handling
+### Error handling
 
 Returning an error or panicking from a callback will **not** influence the IBC packet lifecycle. The
 packet will still be acknowledged or timed out. This means that you can safely return errors from

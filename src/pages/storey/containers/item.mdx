@@ -49,8 +49,8 @@ use cw_storey::CwStorage;
 
 #[cw_serde]
 struct Config {
-    admin: String,
-    interest_rate: Decimal,
+    pub admin: String,
+    pub interest_rate: Decimal,
 }
 
 let item: Item<Config> = Item::new(0);

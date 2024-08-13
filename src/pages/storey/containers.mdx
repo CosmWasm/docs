@@ -19,7 +19,7 @@ For most of your needs, you can likely do what you need to with the built-in con
 For more advanced use cases, you can build your own containers as described in the
 [_Implementing new containers_](container-impl) section.
 
-# Namespace
+## Namespace
 
 To construct a container, you need to provide a single byte. This byte is used to distinguish
 between different "root" containers in the same storage space.
@@ -43,7 +43,7 @@ container.
 
 To avoid key collisions, you must provide a different byte to each container.
 
-# Accessor
+## Accessor
 
 Every container has a corresponding "accessor" type that is used to perform all read/write
 operations.
@@ -69,7 +69,7 @@ assert_eq!(
 );
 ```
 
-# Composition
+## Composition
 
 Some containers can be composed together to create more complex data structures. Right now, the only
 built-in container that supports composition is the `Map` container.
@@ -125,7 +125,7 @@ assert_eq!(
 It's possible to define custom containers that enable composition similar to maps. If done properly,
 they can be mixed with any other containers, including built-in ones.
 
-# Encoding
+## Encoding
 
 Types like `Item` or `Column` need a way to encode values in a binary store. If you're using the
 `Item` and `Column` types from `cw-storey`, the [MessagePack](https://msgpack.org/) format is used.

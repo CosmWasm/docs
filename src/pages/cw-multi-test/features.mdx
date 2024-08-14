@@ -11,19 +11,19 @@ not have a default implementation for the feature, users may provide their own, 
 function listed in **"AppBuilder constructor"** column. Names of **`MultiTest`** feature flags
 required to enable specific functionality are provided in the column **"Feature flag"**.
 
-| Feature         | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor | Functionality                                      |
-| --------------- | :------------------------: | :--------------: | -------------------------- | -------------------------------------------------- |
-| [Block](blocks) |          **YES**           |                  | `with_block`               | Operations on blocks.                              |
-| API             |          **YES**           |                  | `with_api`                 | Access to CosmWasm API.                            |
-| Storage         |          **YES**           |                  | `with_storage`             | Access to storage.                                 |
-| Bank            |          **YES**           |                  | `with_bank`                | Interactions with **Bank** module.                 |
-| Staking         |          **YES**           |    `staking`     | `with_staking`             | Interactions with **Staking** module.              |
-| Distribution    |          **YES**           |    `staking`     | `with_distribution`        | Interactions with **Distribution** module.         |
-| Governance      |           **NO**           |                  | `with_gov`                 | Interactions with **Governance** module.           |
-| Stargate        |           **NO**           |    `stargate`    | `with_stargate`            | Operations using `Stargate` and/or `Any` messages. |
-| Wasm            |          **YES**           |                  | `with_wasm`                | Interactions with **Wasm** module.                 |
-| Custom          |           **NO**           |                  | `new_custom`               | Operations using custom module.                    |
-| IBC             |           **NO**           |    `stargate`    | `with_ibc`                 | Inter-blockchain communication operations.         |
+| Feature          | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor                           | Functionality                                      |
+| ---------------- | :------------------------: | :--------------: | ---------------------------------------------------- | -------------------------------------------------- |
+| [Blocks](blocks) |          **YES**           |                  | [`with_block`](app-builder#with_block)               | Operations on blocks.                              |
+| API              |          **YES**           |                  | [`with_api`](app-builder#with_api)                   | Access to CosmWasm API.                            |
+| Storage          |          **YES**           |                  | [`with_storage`](app-builder#with_storage)           | Access to storage.                                 |
+| Bank             |          **YES**           |                  | [`with_bank`](app-builder#with_bank)                 | Interactions with **Bank** module.                 |
+| Staking          |          **YES**           |    `staking`     | [`with_staking`](app-builder#with_staking)           | Interactions with **Staking** module.              |
+| Distribution     |          **YES**           |    `staking`     | [`with_distribution`](app-builder#with_distribution) | Interactions with **Distribution** module.         |
+| Governance       |           **NO**           |                  | [`with_gov`](app-builder#with_gov)                   | Interactions with **Governance** module.           |
+| Stargate         |           **NO**           |    `stargate`    | [`with_stargate`](app-builder#with_stargate)         | Operations using `Stargate` and/or `Any` messages. |
+| Wasm             |          **YES**           |                  | [`with_wasm`](app-builder#with_wasm)                 | Interactions with **Wasm** module.                 |
+| Custom           |           **NO**           |                  | [`new_custom`](app-builder#new_custom)               | Operations using custom module.                    |
+| IBC              |           **NO**           |    `stargate`    | [`with_ibc`](app-builder#with_ibc)                   | Inter-blockchain communication operations.         |
 
 ## Feature flags summary
 

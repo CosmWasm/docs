@@ -1,0 +1,195 @@
+# Proposals
+
+Proposals are a fundamental part of the governance process in the Cosmos ecosystem. They enable
+validators to vote on important decisions that impact the network, such as software upgrades,
+parameter changes, and the allocation of community funds.
+
+## Overview of the Proposal Process
+
+1. Submission: A proposal is submitted along with a deposit to the network.
+2. Deposit Period: Other participants can contribute to the deposit. If the minimum deposit is met,
+   the proposal moves to the voting stage.
+3. Voting Period: Validators and delegators vote on the proposal.
+4. Tallying: After the voting period ends, the votes are tallied to determine whether the proposal
+   has passed or failed.
+5. Execution: If the proposal passes, it is executed according to the details specified in the
+   proposal, such as implementing a parameter change or initiating a software upgrade.
+
+In this section, we'll dive into how to submit CosmWasm proposals. The submission process is a bit
+different from the Cosmos SDK, but the rest, including the deposit period, voting, tallying, and
+execution, follows the usual Cosmos SDK governance process.
+
+For more details on the `gov` module, check out the
+[Cosmos SDK Governance Documentation](https://docs.cosmos.network/v0.50/build/modules/gov) and the
+[Cosmos SDK Proposal Tutorial](https://tutorials.cosmos.network/tutorials/8-understand-sdk-modules/4-gov.html).
+
+## Submit a CosmWasm proposal
+
+You can submit a CosmWasm proposal using the `wasmd tx wasm submit-proposal` command. To see a full
+list of available proposal types, simply add the `--help` flag. Many of these commands, like
+`wasm-store`, `instantiate-contract`, `execute-contract`, `migrate-contract`, are similar to the
+standard `tx` commands and won't be covered in detail here. Instead, we'll focus on the commands
+that are only available through a proposal such as `pin-codes`, `unpin-codes` and `sudo-contract`.
+
+### Pin Codes
+
+Pinning a code means keeping a specific WASM code stored in the cache. This improves the performance
+of frequently used contracts by avoiding the need to reload the code from the blockchain, which
+leads to lower gas costs during contract execution. For more details about code pinning you can
+check the [Contract pinning section](../../core/architecture/pinning.mdx).
+
+To submit a proposal for pinning a code, you can use the following command:
+
+```sh
+wasmd tx wasm submit-proposal pin-codes $CODE_ID \
+  --title "Pin Code $CODE_ID" \
+  --summary "Pin Code $CODE_ID Proposal" \
+  --from alice \
+  --gas 1500000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -o json \
+  --keyring-backend=test \
+  --deposit 100000stake
+```
+
+You can pin multiple codes by providing a list of code IDs instead of just a single `code_id`. The
+`title` flag specifies the title of the proposal, which should be descriptive and concise, while the
+`summary` flag provides a brief explanation of what the proposal aims to achieve. The `deposit` flag
+indicates the amount of tokens required to submit the proposal, avoiding spam proposals submissions.
+
+To check the details of a submitted proposal, you can query the transaction using the `txhash`
+provided in the command output. This allows you to inspect the emitted events and retrieve the
+`proposal ID`, as shown in the following example:
+
+```json
+{
+  ...
+  "events": [
+    ...
+    {
+      "type": "submit_proposal",
+      "attributes": [
+        {
+          "key": "proposal_id",
+          "value": "2",
+          "index": true
+        },
+        {
+          "key": "proposal_proposer",
+          "value": "wasm10gftgfm8my3f3hymne8327rrzyvy7dqrkucej5",
+          "index": true
+        },
+        {
+          "key": "proposal_messages",
+          "value": ",/cosmwasm.wasm.v1.MsgPinCodes",
+          "index": true
+        },
+        {
+          "key": "msg_index",
+          "value": "0",
+          "index": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+Once you have the `proposal ID`, you can fetch the full proposal details using the following
+command:
+
+```sh
+wasmd q gov proposal 2 -o json
+```
+
+The command will return a JSON object similar to the following:
+
+```json
+{
+  "proposal": {
+    "id": "2",
+    "messages": [
+      {
+        "type": "wasm/MsgPinCodes",
+        "value": {
+          "authority": "wasm10d07y265gmmuvt4z0w9aw880jnsr700js7zslc",
+          "code_ids": ["1"]
+        }
+      }
+    ],
+    "status": 1,
+    "final_tally_result": {
+      "yes_count": "0",
+      "abstain_count": "0",
+      "no_count": "0",
+      "no_with_veto_count": "0"
+    },
+    "submit_time": "2024-08-08T16:48:32.640792888Z",
+    "deposit_end_time": "2024-08-10T16:48:32.640792888Z",
+    "total_deposit": [
+      {
+        "denom": "stake",
+        "amount": "100000"
+      }
+    ],
+    "title": "Pin Code 1",
+    "summary": "Pin Code 1 Proposal",
+    "proposer": "wasm10gftgfm8my3f3hymne8327rrzyvy7dqrkucej5"
+  }
+}
+```
+
+- `id`: This is the unique identifier for the proposal.
+- `messages`: This array contains the specific actions or commands the proposal intends to execute.
+- `status`: Indicates the current status of the proposal.
+- `final_tally_result`: Shows the results of the voting on the proposal.
+- `submit_time`: The timestamp indicating when the proposal was submitted.
+- `deposit_end_time`: The timestamp indicating when the deposit period ends.
+- `total_deposit`: This is the amount of tokens that has been deposited to support the proposal.
+- `title`: Title of the proposal.
+- `summary`: Summary of the proposal.
+- `proposer`: The address of the entity that submitted the proposal.
+
+After the deposit period and voting period, if the proposal passes and is executed, the code is then
+pinned. You can verify the pinned codes by querying them with the following command:
+
+```sh
+wasmd q wasm pinned -o json
+```
+
+The command will return a JSON object similar to the following:
+
+```json
+{
+  "code_ids": [1, 2, 3],
+  "pagination": {
+    "next_key": null,
+    "total": "0"
+  }
+}
+```
+
+The `code_ids` array lists all the code IDs that are currently pinned.
+
+### Unpin codes
+
+To remove a code from the cache and unpin it, you can submit an unpin proposal using the following
+command:
+
+```sh
+wasmd tx wasm submit-proposal unpin-codes $CODE_ID \
+  --title "Pin Code $CODE_ID" \
+  --summary "Pin Code $CODE_ID Proposal" \
+  --from alice \
+  --gas 1500000 \
+  -y \
+  --chain-id=docs-chain-1 \
+  -o json \
+  --keyring-backend=test \
+  --deposit 100000stake
+```
+
+The rest of the process follows the same steps as pinning codes, so we won't go into detail again.
+After the proposal is executed, you can confirm that the code is no longer pinned by using the
+`wasmd q wasm pinned` command.

@@ -17,7 +17,9 @@ blockchain, like:
 For this purpose, **`MultiTest`** provides several options to initialize and update the current
 block properties (such as height and timestamp) to test delays on the blockchain.
 
-(initializing default block)
+## Initialization with the default block
+
+(some description)
 
 ```rust
 use cw_multi_test::App;
@@ -38,7 +40,9 @@ assert_eq!(1571797419879305533, block.time.nanos());
 assert_eq!("cosmos-testnet-14002", block.chain_id);
 ```
 
-(initializing custom block)
+## Initialization with the custom block
+
+(some description)
 
 ```rust
 use cosmwasm_std::{BlockInfo, Timestamp};
@@ -67,7 +71,9 @@ assert_eq!(1723627489, block.time.seconds());
 assert_eq!("starship-testnet", block.chain_id);
 ```
 
-(moving to the next block with the default step)
+## Generating next block with the default step
+
+(some description)
 
 ```rust
 use cw_multi_test::{App, next_block};
@@ -93,7 +99,9 @@ assert_eq!(1571797424879305533, block.time.nanos());
 assert_eq!("cosmos-testnet-14002", block.chain_id);
 ```
 
-(moving to the next block with custom step)
+## Generating next block with custom step
+
+(some description)
 
 ```rust
 use cw_multi_test::App;

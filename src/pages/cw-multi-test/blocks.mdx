@@ -21,6 +21,9 @@ block properties (such as height and timestamp) to test delays on the blockchain
 
 (some description)
 
+- `App::default`
+- `block_info`
+
 ```rust
 use cw_multi_test::App;
 
@@ -43,6 +46,9 @@ assert_eq!("cosmos-testnet-14002", block.chain_id);
 ## Initialization with the custom block
 
 (some description)
+
+- `App::set_block`
+- `cosmwasm_std::BlockInfo`
 
 ```rust
 use cosmwasm_std::{BlockInfo, Timestamp};
@@ -74,6 +80,9 @@ assert_eq!("starship-testnet", block.chain_id);
 ## Generating next block with the default step
 
 (some description)
+
+- `App::update_block`
+- `next_block`
 
 ```rust
 use cw_multi_test::{App, next_block};

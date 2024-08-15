@@ -142,10 +142,10 @@ The command will return a JSON object similar to the following:
 }
 ```
 
-- Code ID: This is the reference to the stored WASM code
-- Creator: This is the address of the account that uploaded the code
-- Data Hash: This is the checksum of the stored WASM code
-- Instantiate Permission: This is the instantiate permission configuration. It is optional, and the
+- `"code_id"` is the reference to the stored WASM code
+- `"creator"` is the address of the account that uploaded the code
+- `"data_hash"` is the checksum of the stored WASM code
+- `"instantiate_permission"` is the instantiate permission configuration. It is optional, and the
   default value is `Everybody`, which means everybody can create an instance of the uploaded WASM
   code
 
@@ -288,24 +288,23 @@ The command will return a JSON object similar to the following:
 }
 ```
 
-- Address: This is the address of the contract on the blockchain. It uniquely identifies the
-  contract and is used for interacting with it.
-- Code ID: This is the reference to the stored WASM code from which the contract was instantiated.
-- Creator: This is the blockchain address of the account that initially instantiated the contract.
-  It indicates who created the contract instance.
-- Admin: This is the address of the account that has administrative privileges over the contract,
-  such as the ability to execute migrations. This field is optional and can be set during
-  instantiation.
-- Label: This is an optional field used to give a human-readable label to the contract. It helps in
+- `"address"` is the address of the contract on the blockchain. It uniquely identifies the contract
+  and is used for interacting with it.
+- `"code_id"` is the reference to the stored WASM code from which the contract was instantiated.
+- `"creator"` is the blockchain address of the account that initially instantiated the contract. It
+  indicates who created the contract instance.
+- `"admin"` is the address of the account that has administrative privileges over the contract, such
+  as the ability to execute migrations. This field is optional and can be set during instantiation.
+- `"label"` is an optional field used to give a human-readable label to the contract. It helps in
   identifying the contract instance, especially when multiple instances of the same code are
   deployed.
-- Created: This section provides details about the transaction in which the contract was
-  instantiated, including the block height at which the contract was created and the index of the
-  transaction within the block.
-- IBC Port ID: This is the Port ID for Inter-Blockchain Communication [IBC](../../ibc.mdx). If the
+- `"created"` section provides details about the transaction in which the contract was instantiated,
+  including the block height at which the contract was created and the index of the transaction
+  within the block.
+- `"ibc_port_id"` is the Port ID for Inter-Blockchain Communication [IBC](../../ibc.mdx). If the
   contract is set up to interact with other blockchains via IBC, this field will contain the
   relevant port ID.
-- Extention: This is is an extension point to store custom metadata within the persistence model
+- `"extension"` is is an extension point to store custom metadata within the persistence model
 
 ## Instantiation with Predictable Address
 
@@ -489,8 +488,8 @@ output will look similar to the following:
 }
 ```
 
-`Events` are logs emitted by the contract during its execution, providing detailed information about
-the actions performed and the resulting state changes.
+`"events"` are logs emitted by the contract during its execution, providing detailed information
+about the actions performed and the resulting state changes.
 
 Below is the full script that combines all the steps for executing a command on a WASM contract and
 querying the events:

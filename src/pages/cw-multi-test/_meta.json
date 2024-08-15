@@ -3,6 +3,18 @@
   "features": "Features",
   "getting-started": "Getting started",
   "app-builder": "AppBuilder",
+  "contract-wrapper": "ContractWrapper",
+  "app": "App",
   "blocks": "Blocks",
+  "cosmwasm-api": "API",
+  "storage": "Storage",
+  "bank": "Bank",
+  "staking": "Staking",
+  "distribution": "Distribution",
+  "governance": "Governance",
+  "stargate": "Stargate",
+  "wasm": "Wasm",
+  "custom": "Custom",
+  "ibc": "IBC",
   "plan": "[Plan]"
 }

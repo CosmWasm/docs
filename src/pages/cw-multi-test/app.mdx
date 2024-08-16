@@ -4,7 +4,26 @@ tags: ["multitest", "App"]
 
 # App
 
-<p style={{ textAlign: "center", fontSize: "32pt", fontWeight: "bold" }}>App == Chain</p>
+<div style={{ textAlign: "center", fontSize: "4em", fontWeight: "bold", verticalAlign: "middle" }}>
+  <div style={{ display: "inline-block", verticalAlign: "middle" }}>App</div>
+  <div style={{ display: "inline-block", verticalAlign: "middle", fontWeight: "normal" }}>
+    &nbsp;==&nbsp;
+  </div>
+  <div style={{ display: "inline-block", verticalAlign: "middle" }}>
+    <div style={{ position: "relative", top: "0.2em" }}>Chain</div>
+    <div
+      style={{
+        fontSize: "0.42em",
+        fontWeight: "bold",
+        top: "-0.3em",
+        position: "relative",
+        color: "green",
+      }}
+    >
+      SIMULATOR
+    </div>
+  </div>
+</div>
 
 ```rust showLineNumbers copy
 let app = App::default();

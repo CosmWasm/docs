@@ -14,7 +14,7 @@ required to enable specific functionality are provided in the column **"Feature 
 | Feature                      | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor                           | Functionality                                      |
 | ---------------------------- | :------------------------: | :--------------: | ---------------------------------------------------- | -------------------------------------------------- |
 | [Blocks](blocks)             |          **YES**           |                  | [`with_block`](app-builder#with_block)               | Operations on blocks.                              |
-| [API](cosmwasm-api)          |          **YES**           |                  | [`with_api`](app-builder#with_api)                   | Access to CosmWasm API.                            |
+| [API](api)                   |          **YES**           |                  | [`with_api`](app-builder#with_api)                   | Access to CosmWasm API.                            |
 | [Storage](storage)           |          **YES**           |                  | [`with_storage`](app-builder#with_storage)           | Access to storage.                                 |
 | [Bank](bank)                 |          **YES**           |                  | [`with_bank`](app-builder#with_bank)                 | Interactions with **Bank** module.                 |
 | [Staking](staking)           |          **YES**           |    `staking`     | [`with_staking`](app-builder#with_staking)           | Interactions with **Staking** module.              |

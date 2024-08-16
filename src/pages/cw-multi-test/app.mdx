@@ -5,3 +5,24 @@ tags: ["multitest", "App"]
 # App
 
 <p style={{ textAlign: "center", fontSize: "32pt", fontWeight: "bold" }}>App == Chain</p>
+
+```rust showLineNumbers copy
+let app = App::default();
+```
+
+| Feature                      | Default implementation                                                                                                      |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [Blocks](blocks)             | [`cosmwasm_std::mock_env().block{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/fn.mock_env.html)        |
+| [API](api)                   | [`cosmwasm_std::MockApi{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html)              |
+| [Storage](storage)           | [`cosmwasm_std::MockStorage{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html)        |
+| [Bank](bank)                 | [`BankKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html)                            |
+| [Staking](staking)           | `StakeKeeper{:rust}`¹                                                                                                       |
+| [Distribution](distribution) | `DistributionKeeper{:rust}`¹                                                                                                |
+| [Governance](governance)     | [`GovFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html)                  |
+| [Stargate](stargate)         | [`StargateFailing{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StargateFailing.html)                  |
+| [Wasm](wasm)                 | [`WasmKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.WasmKeeper.html)                            |
+| [Custom](custom)             | [`FailingModule<Empty, Empty, Empty>{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.FailingModule.html) |
+| [IBC](ibc)                   | [`IbcFailingModule`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html)²                        |
+
+¹ Add a link, when the documentation will be built with all features set.<br/> ² IBC support is on
+the way in version 3.0.0.

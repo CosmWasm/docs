@@ -44,13 +44,12 @@ let app = App::default();
 | [API](api)                   | [`cosmwasm_std::MockApi{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html)              |
 | [Storage](storage)           | [`cosmwasm_std::MockStorage{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html)        |
 | [Bank](bank)                 | [`BankKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html)                            |
-| [Staking](staking)           | `StakeKeeper{:rust}`¹                                                                                                       |
-| [Distribution](distribution) | `DistributionKeeper{:rust}`¹                                                                                                |
+| [Staking](staking)           | [`StakeKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StakeKeeper.html)                          |
+| [Distribution](distribution) | [`DistributionKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.DistributionKeeper.html)            |
 | [Governance](governance)     | [`GovFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html)                  |
 | [Stargate](stargate)         | [`StargateFailing{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StargateFailing.html)                  |
 | [Wasm](wasm)                 | [`WasmKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.WasmKeeper.html)                            |
 | [Custom](custom)             | [`FailingModule<Empty, Empty, Empty>{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.FailingModule.html) |
 | [IBC](ibc)                   | [`IbcFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html)²                 |
 
-¹ Add a link, when the documentation will be built with all features set.<br/> ² IBC support is on
-the way in version 3.0.0.
+² IBC support will be documented in version 3.0.0.

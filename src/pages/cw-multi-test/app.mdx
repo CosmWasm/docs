@@ -2,7 +2,9 @@
 tags: ["multitest", "App"]
 ---
 
-# App
+# `App{:rust}`
+
+The `App{:rust}` struct in **`MultiTest`** represents the whole blockchain simulator.
 
 <div
   style={{
@@ -36,6 +38,10 @@ tags: ["multitest", "App"]
 
 ```rust showLineNumbers copy
 let app = App::default();
+```
+
+```rust showLineNumbers copy
+let app = App::new(no_init);
 ```
 
 | Feature                      | Default implementation                                                                                                      |

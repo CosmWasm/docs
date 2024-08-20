@@ -4,8 +4,6 @@ tags: ["multitest", "App"]
 
 # `App{:rust}`
 
-The `App{:rust}` struct in **`MultiTest`** represents the whole blockchain simulator.
-
 <div
   style={{
     textAlign: "center",
@@ -36,13 +34,23 @@ The `App{:rust}` struct in **`MultiTest`** represents the whole blockchain simul
   </div>
 </div>
 
-```rust showLineNumbers copy
+The `App{:rust}` struct in **`MultiTest`** represents the whole blockchain simulator. When creating
+the `App{:rust}`, it simulates the startup of a real-life blockchain within tests that utilize
+**`MultiTest`**.
+
+The most straightforward way to create the `App{:rust}` is by using the `default` method, which is
+the equivalent of calling the `new` constructor with an empty initialization callback.
+
+```rust copy /default/
 let app = App::default();
 ```
 
-```rust showLineNumbers copy
+```rust copy /new/
 let app = App::new(no_init);
 ```
+
+In both cases, the newly created `app{:rust}` object simulates a blockchain with default settings,
+as summarized in the following table:
 
 | Feature                      | Default implementation                                                                                                      |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -56,6 +64,4 @@ let app = App::new(no_init);
 | [Stargate](stargate)         | [`StargateFailing{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StargateFailing.html)                  |
 | [Wasm](wasm)                 | [`WasmKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.WasmKeeper.html)                            |
 | [Custom](custom)             | [`FailingModule<Empty, Empty, Empty>{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.FailingModule.html) |
-| [IBC](ibc)                   | [`IbcFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html)²                 |
-
-² IBC support will be documented in version 3.0.0.
+| [IBC](ibc)                   | [`IbcFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html)                  |

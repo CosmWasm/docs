@@ -16,6 +16,5 @@
   "stargate": "Stargate",
   "wasm": "Wasm",
   "custom": "Custom",
-  "ibc": "IBC",
-  "plan": "[Plan]"
+  "ibc": "IBC"
 }

@@ -2,6 +2,8 @@
 tags: ["multitest", "governance"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Governance
 
 - `GovFailingModule{:rust}` (default implementation)
@@ -11,3 +13,10 @@ tags: ["multitest", "governance"]
 
 - `GovMsg::Vote{:rust}`
 - `GovMsg::VoteWeighted{:rust}`
+
+---
+
+<Callout>
+  This seems to be a straightforward case where we can demonstrate how to implement a 'module' and
+  use it in tests, even when no default implementation is provided in **`MultiTest`**.
+</Callout>

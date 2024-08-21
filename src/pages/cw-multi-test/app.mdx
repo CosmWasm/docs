@@ -41,16 +41,20 @@ the `App{:rust}`, it simulates the startup of a real-life blockchain within test
 The most straightforward way to create the `App{:rust}` is by using the `default` method, which is
 the equivalent of calling the `new` constructor with an empty initialization callback.
 
-```rust copy /default/
+```rust showLineNumbers copy /default/
+use cw_multi_test::App;
+
 let app = App::default();
 ```
 
-```rust copy /new/
+```rust showLineNumbers copy /new/
+use cw_multi_test::{no_init, App};
+
 let app = App::new(no_init);
 ```
 
-In both cases, the newly created `app{:rust}` object simulates a blockchain with default settings,
-as summarized in the following table:
+In both cases, the newly created `App{:rust}` object simulates a blockchain with the default
+settings, as summarized below:
 
 | Feature                      | Default implementation                                                                                                      |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------- |

@@ -2,101 +2,21 @@
 tags: ["multitest", "getting", "started"]
 ---
 
-import { Tabs } from "nextra/components";
-
 # Getting started
 
-```text
-├── Cargo.toml
-└── src
-    ├── contract.rs
-    └── lib.rs
+```shell copy
+cargo init --lib counter
 ```
 
-<Tabs items={['CosmWasm', 'Sylvia']}>
-
-<Tabs.Tab>
+```ansi filename="counter"
+[34;1m.[0m
+├── Cargo.toml
+└── [34;1msrc[0m
+    ├── contract.rs
+    ├── lib.rs
+    └── msg.rs
+```
 
 ```rust showLineNumbers copy
 // CosmWasm
 ```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
-
-```toml copy filename="Cargo.toml"
-[package]
-name = "counter"
-version = "0.0.1"
-edition = "2021"
-
-[features]
-library = []
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-cosmwasm-std = { version = "2" }
-cosmwasm-schema = "2"
-cw-storage-plus = "2"
-schemars = "0.8"
-serde = "1.0"
-sylvia = "1"
-
-[dev-dependencies]
-sylvia = { version = "1", features = ["mt"] }
-cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
-```
-
-```rust showLineNumbers copy filename="lib.rs"
-pub mod contract;
-```
-
-```rust showLineNumbers copy filename="contract.rs"
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Response, StdResult};
-use cw_storage_plus::Item;
-use sylvia::contract;
-use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
-
-#[cw_serde]
-pub struct CountResponse {
-    pub count: u8,
-}
-
-pub struct CounterContract {
-    pub count: Item<u8>,
-}
-
-#[cfg_attr(not(feature = "library"), sylvia::entry_points)]
-#[contract]
-impl CounterContract {
-    pub const fn new() -> Self {
-        Self { count: Item::new("count") }
-    }
-
-    #[sv::msg(instantiate)]
-    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
-        self.count.save(ctx.deps.storage, &0)?;
-        Ok(Response::new())
-    }
-
-    #[sv::msg(exec)]
-    fn increment(&self, ctx: ExecCtx) -> StdResult<Response> {
-        self.count.update(ctx.deps.storage, |count| -> StdResult<u8> { Ok(count.saturating_add(1)) })?;
-        Ok(Response::new())
-    }
-
-    #[sv::msg(query)]
-    fn count(&self, ctx: QueryCtx) -> StdResult<CountResponse> {
-        let count = self.count.load(ctx.deps.storage)?;
-        Ok(CountResponse { count })
-    }
-}
-```
-
-</Tabs.Tab>
-
-</Tabs>

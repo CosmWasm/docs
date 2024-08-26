@@ -1,0 +1,173 @@
+---
+tags: ["multitest", "smart contract", "example"]
+---
+
+# Smart contract
+
+```shell copy
+cd ~
+```
+
+```shell copy
+mkdir my-contracts
+```
+
+```shell copy
+cd my-contracts
+```
+
+```shell copy
+cargo init --lib counter
+```
+
+```shell copy
+cd counter
+```
+
+```shell copy
+tree
+```
+
+```ansi filename="counter"
+[34;1m.[0m
+├── Cargo.toml
+└── [34;1msrc[0m
+    └── lib.rs
+```
+
+```shell copy
+touch src/counter.rs
+```
+
+```shell copy
+touch src/msg.rs
+```
+
+```ansi filename="counter"
+[34;1m.[0m
+├── Cargo.toml
+└── [34;1msrc[0m
+    ├── contract.rs
+    ├── lib.rs
+    └── msg.rs
+```
+
+```toml filename="Cargo.toml" copy
+[package]
+name = "counter"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cosmwasm-schema = "2"
+cosmwasm-std = { version = "2" }
+cw-storage-plus = "2"
+schemars = "0.8"
+serde = "1.0"
+
+[dev-dependencies]
+cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
+```
+
+```rust filename="lib.rs" copy
+pub mod contract;
+pub mod msg;
+```
+
+```rust filename="msg.rs" copy
+use cosmwasm_schema::cw_serde;
+
+#[cw_serde]
+pub enum CounterInitMsg {
+    Zero,
+    Set(u8),
+}
+
+#[cw_serde]
+pub enum CounterActionMsg {
+    Inc,
+    Dec,
+    Set(u8),
+}
+
+#[cw_serde]
+pub enum CounterQuery {
+    Value,
+}
+
+#[cw_serde]
+pub struct CounterResponse {
+    pub value: u8,
+}
+```
+
+```rust filename="contract.rs" copy
+#[cfg(not(feature = "library"))]
+use cosmwasm_std::entry_point;
+
+use crate::msg::{
+    CounterActionMsg, CounterInitMsg, CounterQuery, CounterResponse,
+};
+use cosmwasm_std::{
+    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError,
+};
+use cw_storage_plus::Item;
+
+const COUNTER: Item<u8> = Item::new("value");
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn instantiate(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: CounterInitMsg,
+) -> Result<Response, StdError> {
+    COUNTER.save(
+        deps.storage,
+        &match msg {
+            CounterInitMsg::Zero => 0,
+            CounterInitMsg::Set(value) => value,
+        },
+    )?;
+    Ok(Response::default())
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn execute(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: CounterActionMsg,
+) -> Result<Response, StdError> {
+    COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+        Ok(match msg {
+            CounterActionMsg::Inc => old_value.saturating_add(1),
+            CounterActionMsg::Dec => old_value.saturating_sub(1),
+            CounterActionMsg::Set(new_value) => new_value,
+        })
+    })?;
+    Ok(Response::default())
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(
+    deps: Deps,
+    _env: Env,
+    msg: CounterQuery,
+) -> Result<Binary, StdError> {
+    match msg {
+        CounterQuery::Value => Ok(to_json_binary(&CounterResponse {
+            value: COUNTER.may_load(deps.storage).unwrap().unwrap(),
+        })?),
+    }
+}
+```

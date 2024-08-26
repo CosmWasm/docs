@@ -4,6 +4,10 @@ tags: ["multitest", "smart contract", "example"]
 
 # Smart contract
 
+(explain what the contract does)
+
+## Creating the project
+
 ```shell copy
 cd ~
 ```
@@ -52,6 +56,8 @@ touch src/msg.rs
     └── msg.rs
 ```
 
+## Filling the content
+
 ```toml filename="Cargo.toml" copy
 [package]
 name = "counter"
@@ -78,10 +84,20 @@ serde = "1.0"
 cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
 ```
 
+<details>
+  <summary>Detailed explanation of the &#8203;**Cargo.toml**&#8203; content</summary>
+  (explanation)
+</details>
+
 ```rust filename="lib.rs" copy
 pub mod contract;
 pub mod msg;
 ```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**lib.rs**&#8203; content</summary>
+  (explanation)
+</details>
 
 ```rust filename="msg.rs" copy
 use cosmwasm_schema::cw_serde;
@@ -109,6 +125,11 @@ pub struct CounterResponse {
     pub value: u8,
 }
 ```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**msg.rs**&#8203; content</summary>
+  (explanation)
+</details>
 
 ```rust filename="contract.rs" copy
 #[cfg(not(feature = "library"))]
@@ -170,4 +191,15 @@ pub fn query(
         })?),
     }
 }
+```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**contract.rs**&#8203; content</summary>
+  (explanation)
+</details>
+
+## Building the project
+
+```shell copy
+cargo build
 ```

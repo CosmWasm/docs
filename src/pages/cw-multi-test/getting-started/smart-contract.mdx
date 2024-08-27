@@ -15,7 +15,7 @@ that can be initialized, incremented, decremented, and queried. Later, you will
   [cw-template](/core/installation#setting-up-the-contract).
 </Callout>
 
-## Creating Rust project
+## Creating project
 
 Smart contracts written in Rust are typically developed as Rust libraries, so let's first create a
 Rust library named **counter**.
@@ -32,7 +32,7 @@ Create a dedicated directory to store your example smart contract:
 mkdir my-contracts
 ```
 
-Change the working directory to **my-contracts**:
+Change the working directory to `my-contracts`:
 
 ```shell copy
 cd my-contracts
@@ -44,18 +44,19 @@ Create a new Rust library named **counter**:
 cargo init --lib counter
 ```
 
-Change the working directory to **counter**:
+Change the working directory to `counter`:
 
 ```shell copy
 cd counter
 ```
 
-The newly created library should contain the **Cargo.toml** file and **lib.rs** file in **src**
-directory.
+Newly created library contains the **Cargo.toml** file and **lib.rs** file in `src` directory...
 
 ```shell copy
 tree
 ```
+
+...so expected content of the `counter` directory is:
 
 ```ansi filename="counter"
 [34;1m.[0m
@@ -64,13 +65,24 @@ tree
     └── lib.rs
 ```
 
+By convention, the source code of the smart contract is placed in file named **contract.rs**, and
+the messages processed by this contract are placed in file named **msg.rs**, both in `src`
+directory.
+
+Let's create the **contract.rs** file...
+
 ```shell copy
-touch src/counter.rs
+touch src/contract.rs
 ```
+
+...and **msg.rs** file:
 
 ```shell copy
 touch src/msg.rs
 ```
+
+The final structure of the smart contract project placed in `counter` directory, should look like
+shown below:
 
 ```shell copy
 tree

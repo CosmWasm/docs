@@ -2,11 +2,20 @@
 tags: ["multitest", "smart contract", "example"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Smart contract
 
-(explain what the contract does)
+The following sections describe how to create the example smart contract, which manages a counter
+that can be initialized, incremented, decremented, and queried. Later, you will
+[write tests](writing-tests.mdx) for this contract using **`MultiTest`**.
 
-## Creating the project
+<Callout type="info">
+  The following smart contract example is a simplified version of the contract created using
+  [cw-template](/core/installation#setting-up-the-contract).
+</Callout>
+
+## Creating Rust project
 
 ```shell copy
 cd ~
@@ -198,7 +207,7 @@ pub fn query(
   (explanation)
 </details>
 
-## Building the project
+## Building smart contract
 
 ```shell copy
 cargo build

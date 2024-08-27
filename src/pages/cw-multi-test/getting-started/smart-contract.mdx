@@ -63,6 +63,8 @@ tree
 ├── Cargo.toml
 └── [34;1msrc[0m
     └── lib.rs
+
+2 directories, 2 files
 ```
 
 By convention, the source code of the smart contract is placed in file named **contract.rs**, and
@@ -95,9 +97,16 @@ tree
     ├── contract.rs
     ├── lib.rs
     └── msg.rs
+
+2 directories, 4 files
 ```
 
 ## Filling the content
+
+The following code snippets show the content of the **Cargo.toml**, **lib.rs**, **msg.rs** and
+**contract.rs** files, respectively. You can freely copy and paste this content, temporarily
+skipping the detailed explanations. However, if you're curious about what is inside, feel free to
+check the detailed descriptions provided below each file.
 
 ```toml filename="Cargo.toml" copy
 [package]
@@ -127,7 +136,7 @@ cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
 
 <details>
   <summary>Detailed explanation of the &#8203;**Cargo.toml**&#8203; content</summary>
-  (explanation)
+  (tbd)
 </details>
 
 ```rust filename="lib.rs" copy
@@ -137,7 +146,7 @@ pub mod msg;
 
 <details>
   <summary>Detailed explanation of the &#8203;**lib.rs**&#8203; content</summary>
-  (explanation)
+  (tbd)
 </details>
 
 ```rust filename="msg.rs" copy
@@ -169,7 +178,7 @@ pub struct CounterResponse {
 
 <details>
   <summary>Detailed explanation of the &#8203;**msg.rs**&#8203; content</summary>
-  (explanation)
+  (tbd)
 </details>
 
 ```rust filename="contract.rs" copy
@@ -236,11 +245,27 @@ pub fn query(
 
 <details>
   <summary>Detailed explanation of the &#8203;**contract.rs**&#8203; content</summary>
-  (explanation)
+  (tbd)
 </details>
 
 ## Building smart contract
 
+With the example **counter** smart contract set up, you can now build the project:
+
 ```shell copy
 cargo build
 ```
+
+```ansi
+ [32;1mUpdating[0m crates.io index
+  [32;1mLocking[0m 112 packages to latest compatible versions
+    ⋮
+[32;1mCompiling[0m cosmwasm-crypto v2.1.3
+[32;1mCompiling[0m cosmwasm-std v2.1.3
+[32;1mCompiling[0m cw-storage-plus v2.0.0
+[32;1mCompiling[0m counter v0.1.0 (/home/user/my-contracts/counter)
+ [32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 3.27s
+```
+
+**counter** smart contract is built, let's [write some tests](writing-tests.mdx) using
+**`MultiTest`** !

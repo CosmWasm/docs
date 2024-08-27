@@ -6,6 +6,11 @@ import { Callout } from "nextra/components";
 
 # Contract pinning
 
+<Callout type="info">
+  This is done by chain maintainers and not by contract developers. It's not something you need to
+  worry about when writing contracts but can be a fun thing to know.
+</Callout>
+
 Contract pinning is a feature of the CosmWasm virtual machine which ensures that a previously stored
 compiled contract code (module) is started from a dedicated in-memory cache. Starting a module from
 memory takes ~45µs compared to 1.5ms when loaded from disk (33x faster).

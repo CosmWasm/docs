@@ -11,31 +11,47 @@ that can be initialized, incremented, decremented, and queried. Later, you will
 [write tests](writing-tests.mdx) for this contract using **`MultiTest`**.
 
 <Callout type="info">
-  The following smart contract example is a simplified version of the contract created using
+  This example smart contract is a simplified version of the contract created using
   [cw-template](/core/installation#setting-up-the-contract).
 </Callout>
 
 ## Creating Rust project
 
+Smart contracts written in Rust are typically developed as Rust libraries, so let's first create a
+Rust library named **counter**.
+
+Change the working directory to your home directory:
+
 ```shell copy
 cd ~
 ```
+
+Create a dedicated directory to store your example smart contract:
 
 ```shell copy
 mkdir my-contracts
 ```
 
+Change the working directory to **my-contracts**:
+
 ```shell copy
 cd my-contracts
 ```
+
+Create a new Rust library named **counter**:
 
 ```shell copy
 cargo init --lib counter
 ```
 
+Change the working directory to **counter**:
+
 ```shell copy
 cd counter
 ```
+
+The newly created library should contain the **Cargo.toml** file and **lib.rs** file in **src**
+directory.
 
 ```shell copy
 tree
@@ -54,6 +70,10 @@ touch src/counter.rs
 
 ```shell copy
 touch src/msg.rs
+```
+
+```shell copy
+tree
 ```
 
 ```ansi filename="counter"

@@ -6,15 +6,22 @@ import { Callout, Tabs } from "nextra/components";
 
 # ADR-8: IBC Callbacks
 
-When you send an [ICS20](../ics20) transfer, you do not get any feedback on whether the transfer was
-successful or not and the destination does not get informed of its newfound wealth. To solve this
-problem, the [ADR-8 specification][adr-8] was created. On the source chain, it provides callbacks
-when an IBC packet was acknowledged or timed out. On the destination chain, it triggers callbacks
-when a packet is received.
+If you send an IBC packet from a contract, you'll get an acknowledgement of receipt or timeout in
+the respective handler (see [Packet lifecycle][packet-lifecycle] for more details). This is great,
+but what if you want to get notified on completion of IBC packets you did not send directly from the
+contract, but that were caused by a message you sent? One real-world use-case of this is
+[ICS20](../ics20) transfers. When you send an ICS20 transfer message, the transfer module on the
+chain sends an IBC packet, but you do not get any feedback on whether the transfer was successful or
+not and the destination does not get informed of its newfound wealth.
+
+To solve this problem, the [ADR-8 specification][adr-8] was created. On the source chain, it
+provides callbacks when an IBC packet was acknowledged or timed out. On the destination chain, it
+triggers callbacks when a packet is received.
 
 IBC Callbacks is a generalized successor of [IBC Hooks][ibc-hooks] that works not just for ICS20
 transfers, but any message that supports the required interface.
 
+[packet-lifecycle]: ../diy-protocol/packet-lifecycle
 [adr-8]: https://github.com/cosmos/ibc-go/blob/main/docs/architecture/adr-008-app-caller-cbs.md
 [ibc-hooks]: https://github.com/cosmos/ibc-apps/blob/main/modules/ibc-hooks/README.md
 

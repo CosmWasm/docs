@@ -11,4 +11,18 @@ const withNextra = nextra({
 
 export default withNextra({
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: "/docs",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/docs/:p*",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
 });

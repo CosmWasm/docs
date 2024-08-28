@@ -2,4 +2,39 @@
 tags: ["multitest", "writing tests"]
 ---
 
+import { Tabs } from "nextra/components";
+
 # Writing tests
+
+<Tabs items={['CosmWasm','Sylvia']}>
+
+<Tabs.Tab>
+```toml  filename="Cargo.toml" copy
+[package]
+name = "counter"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib] crate-type = ["cdylib", "rlib"]
+
+[features]
+
+# use library feature to disable all instantiate/execute/query exports
+
+library = []
+
+[dependencies] cosmwasm-schema = "2" cosmwasm-std = { version = "2" } cw-storage-plus = "2" schemars
+= "0.8" serde = "1.0"
+
+[dev-dependencies] cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
+
+```
+</Tabs.Tab>
+
+<Tabs.Tab>
+</Tabs.Tab>
+
+</Tabs>
+```

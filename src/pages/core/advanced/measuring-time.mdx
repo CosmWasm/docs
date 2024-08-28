@@ -27,4 +27,9 @@ But you can rely on this timestamp to have the following properties:
 - Consistent across the chain (every validator on the chain has the same info)
 - Monotonic (it will ever only increase or stay the same; never decrease)
 
+Read more about [BFT Time] and [Proposer-Based Timestamps (PBTS)][PBTS] if you want to better understand
+where the time value comes from.
+
 [found here]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html
+[BFT Time]: https://docs.cometbft.com/main/spec/consensus/bft-time
+[PBTS]: https://informal.systems/blog/introducing-proposer-based-timestamps-pbts-in-cometbft

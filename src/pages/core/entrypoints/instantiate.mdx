@@ -7,14 +7,13 @@ import { Callout } from "nextra/components";
 # Instantiate
 
 This is one of the most fundamental entrypoints. This entrypoint is called once during the contract
-lifecycle.  
-It essentially is there to initialise the state of your contract (for example, initialising a
-counter in storage, etc.).
+lifecycle, right after an address has been assigned. It essentially is there to initialise the state
+of your contract (for example, initialising a counter in storage, etc.).
 
 You can imagine it as the constructor of your contract.
 
 <Callout>
-    Note that this function is called for *each instance* of your contract 
+    Note that this function is called for *each instance* of your contract
     that you decide to create, not one time ever.
 
     To equate it to OOP, your contract is a *class*, and this is the *constructor*,

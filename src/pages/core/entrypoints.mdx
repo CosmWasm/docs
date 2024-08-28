@@ -7,9 +7,8 @@ import { Callout } from "nextra/components";
 # Entrypoints
 
 Entrypoints are where your contract can be called from the outside world. You can equate that to
-your `main` function in C, Rust, Java, etc.  
-However, there is one _small_ difference: In CosmWasm, you have multiple of these entrypoints, each
-one different from the last.
+your `main` function in C, Rust, Java, etc. However, there is one _small_ difference: In CosmWasm,
+you have multiple of these entrypoints, each one different from the last.
 
 In this section we want to give you a quick overview over all the entrypoints and when they are
 called.
@@ -128,7 +127,6 @@ struct CustomInstantiateMsg {
   PartialEq,
   schemars::JsonSchema
 )]
-#[serde(deny_unknown_fields)]
 struct CustomInstantiateMsg {
   initial_admins: Vec<Addr>,
 }

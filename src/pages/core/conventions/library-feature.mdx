@@ -9,21 +9,7 @@ import { Callout } from "nextra/components";
 In the ecosystem, there is the convention to gate the entrypoints of your contract behind a
 compile-time feature. The feature is conventionally called `library`.
 
-So instead of doing this:
-
-```rust filename="contract.rs" template="core"
-#[entry_point]
-pub fn instantiate(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    _msg: InstantiateMsg,
-) -> StdResult<Response> {
-    Ok(Response::new())
-}
-```
-
-You should do this:
+So instead of using the `#[entry_point]` macro directly, you should do this:
 
 ```rust filename="contract.rs" template="core"
 #[cfg_attr(not(feature = "library"), entry_point)]

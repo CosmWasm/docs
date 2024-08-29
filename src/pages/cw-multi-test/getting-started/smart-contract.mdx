@@ -1,13 +1,13 @@
 ---
-tags: ["multitest", "smart contract"]
+tags: ["multitest", "getting started", "contract"]
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Cards, Card } from "nextra/components";
 
 # Smart contract
 
 The following sections describe how to create the example smart contract, which manages a counter
-that can be initialized, incremented, decremented, and queried. Later, you will
+that can be initialized, incremented, decremented, and queried. Later on, you will
 [write tests](writing-tests.mdx) for this contract using **`MultiTest`**.
 
 <Callout type="info">
@@ -15,7 +15,7 @@ that can be initialized, incremented, decremented, and queried. Later, you will
   [cw-template](/core/installation#setting-up-the-contract).
 </Callout>
 
-## Creating project
+## Creating the project
 
 Smart contracts written in Rust are typically developed as Rust libraries, so let's first create a
 Rust library named **counter**.
@@ -103,169 +103,13 @@ tree
 
 ## Filling the content
 
-The following code snippets show the content of the **Cargo.toml**, **lib.rs**, **msg.rs** and
-**contract.rs** files, respectively. You can copy and paste this content, temporarily skipping the
-detailed explanations. However, if you're curious about what happens inside each file, feel free to
-check the detailed descriptions provided below each snippet.
+(some introduction)
 
-```toml filename="Cargo.toml" copy
-[package]
-name = "counter"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[features]
-# use library feature to disable all instantiate/execute/query exports
-library = []
-
-[dependencies]
-cosmwasm-schema = "2"
-cosmwasm-std = { version = "2" }
-cw-storage-plus = "2"
-schemars = "0.8"
-serde = "1.0"
-
-[dev-dependencies]
-cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
-```
-
-<details>
-  <summary>Detailed explanation of the &#8203;**Cargo.toml**&#8203; content</summary>
-  (tbd)
-</details>
-
-```rust filename="lib.rs" copy
-pub mod contract;
-pub mod msg;
-```
-
-<details>
-  <summary>Detailed explanation of the &#8203;**lib.rs**&#8203; content</summary>
-  (tbd)
-</details>
-
-```rust filename="msg.rs" copy
-use cosmwasm_schema::cw_serde;
-
-#[cw_serde]
-pub enum CounterInitMsg {
-    Zero,
-    Set(u8),
-}
-
-#[cw_serde]
-pub enum CounterActionMsg {
-    Inc,
-    Dec,
-    Set(u8),
-}
-
-#[cw_serde]
-pub enum CounterQuery {
-    Value,
-}
-
-#[cw_serde]
-pub struct CounterResponse {
-    pub value: u8,
-}
-```
-
-<details>
-  <summary>Detailed explanation of the &#8203;**msg.rs**&#8203; content</summary>
-  (tbd)
-</details>
-
-```rust filename="contract.rs" copy
-#[cfg(not(feature = "library"))]
-use cosmwasm_std::entry_point;
-
-use crate::msg::{
-    CounterActionMsg, CounterInitMsg, CounterQuery, CounterResponse,
-};
-use cosmwasm_std::{
-    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError,
-};
-use cw_storage_plus::Item;
-
-const COUNTER: Item<u8> = Item::new("value");
-
-#[cfg_attr(not(feature = "library"), entry_point)]
-pub fn instantiate(
-    deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    msg: CounterInitMsg,
-) -> Result<Response, StdError> {
-    COUNTER.save(
-        deps.storage,
-        &match msg {
-            CounterInitMsg::Zero => 0,
-            CounterInitMsg::Set(value) => value,
-        },
-    )?;
-    Ok(Response::default())
-}
-
-#[cfg_attr(not(feature = "library"), entry_point)]
-pub fn execute(
-    deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    msg: CounterActionMsg,
-) -> Result<Response, StdError> {
-    COUNTER.update::<_, StdError>(deps.storage, |old_value| {
-        Ok(match msg {
-            CounterActionMsg::Inc => old_value.saturating_add(1),
-            CounterActionMsg::Dec => old_value.saturating_sub(1),
-            CounterActionMsg::Set(new_value) => new_value,
-        })
-    })?;
-    Ok(Response::default())
-}
-
-#[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(
-    deps: Deps,
-    _env: Env,
-    msg: CounterQuery,
-) -> Result<Binary, StdError> {
-    match msg {
-        CounterQuery::Value => Ok(to_json_binary(&CounterResponse {
-            value: COUNTER.may_load(deps.storage).unwrap().unwrap(),
-        })?),
-    }
-}
-```
-
-<details>
-  <summary>Detailed explanation of the &#8203;**contract.rs**&#8203; content</summary>
-  (tbd)
-</details>
-
-## Building smart contract
-
-With the example **counter** smart contract set up, you can now build the project:
-
-```shell copy
-cargo build
-```
-
-```ansi
- [32;1mUpdating[0m crates.io index
-  [32;1mLocking[0m 112 packages to latest compatible versions
-    ⋮
-[32;1mCompiling[0m cosmwasm-crypto v2.1.3
-[32;1mCompiling[0m cosmwasm-std v2.1.3
-[32;1mCompiling[0m cw-storage-plus v2.0.0
-[32;1mCompiling[0m counter v0.1.0 (/home/user/my-contracts/counter)
- [32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 3.27s
-```
-
-The **counter** smart contract is built. Let's [write some tests](writing-tests.mdx) using
-**`MultiTest`** .
+<Cards>
+  <Card title="Smart contract in CosmWasm" href="smart-contract/smart-contract-cosmwasm" icon="">
+    Smart contract in CosmWasm
+  </Card>
+  <Card title="Smart contract in Sylvia" href="smart-contract/smart-contract-sylvia" icon="">
+    Smart contract in Sylvia
+  </Card>
+</Cards>

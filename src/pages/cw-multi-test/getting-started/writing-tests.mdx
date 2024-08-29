@@ -1,40 +1,26 @@
 ---
-tags: ["multitest", "writing tests"]
+tags: ["multitest", "getting started", "writing tests"]
 ---
-
-import { Tabs } from "nextra/components";
 
 # Writing tests
 
-<Tabs items={['CosmWasm','Sylvia']}>
+## Compiling the smart contract
 
-<Tabs.Tab>
-```toml  filename="Cargo.toml" copy
-[package]
-name = "counter"
-version = "0.1.0"
-edition = "2021"
+With the example **counter** smart contract set up, you can now compile (build) the project:
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[lib] crate-type = ["cdylib", "rlib"]
-
-[features]
-
-# use library feature to disable all instantiate/execute/query exports
-
-library = []
-
-[dependencies] cosmwasm-schema = "2" cosmwasm-std = { version = "2" } cw-storage-plus = "2" schemars
-= "0.8" serde = "1.0"
-
-[dev-dependencies] cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
-
+```shell copy
+cargo build
 ```
-</Tabs.Tab>
 
-<Tabs.Tab>
-</Tabs.Tab>
-
-</Tabs>
+```ansi
+ [32;1mUpdating[0m crates.io index
+  [32;1mLocking[0m 112 packages to latest compatible versions
+    ⋮
+[32;1mCompiling[0m cosmwasm-crypto v2.1.3
+[32;1mCompiling[0m cosmwasm-std v2.1.3
+[32;1mCompiling[0m cw-storage-plus v2.0.0
+[32;1mCompiling[0m counter v0.1.0 (/home/user/my-contracts/counter)
+ [32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 3.27s
 ```
+
+Ok, the **counter** smart contract has been built successfully.

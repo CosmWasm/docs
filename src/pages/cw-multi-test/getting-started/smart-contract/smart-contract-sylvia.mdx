@@ -3,3 +3,132 @@ tags: ["multitest", "getting started", "contract", "Sylvia"]
 ---
 
 # Smart contract in Sylvia
+
+```toml filename="Cargo.toml" copy
+[package]
+[package]
+name = "counter"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cosmwasm-schema = "2"
+cosmwasm-std = { version = "2" }
+cw-storage-plus = "2"
+schemars = "0.8"
+serde = "1.0"
+sylvia = { version = "1", features = ["mt"] }
+
+[dev-dependencies]
+cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
+```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**Cargo.toml**&#8203; content</summary>
+  (tbd)
+</details>
+
+```rust filename="lib.rs" copy
+pub mod contract;
+pub mod msg;
+```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**lib.rs**&#8203; content</summary>
+  (tbd)
+</details>
+
+```rust filename="msg.rs" copy
+use cosmwasm_schema::cw_serde;
+
+#[cw_serde]
+pub enum CounterInitMsg {
+    Zero,
+    Set(u8),
+}
+
+#[cw_serde]
+pub struct CounterResponse {
+    pub count: u8,
+}
+```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**msg.rs**&#8203; content</summary>
+  (tbd)
+</details>
+
+```rust filename="contract.rs" copy
+use crate::msg::{CounterInitMsg, CounterResponse};
+use cosmwasm_std::{Response, StdResult};
+use cw_storage_plus::Item;
+use sylvia::contract;
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+pub struct CounterContract {
+    pub count: Item<u8>,
+}
+
+#[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self {
+            count: Item::new("count"),
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn zero(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+        match msg {
+            CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+            CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+        }
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_add(1))
+            })?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_sub(1))
+            })?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+        self.count.save(ctx.deps.storage, &value)?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn count(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+        let count = self.count.load(ctx.deps.storage)?;
+        Ok(CounterResponse { count })
+    }
+}
+```
+
+<details>
+  <summary>Detailed explanation of the &#8203;**contract.rs**&#8203; content</summary>
+  (tbd)
+</details>

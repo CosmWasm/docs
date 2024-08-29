@@ -9,3 +9,47 @@ tags: ["multitest", "getting started", "best practices"]
 - `/tests/multitest` directory suggested variant
 - `/src/multitest` directory suggested variant
 - [The Rust Programming Language - Test Organization](https://doc.rust-lang.org/book/ch11-03-test-organization.html)
+
+## How many tests should I usually write?
+
+### CosmWasm
+
+```shell copy
+cloc src
+```
+
+```ansi
+       3 text files.
+       3 unique files.
+       0 files ignored.
+
+github.com/AlDanial/cloc v 2.02  T=0.01 s (330.0 files/s, 8470.9 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Rust                             3              9              0             68
+-------------------------------------------------------------------------------
+SUM:                             3              9              0             68
+-------------------------------------------------------------------------------
+```
+
+```shell copy
+cloc tests
+```
+
+```ansi
+       3 text files.
+       3 unique files.
+       0 files ignored.
+
+github.com/AlDanial/cloc v 2.02  T=0.01 s (409.1 files/s, 31224.5 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Rust                             3             41              0            188
+-------------------------------------------------------------------------------
+SUM:                             3             41              0            188
+-------------------------------------------------------------------------------
+```
+
+### Sylvia

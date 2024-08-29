@@ -24,3 +24,107 @@ cargo build
 ```
 
 Ok, the **counter** smart contract has been built successfully.
+
+## Preparing directories for tests
+
+```ansi {8-12} filename="counter"
+[34;1m.[0m
+├── Cargo.toml
+├── [34;1msrc[0m
+│   ├── contract.rs
+│   ├── lib.rs
+│   └── msg.rs
+├── taskfile.yml
+└── [34;1mtests[0m
+    ├── mod.rs
+    └── [34;1mmultitest[0m
+        ├── mod.rs
+        └── test_counter.rs
+```
+
+## Preparing code coverage script
+
+```shell
+touch coverage.sh
+```
+
+```shell copy filename="coverage.sh"
+#!/usr/bin/env bash
+
+# generate coverage report
+cargo tarpaulin --force-clean --out Html --engine llvm --output-dir "$(pwd)/target/coverage-report"
+
+# display link to coverage report
+echo "Report: file://$(pwd)/target/coverage-report/tarpaulin-report.html"
+```
+
+```shell
+chmod +x coverage.sh
+```
+
+```shell
+tree
+```
+
+```ansi {3} filename="counter"
+[34;1m.[0m
+├── Cargo.toml
+├── [32;1mcoverage.sh[0m
+├── [34;1msrc[0m
+│   ├── contract.rs
+│   ├── lib.rs
+│   └── msg.rs
+├── taskfile.yml
+└── [34;1mtests[0m
+    ├── mod.rs
+    └── [34;1mmultitest[0m
+        ├── mod.rs
+        └── test_counter.rs
+```
+
+## Running tests and measuring code coverage
+
+```shell copy
+cargo test
+```
+
+```ansi
+     Running unittests src/lib.rs (target/debug/deps/counter-f350df45a1cd1c74)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/mod.rs (target/debug/deps/mod-54761c1d31e6d0fe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests counter
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+```shell copy
+cargo nextest run
+```
+
+```ansi
+    Starting 0 tests across 2 binaries (run ID: dbbc2d93-b077-47ea-81f2-9cdfea6fff1b, nextest profile: default)
+------------
+     Summary [   0.000s] 0 tests run: 0 passed, 0 skipped
+```
+
+```shell copy
+./coverage.sh
+```
+
+```ansi
+|| Tested/Total Lines:
+|| src/contract.rs: 0/18
+||
+0.00% coverage, 0/18 lines covered
+```

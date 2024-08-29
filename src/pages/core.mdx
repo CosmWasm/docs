@@ -9,7 +9,11 @@ import { Callout } from "nextra/components";
 This chapter will give you an overview over CosmWasm from a contract developer perspective, its
 capabilities, and guide you through initializing your first smart contract.
 
-<Callout>We assume you have basic knowledge of Rust and Cargo (its standard build system)</Callout>
+<Callout>
+  We assume you have basic knowledge of Rust and Cargo (Rust's standard build system). If not, have
+  a look [here](https://www.rust-lang.org/learn/get-started). No worries, you don't need to be a
+  Rust expert to write your first contract.
+</Callout>
 
 ## What is CosmWasm?
 
@@ -25,6 +29,7 @@ standard library. These primitives include:
 - extended precision arithmetic (128, 256, 512-bit integers)
 - cryptographic primitives (for example, secp256k1 verification)
 - interaction with the Cosmos SDK
+- IBC connectivity
 
 ## What does CosmWasm _not_ provide?
 

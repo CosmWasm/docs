@@ -14,12 +14,17 @@ the contract entrypoint returns an error or panics.
 
 ## Preventing rollbacks in case of failure
 
-If you don't want your entire transaction to be rolled back in case of a failure, you can use the
-`reply_on` field in the message you send. Set the field to one of the following values and instead
-of rolling back the transaction, you will receive a message containing the error:
+If you don't want your entire transaction to be rolled back in case of a failure, you can split the
+logic into multiple messages. This can be two contracts, a contract executing itself or a contract
+that sends a message to a Cosmos SDK module. Then use the `reply_on` field in the message you send.
+Set the field to one of the following values and instead of rolling back the transaction, you will
+receive a message containing the error:
 
 - `ReplyOn::Always`
 - `ReplyOn::Error`
 
 That way you can handle the error and decide what to do next, whether you want to propagate the
 error, retry the operation, ignore it, etc.
+
+The default value `ReplyOn::Success` means the caller is not ready to handle an error in the message
+execution and the entire transaction is reverted on error.

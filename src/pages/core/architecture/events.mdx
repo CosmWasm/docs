@@ -6,8 +6,8 @@ import { Callout } from "nextra/components";
 
 # Events
 
-CosmWasm can emit [Cosmos Events]. These events are stored in the block as metadata, allowing the contract
-to attach metadata to what exactly happened during execution.
+CosmWasm can emit [Cosmos Events]. These events are stored in the block execution result as metadata,
+allowing the contract to attach metadata to what exactly happened during execution.
 
 <Callout>
 
@@ -19,7 +19,7 @@ Some important details about the keys:
 
 </Callout>
 
-By default CosmWasm emits the `wasm` event to which you can add context like so:
+By default CosmWasm emits the `wasm` event to which you can add attributes like so:
 
 ```rust filename="wasm_event.rs" template="core"
 let response: Response<Empty> = Response::new()

@@ -205,11 +205,12 @@ the contract sends the message to initiate the handshake and immediately set to 
 
 <details>
   <summary>Advanced example: Contract initiating the handshake on its own</summary>
-  
-  <Callout>
-    The following example requires the `cosmos-sdk-proto` crate that provides
-    protobuf types for Cosmos SDK messages.
-  </Callout>
+
+{" "}
+<Callout>
+  The following example requires the `cosmos-sdk-proto` crate that provides protobuf types for
+  Cosmos SDK messages.
+</Callout>
 
 ```rust filename="ibc.rs" template="ibc-channel"
 use cosmos_sdk_proto::ibc::core::channel::v1::{
@@ -244,6 +245,7 @@ pub fn new_msg_channel_open_init(
             }),
             connection_hops: vec![connection_id],
             version: IBC_APP_VERSION.to_string(),
+            upgrade_sequence: 0,
         }),
         signer: env.contract.address.to_string(),
     })

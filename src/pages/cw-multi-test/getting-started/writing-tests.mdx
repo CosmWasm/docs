@@ -2,6 +2,8 @@
 tags: ["multitest", "getting started", "writing tests"]
 ---
 
+import { Cards, Card } from "nextra/components";
+
 # Writing tests
 
 ## Compiling the smart contract
@@ -25,7 +27,7 @@ cargo build
 
 Ok, the **counter** smart contract has been built successfully.
 
-## Preparing directories for tests
+## Preparing tests directory structure
 
 ```ansi {8-12} filename="counter"
 [34;1m.[0m
@@ -82,7 +84,7 @@ tree
         └── test_counter.rs
 ```
 
-## Running tests and measuring the code coverage
+## Running tests and measuring code coverage
 
 ```shell copy
 cargo test
@@ -130,3 +132,16 @@ cargo nextest run
 ```
 
 ![coverage-0](./coverage-0.png)
+
+## Writing tests
+
+(some introduction)
+
+<Cards>
+  <Card title="Writing tests in CosmWasm" href="writing-tests/writing-tests-cosmwasm" icon="">
+    Writing tests in CosmWasm
+  </Card>
+  <Card title="Writing tests in Sylvia" href="writing-tests/writing-tests-sylvia" icon="">
+    Writing tests in Sylvia
+  </Card>
+</Cards>

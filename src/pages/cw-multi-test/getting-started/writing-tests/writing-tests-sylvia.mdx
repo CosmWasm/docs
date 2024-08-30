@@ -3,3 +3,260 @@ tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
 # Writing tests in Sylvia
+
+```rust copy showLineNumbers filename="test_counter.rs"
+use counter::contract::sv::mt::{CodeId, CounterContractProxy};
+use counter::msg::CounterInitMsg;
+use sylvia::cw_multi_test::IntoAddr;
+use sylvia::multitest::App;
+```
+
+```rust copy showLineNumbers{6} filename="test_counter.rs"
+#[test]
+fn instantiating_with_zero_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(0, contract.count().unwrap().count);
+}
+```
+
+```rust copy showLineNumbers{20} filename="test_counter.rs"
+#[test]
+fn instantiating_with_value_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(12))
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(12, contract.count().unwrap().count);
+}
+```
+
+```rust copy showLineNumbers{34} filename="test_counter.rs"
+#[test]
+fn incrementing_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    contract.inc().call(&owner).unwrap();
+
+    assert_eq!(1, contract.count().unwrap().count);
+}
+```
+
+```rust copy showLineNumbers{50} filename="test_counter.rs"
+#[test]
+fn incrementing_should_stop_at_maximum() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(250))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.inc().call(&owner).unwrap();
+    }
+
+    assert_eq!(255, contract.count().unwrap().count);
+}
+```
+
+```rust copy showLineNumbers{68} filename="test_counter.rs"
+#[test]
+fn decrementing_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(126))
+        .call(&owner)
+        .unwrap();
+
+    contract.dec().call(&owner).unwrap();
+
+    assert_eq!(125, contract.count().unwrap().count);
+}
+```
+
+```rust copy showLineNumbers{84} filename="test_counter.rs"
+#[test]
+fn decrementing_should_stop_at_minimum() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.dec().call(&owner).unwrap();
+    }
+
+    assert_eq!(0, contract.count().unwrap().count);
+}
+```
+
+```rust copy showLineNumbers{102} filename="test_counter.rs"
+#[test]
+fn setting_value_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    contract.set(125).call(&owner).unwrap();
+
+    assert_eq!(125, contract.count().unwrap().count);
+}
+```
+
+## All tests put together
+
+Below is the final content of the `test_counter.rs` file, containing all previously presented test
+cases for smart contract written in Sylvia.
+
+```rust copy showLineNumbers filename="test_counter.rs"
+use counter::contract::sv::mt::{CodeId, CounterContractProxy};
+use counter::msg::CounterInitMsg;
+use sylvia::cw_multi_test::IntoAddr;
+use sylvia::multitest::App;
+
+#[test]
+fn instantiating_with_zero_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(0, contract.count().unwrap().count);
+}
+
+#[test]
+fn instantiating_with_value_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(12))
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(12, contract.count().unwrap().count);
+}
+
+#[test]
+fn incrementing_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    contract.inc().call(&owner).unwrap();
+
+    assert_eq!(1, contract.count().unwrap().count);
+}
+
+#[test]
+fn incrementing_should_stop_at_maximum() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(250))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.inc().call(&owner).unwrap();
+    }
+
+    assert_eq!(255, contract.count().unwrap().count);
+}
+
+#[test]
+fn decrementing_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(126))
+        .call(&owner)
+        .unwrap();
+
+    contract.dec().call(&owner).unwrap();
+
+    assert_eq!(125, contract.count().unwrap().count);
+}
+
+#[test]
+fn decrementing_should_stop_at_minimum() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.dec().call(&owner).unwrap();
+    }
+
+    assert_eq!(0, contract.count().unwrap().count);
+}
+
+#[test]
+fn setting_value_should_work() {
+    let app = App::default();
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    contract.set(125).call(&owner).unwrap();
+
+    assert_eq!(125, contract.count().unwrap().count);
+}
+```

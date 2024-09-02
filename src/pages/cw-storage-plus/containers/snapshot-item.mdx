@@ -1,0 +1,109 @@
+---
+tags: ["storage-plus", "containers"]
+---
+
+import { Callout } from "nextra/components";
+
+# SnapshotItem
+
+A `SnapshotItem` is a container that contains a single value that is potentially stored in some
+storage identified by a unique key - just like an [`Item`]. It's worth familiarizing yourself with
+the `Item` type first, as everything we talked about there is applicable to `SnapshotItem`.
+
+On top of that, `SnapshotItem` makes it a little simpler to maintain a history of values at various
+block heights. This involves saving "checkpoints" at some points in time - just how that is done is
+decided by the [`Strategy`] type passed to the `SnapshotItem` constructor.
+
+# Strategy
+
+There are currently 3 built-in strategies, although in the future this might be open to extension.
+
+- `EveryBlock` - a checkpoint is (conceptually) added at the beginning of every block, and
+  historical data is available for any height
+- `Never` - there's never a checkpoint saved, and the `SnapshotItem` is no different from a regular
+  `Item` in terms of features. Any call to [`may_load_at_height`] will return `StdError::NotFound`
+- `Selected` - the [`add_checkpoint`] method has to be called manually to add a checkpoint at the
+  given height. Keep in mind that when calling [`may_load_at_height`] later, the height has to be
+  the same as the one passed to [`add_checkpoint`]. If you try to load a value at a height when no
+  checkpoint was saved, the method will return [`StdError::NotFound`].
+
+## Usage examples
+
+### Maintaining a price history
+
+<Callout>
+  The constructor of `SnapshotItem` takes 3 "namespace" arguments: - the main namespace, similar to
+  the `Item` constructor - two additional unique namespaces, which are used to store the changelog
+  metadata
+</Callout>
+
+Let's say we want to keep a history of prices for a specific trading pair.
+
+```rust template="storage"
+use cw_storage_plus::{SnapshotItem, Strategy};
+
+let price: SnapshotItem<Decimal> = SnapshotItem::new("p", "p1", "p2", Strategy::EveryBlock);
+
+price
+    .save(&mut storage, &Decimal::percent(81), env.block.height)
+    .unwrap();
+
+advance_height(&mut env, 50); // fast forward 50 blocks
+
+price
+    .save(&mut storage, &Decimal::percent(92), env.block.height)
+    .unwrap();
+
+// Before/at the first save, the price was unknown (uninitialized state)
+assert_eq!(
+    price
+        .may_load_at_height(&storage, env.block.height - 60)
+        .unwrap(),
+    None
+);
+assert_eq!(
+    price
+        .may_load_at_height(&storage, env.block.height - 50)
+        .unwrap(),
+    None
+);
+
+// Before/at the current block, the price was 0.81
+assert_eq!(
+    price
+        .may_load_at_height(&storage, env.block.height - 49)
+        .unwrap(),
+    Some(Decimal::percent(81))
+);
+assert_eq!(
+    price
+        .may_load_at_height(&storage, env.block.height)
+        .unwrap(),
+    Some(Decimal::percent(81))
+);
+
+// After the current block, the price will come up as 0.92
+assert_eq!(
+    price
+        .may_load_at_height(&storage, env.block.height + 1)
+        .unwrap(),
+    Some(Decimal::percent(92))
+);
+assert_eq!(
+    price
+        .may_load_at_height(&storage, env.block.height + 50)
+        .unwrap(),
+    Some(Decimal::percent(92))
+);
+```
+
+[`Item`]: item
+[`Strategy`]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/enum.Strategy.html
+[`add_checkpoint`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.SnapshotItem.html#method.add_checkpoint
+[`may_load_at_height`]:
+  https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.SnapshotItem.html#method.may_load_at_height
+[`StdError::NotFound`]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdError.html#variant.NotFound
+[`serde`]: https://serde.rs/
+[API docs]: https://docs.rs/cw-storage-plus/latest/cw_storage_plus/struct.SnapshotItem.html

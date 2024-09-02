@@ -4,8 +4,16 @@ tags: ["multitest", "getting started", "contract", "Sylvia"]
 
 # Smart contract in Sylvia
 
+## Source files
+
+The following code snippets present the content of **Cargo.toml**, **lib.rs**, **msg.rs**, and
+**contract.rs** files, respectively.
+
+You can just copy and paste the content, temporarily skipping the detailed explanations. However, if
+you're curious about what happens inside each file, feel free to check the
+[detailed explanations](#details) provided for each code snippet.
+
 ```toml filename="Cargo.toml" copy
-[package]
 [package]
 name = "counter"
 version = "0.1.0"
@@ -32,20 +40,14 @@ sylvia = { version = "1", features = ["mt"] }
 cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
 ```
 
-<details>
-  <summary>Detailed explanation of the &#8203;**Cargo.toml**&#8203; content</summary>
-  (tbd)
-</details>
+[Detailed explanation of **Cargo.toml**](#cargotoml)
 
 ```rust filename="lib.rs" copy
 pub mod contract;
 pub mod msg;
 ```
 
-<details>
-  <summary>Detailed explanation of the &#8203;**lib.rs**&#8203; content</summary>
-  (tbd)
-</details>
+[Detailed explanation of **lib.rs**](#librs)
 
 ```rust filename="msg.rs" copy
 use cosmwasm_schema::cw_serde;
@@ -62,10 +64,7 @@ pub struct CounterResponse {
 }
 ```
 
-<details>
-  <summary>Detailed explanation of the &#8203;**msg.rs**&#8203; content</summary>
-  (tbd)
-</details>
+[Detailed explanation of **msg.rs**](#msgrs)
 
 ```rust filename="contract.rs" copy
 use crate::msg::{CounterInitMsg, CounterResponse};
@@ -128,7 +127,22 @@ impl CounterContract {
 }
 ```
 
-<details>
-  <summary>Detailed explanation of the &#8203;**contract.rs**&#8203; content</summary>
-  (tbd)
-</details>
+[Detailed explanation of **contract.rs**](#contractrs)
+
+## Details
+
+### Cargo.toml
+
+(todo)
+
+### lib.rs
+
+(todo)
+
+### msg.rs
+
+(todo)
+
+### contract.rs
+
+(todo)

@@ -22,7 +22,9 @@ An `Item` that's never been `set` is empty, and will return `None` upon a `get`.
 use cw_storey::containers::Item;
 use cw_storey::CwStorage;
 
-let admin: Item<String> = Item::new(0);
+const ADMIN_IX: u8 = 0;
+
+let admin: Item<String> = Item::new(ADMIN_IX);
 let mut cw_storage = CwStorage(&mut storage);
 let mut access = admin.access(&mut cw_storage);
 
@@ -47,13 +49,15 @@ assert_eq!(
 use cw_storey::containers::Item;
 use cw_storey::CwStorage;
 
+const CFG_IX: u8 = 0;
+
 #[cw_serde]
 struct Config {
     pub admin: String,
     pub interest_rate: Decimal,
 }
 
-let item: Item<Config> = Item::new(0);
+let item: Item<Config> = Item::new(CFG_IX);
 let mut cw_storage = CwStorage(&mut storage);
 let mut access = item.access(&mut cw_storage);
 
@@ -75,7 +79,9 @@ default. This is a common pattern for counters or other numeric values.
 use cw_storey::containers::Item;
 use cw_storey::CwStorage;
 
-let counter: Item<u32> = Item::new(0);
+const COUNTER_IX: u8 = 0;
+
+let counter: Item<u32> = Item::new(COUNTER_IX);
 let mut cw_storage = CwStorage(&mut storage);
 let mut access = counter.access(&mut cw_storage);
 

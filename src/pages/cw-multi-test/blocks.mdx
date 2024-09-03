@@ -2,20 +2,22 @@
 tags: ["multitest", "blocks"]
 ---
 
-# Operations on blocks
+# Blocks
 
-There are multiple situations where testing smart contracts requires simulating delays on the
+There are several cases when testing CosmWasm smart contracts requires simulating delays on the
 blockchain, like:
 
 - staking and unstaking processes,
 - governance voting periods,
 - validator set changes,
 - token vesting schedules,
-- incentive distribution,
+- incentive distribution, or
 - IBC packet timeouts.
 
-For this purpose, **`MultiTest`** provides several options to initialize and update the current
-block properties (such as height and timestamp) to test delays on the blockchain.
+## Operations on blocks
+
+**`MultiTest`** provides several options to initialize and update the current block properties (such
+as height and timestamp), to test delays on the blockchain.
 
 ## Initialization with the default block
 

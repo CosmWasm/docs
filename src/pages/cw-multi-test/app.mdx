@@ -2,7 +2,13 @@
 tags: ["multitest", "App"]
 ---
 
-# `App`
+# App
+
+The `App{:rust}` struct in **`MultiTest`** represents the whole blockchain simulator. When creating
+the `App{:rust}`, it simulates the startup of a real-life blockchain within tests that utilize
+**`MultiTest`**.
+
+<br />
 
 <div
   style={{
@@ -34,9 +40,7 @@ tags: ["multitest", "App"]
   </div>
 </div>
 
-The `App{:rust}` struct in **`MultiTest`** represents the whole blockchain simulator. When creating
-the `App{:rust}`, it simulates the startup of a real-life blockchain within tests that utilize
-**`MultiTest`**.
+## `App::default`
 
 The most straightforward way to create the `App{:rust}` is by using the `default` method, which is
 the equivalent of calling the `new` constructor with an empty initialization callback.
@@ -54,7 +58,7 @@ let app = App::new(no_init);
 ```
 
 In both cases, the newly created `App{:rust}` object simulates a blockchain with the default
-settings, as summarized below:
+settings, as summarized in the table below:
 
 | Feature                      | Default implementation                                                                                                      |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -69,3 +73,23 @@ settings, as summarized below:
 | [Wasm](wasm)                 | [`WasmKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.WasmKeeper.html)                            |
 | [Custom](custom)             | [`FailingModule<Empty, Empty, Empty>{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.FailingModule.html) |
 | [IBC](ibc)                   | [`IbcFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html)                  |
+
+## `App::new`
+
+(todo)
+
+## Storing smart contract's code
+
+(todo)
+
+## Instantiating smart contract
+
+(todo)
+
+## Querying smart contract
+
+(todo)
+
+## Executing smart contract's message
+
+(todo)

@@ -2,6 +2,8 @@
 tags: ["multitest", "blocks"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Blocks
 
 There are several cases when testing CosmWasm smart contracts requires simulating delays on the
@@ -16,8 +18,17 @@ blockchain, like:
 
 ## Operations on blocks
 
-**`MultiTest`** provides several options to initialize and update the current block properties (such
-as height and timestamp), to test delays on the blockchain.
+**`MultiTest`** provides several operations to initialize and update current block properties, such
+as height and timestamp, in order to test delays on the blockchain.
+
+<Callout emoji="🚨">
+  Although it is possible to modify only the height or only the timestamp of the block in MultiTest,
+  this is not possible in a real-life blockchain and may lead to unpredictable test results.
+</Callout>
+
+<Callout type="info">
+  Always increment the height **and** the timestamp of the block in tests.
+</Callout>
 
 ## Initialization with the default block
 

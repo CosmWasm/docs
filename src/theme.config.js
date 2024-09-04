@@ -7,7 +7,7 @@ import { cn } from "./lib/utils";
 const title = "Official guide to CosmWasm development";
 const description =
   "Learn how to build smart contracts for CosmWasm-enabled blockchains, how they can interact with the chain and how to integrate CosmWasm into your blockchain.";
-const socialPreviewImg = "/social-preview.png";
+const socialPreviewImg = "https://docs.cosmwasm.com/social-preview.png";
 
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -116,6 +116,8 @@ export default {
         { content: "#000", name: "msapplication-TileColor" },
         { content: "#000000", name: "theme-color" },
         { content: socialPreviewImg, name: "twitter:image" },
+        { content: title, name: "twitter:title" },
+        { content: description, name: "twitter:description" },
       ],
       twitter: { handle: "@CosmWasm", site: "@CosmWasm" },
     };

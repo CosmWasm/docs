@@ -6,6 +6,8 @@ import { Callout, Cards, Card } from "nextra/components";
 
 # Writing tests
 
+(todo)
+
 ## Compiling the smart contract
 
 Having the **counter** smart contract set up, let's first check if the project compiles:
@@ -59,38 +61,60 @@ final directory and file structure is shown below.
   `counter` directory).
 </Callout>
 
-(todo)
+Let's begin by creating the `tests` directory:
 
 ```shell copy filename="TERMINAL"
 mkdir tests
 ```
 
+Then create an empty `mod.rs` file inside the `tests` directory:
+
 ```shell copy filename="TERMINAL"
 touch tests/mod.rs
 ```
+
+Now, copy and paste the following content to `tests/mod.rs` file:
 
 ```rust copy filename="tests/mod.rs"
 mod multitest;
 ```
 
+By convention, we place all **`MultiTest`** test cases under the `multitest` directory, so let's
+create it:
+
 ```shell copy filename="TERMINAL"
 mkdir tests/multitest
 ```
+
+Inside the `tests/multitest` directory we should also create an empty file named `mod.rs`:
 
 ```shell copy filename="TERMINAL"
 touch tests/multitest/mod.rs
 ```
 
+And populate it with the following content (just copy and paste):
+
 ```rust copy filename="tests/multitest/mod.rs"
 mod test_counter;
 ```
+
+Finally, inside the `tests/multitest` directory, we create a file named `test_counter.rs`:
 
 ```shell copy filename="TERMINAL"
 touch tests/multitest/test_counter.rs
 ```
 
-Temporarily, we leave the `tests/multitest/test_counter.rs` file empty. Later on, we place all our
-test cases in this file.
+For now, we will leave this file empty, but later, we will place all our test cases there.
+
+Now that the directory structure for tests is ready, it's time to run the tests.
+
+## Running tests
+
+Once the directories and files are set up for tests, let's run the tests:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
 
 ## Preparing code coverage script
 

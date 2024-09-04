@@ -1,9 +1,13 @@
 import TagDots from "@/components/TagDots";
 import TagPills from "@/components/TagPills";
 import { iceland } from "@/utils/fonts";
-import { useConfig } from "nextra-theme-docs";
 import { useEffect, useState } from "react";
 import { cn } from "./lib/utils";
+
+const title = "Official guide to CosmWasm development";
+const description =
+  "Learn how to build smart contracts for CosmWasm-enabled blockchains, how they can interact with the chain and how to integrate CosmWasm into your blockchain.";
+const socialPreviewImg = "/social-preview.png";
 
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -12,13 +16,7 @@ export default {
   docsRepositoryBase: "https://github.com/CosmWasm/docs/blob/main",
   logo: (
     <>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        width="32"
-        height="32"
-        viewBox="0 0 686 686"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32" viewBox="0 0 686 686">
         <path
           fill="url(#a)"
           fillRule="evenodd"
@@ -26,14 +24,7 @@ export default {
           clipRule="evenodd"
         />
         <defs>
-          <linearGradient
-            id="a"
-            x1="128.232"
-            x2="566.756"
-            y1="28.779"
-            y2="653.676"
-            gradientUnits="userSpaceOnUse"
-          >
+          <linearGradient id="a" x1="128.232" x2="566.756" y1="28.779" y2="653.676" gradientUnits="userSpaceOnUse">
             <stop stopColor="#FCECB2" />
             <stop offset=".26" stopColor="#FF8B89" />
             <stop offset=".521" stopColor="#FC8ADC" />
@@ -42,10 +33,7 @@ export default {
           </linearGradient>
         </defs>
       </svg>
-      <span
-        className={iceland.className}
-        style={{ marginLeft: ".5rem", fontSize: "1.5rem", lineHeight: 1 }}
-      >
+      <span className={iceland.className} style={{ marginLeft: ".5rem", fontSize: "1.5rem", lineHeight: 1 }}>
         CosmWasm Docs
       </span>
     </>
@@ -57,11 +45,7 @@ export default {
         <p>CosmWasm is proudly created and maintained by Confio.</p>
         <p style={{ marginTop: "8px" }}>
           This deployment is hosted by Confio GmbH (
-          <a
-            href="https://confio.gmbh/impressum"
-            target="_blank"
-            style={{ textDecoration: "underline" }}
-          >
+          <a href="https://confio.gmbh/impressum" target="_blank" style={{ textDecoration: "underline" }}>
             Legal Information
           </a>
           ).
@@ -86,21 +70,17 @@ export default {
       }, []);
 
       return (
-        <div
-          className={cn(
-            "group",
-            !isDocRoute && title === "How to doc" ? "how-to-doc-dir" : "",
-          )}
-        >
+        <div className={cn("group", !isDocRoute && title === "How to doc" ? "how-to-doc-dir" : "")}>
           <span>{title}</span> <TagDots route={route} />
         </div>
       );
     },
   },
   useNextSeoProps() {
-    const { frontMatter } = useConfig();
-
     return {
+      title,
+      description,
+      openGraph: { title, description, images: [{ url: socialPreviewImg }] },
       additionalLinkTags: [
         {
           href: "/apple-touch-icon.png",
@@ -135,12 +115,9 @@ export default {
         { content: "CosmWasm Docs", name: "application-name" },
         { content: "#000", name: "msapplication-TileColor" },
         { content: "#000000", name: "theme-color" },
+        { content: socialPreviewImg, name: "twitter:image" },
       ],
-      description: frontMatter.description || "CosmWasm Docs",
-      openGraph: {
-        images: frontMatter.image ? [{ url: frontMatter.image }] : undefined, // TODO: Fall back to CW branding
-      },
-      titleTemplate: "%s – Docs",
+      twitter: { handle: "@CosmWasm", site: "@CosmWasm" },
     };
   },
 };

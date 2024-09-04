@@ -116,6 +116,8 @@ export default {
         { content: "#000", name: "msapplication-TileColor" },
         { content: "#000000", name: "theme-color" },
         { content: socialPreviewImg, name: "twitter:image" },
+        { content: title, name: "twitter:title" },
+        { content: description, name: "twitter:description" },
       ],
       twitter: { handle: "@CosmWasm", site: "@CosmWasm" },
     };

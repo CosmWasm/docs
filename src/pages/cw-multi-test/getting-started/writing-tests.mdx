@@ -25,8 +25,8 @@ cargo build
  [32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 3.27s
 ```
 
-If the output is similar to the one shown above, it looks like the counter smart contract has been
-built successfully!
+If the output is similar to the one shown above, it looks like the **counter** smart contract has
+been built successfully!
 
 ## Preparing directory structure for tests
 
@@ -55,7 +55,8 @@ final directory and file structure is shown below.
 </Callout>
 
 <Callout>
-  Note, that both directories **`src`** and **`tests`** should be placed at the root of the project.
+  Note, that both directories **`src`** and **`tests`** are be placed at the root of the project (in
+  `counter` directory).
 </Callout>
 
 (todo)
@@ -68,6 +69,10 @@ mkdir tests
 touch tests/mod.rs
 ```
 
+```rust copy filename="tests/mod.rs"
+mod multitest;
+```
+
 ```shell copy filename="TERMINAL"
 mkdir tests/multitest
 ```
@@ -76,16 +81,12 @@ mkdir tests/multitest
 touch tests/multitest/mod.rs
 ```
 
-```shell copy filename="TERMINAL"
-touch tests/multitest/test_counter.rs
-```
-
-```rust copy filename="tests/mod.rs"
-mod multitest;
-```
-
 ```rust copy filename="tests/multitest/mod.rs"
 mod test_counter;
+```
+
+```shell copy filename="TERMINAL"
+touch tests/multitest/test_counter.rs
 ```
 
 Temporarily, we leave the `tests/multitest/test_counter.rs` file empty. Later on, we place all our

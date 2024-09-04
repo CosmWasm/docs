@@ -6,8 +6,8 @@ import { Callout, Cards, Card } from "nextra/components";
 
 # Smart contract
 
-The following sections describe how to create the example smart contract, which manages a counter
-that can be initialized, incremented, decremented, and queried. Later on, you will
+The following sections describe how to create the example smart contract, which manages a
+**counter** that can be initialized, incremented, decremented, and queried. Later on, you will
 [write tests](writing-tests.mdx) for this contract using **`MultiTest`**.
 
 <Callout type="info">
@@ -22,73 +22,73 @@ library named **counter**.
 
 Change the working directory to your home directory:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cd ~
 ```
 
 Create a dedicated directory to store your example smart contract:
 
-```shell copy
+```shell copy filename="TERMINAL"
 mkdir my-contracts
 ```
 
 Change the working directory to `my-contracts`:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cd my-contracts
 ```
 
 Create a new Rust library named **counter**:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cargo init --lib counter
 ```
 
 Change the working directory to `counter`:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cd counter
 ```
 
 Newly created library contains the **Cargo.toml** file and **lib.rs** file in `src` directory...
 
-```shell copy
+```shell copy filename="TERMINAL"
 tree
 ```
 
 ...so the expected content of the `counter` directory is:
 
-```ansi filename="counter"
+```ansi filename="counter (directory)"
 [34;1m.[0m
 ├── Cargo.toml
 └── [34;1msrc[0m
     └── lib.rs
 ```
 
-By convention, the source code of the smart contract is placed in file named **contract.rs**, and
-the messages processed by the contract are placed in file named **msg.rs**; both files should be
-saved in `src` directory.
+By convention, the source code of the smart contract is placed in the file named **contract.rs**,
+and the messages processed by the contract are usually placed in file named **msg.rs**. Both files
+should be saved in `src` directory.
 
-Let's create the **contract.rs** file...
+Let's create an empty **contract.rs** file...
 
-```shell copy
+```shell copy filename="TERMINAL"
 touch src/contract.rs
 ```
 
-...and **msg.rs** file:
+...and empty **msg.rs** file:
 
-```shell copy
+```shell copy filename="TERMINAL"
 touch src/msg.rs
 ```
 
 The final structure of the smart contract project placed in `counter` directory should look like
 shown below:
 
-```shell copy
+```shell copy filename="TERMINAL"
 tree
 ```
 
-```ansi filename="counter"
+```ansi filename="counter (directory)"
 [34;1m.[0m
 ├── Cargo.toml
 └── [34;1msrc[0m
@@ -99,18 +99,29 @@ tree
 
 ## Filling the content
 
-In the following chapters, we provide examples of different smart contract implementations. Whether
-you're interested in developing smart contracts using pure CosmWasm or exploring the Sylvia
-framework, the resources below will guide you through the essential content of each smart contract.
+In the [previous section](#creating-the-project) we have created a project structure for **counter**
+smart contract, but the source files are still empty. In the following chapters, we provide examples
+of different smart contract implementations.
 
-Click on the cards below to dive into the details of smart contracts written in CosmWasm or the
-Sylvia framework.
+Whether you're interested in developing smart contracts using pure CosmWasm or exploring the Sylvia
+framework, the provided examples will guide you through the essential content of smart contract.
+
+Click on the cards below to dive into the details of smart contracts written in pure CosmWasm or
+written using the Sylvia framework.
 
 <Cards>
-  <Card title="Smart contract in CosmWasm" href="smart-contract/smart-contract-cosmwasm" icon="">
-    Smart contract in CosmWasm
+  <Card
+    title="Smart contract written using pure CosmWasm"
+    href="smart-contract/smart-contract-cosmwasm"
+    icon=""
+  >
+    Smart contract CosmWasm
   </Card>
-  <Card title="Smart contract in Sylvia" href="smart-contract/smart-contract-sylvia" icon="">
-    Smart contract in Sylvia
+  <Card
+    title="Smart contract written using Sylvia framework"
+    href="smart-contract/smart-contract-sylvia"
+    icon=""
+  >
+    Smart contract Sylvia
   </Card>
 </Cards>

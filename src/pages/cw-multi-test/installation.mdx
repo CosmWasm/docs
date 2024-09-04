@@ -12,11 +12,11 @@ import { Callout } from "nextra/components";
 
 # Installation
 
-## Rust library
+## It's a Rust library
 
 **`MultiTest`** ships as a **Rust library** named [cw-multi-test].
 
-To use **`MultiTest`** add it as a **DEVELOPMENT DEPENDENCY** to your project:
+To use **`MultiTest`** in your project, add it as a **DEVELOPMENT DEPENDENCY**:
 
 ```toml filename="Cargo.toml" copy
 [dev-dependencies]
@@ -31,16 +31,20 @@ cw-multi-test = "2"
 
 ## Prerequisities
 
+### Rust and Cargo
+
 The only prerequisite to test CosmWasm smart contracts using **`MultiTest`** is having [Rust
 and Cargo] installed.
 
 <Callout>
   We recommend installing Rust using the official [rustup installer]. This makes it easy to stay on
-  the most recent Rust version.
+  the most recent version of Rust.
 </Callout>
 
-Optionally, you may want to install [Tarpaulin] for measuring code coverage and [Nextest] for
-running tests faster, with clean and beautiful user interface.
+### Tarpaulin and Nextest
+
+Optionally, you may want to install [Tarpaulin] for measuring code coverage, and [Nextest] for
+running tests faster with clean and beautiful user interface.
 
 Installing **Tarpaulin**:
 

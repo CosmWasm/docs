@@ -2,15 +2,15 @@
 tags: ["multitest", "getting started", "writing tests"]
 ---
 
-import { Cards, Card } from "nextra/components";
+import { Callout, Cards, Card } from "nextra/components";
 
 # Writing tests
 
 ## Compiling the smart contract
 
-With the example **counter** smart contract set up, you can now compile (build) the project:
+Having the **counter** smart contract set up, let's first check if the project compiles:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cargo build
 ```
 
@@ -25,18 +25,21 @@ cargo build
  [32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 3.27s
 ```
 
-The **counter** smart contract has been built successfully.
+If the output is similar to the one shown above, it looks like the counter smart contract has been
+built successfully!
 
-## Preparing tests directory structure
+## Preparing directory structure for tests
 
-```ansi {8-12} filename="counter"
+Before we start writing tests, we need to set up the directories and files for the test cases. The
+final directory and file structure is shown below.
+
+```ansi showLineNumbers {7-11} filename="counter (directory)"
 [34;1m.[0m
 ├── Cargo.toml
 ├── [34;1msrc[0m
 │   ├── contract.rs
 │   ├── lib.rs
 │   └── msg.rs
-├── taskfile.yml
 └── [34;1mtests[0m
     ├── mod.rs
     └── [34;1mmultitest[0m
@@ -44,9 +47,53 @@ The **counter** smart contract has been built successfully.
         └── test_counter.rs
 ```
 
+<Callout>
+  There are several configurations possible for placing tests in Rust, which are discussed in detail
+  in [this chapter](best-practices#where-to-place-test-cases). For the purpose of this example, we
+  have chosen to place all test cases outside **`src`** directory, in a new directory named
+  **`tests`**.
+</Callout>
+
+<Callout>
+  Note, that both directories **`src`** and **`tests`** should be placed at the root of the project.
+</Callout>
+
+(todo)
+
+```shell copy filename="TERMINAL"
+mkdir tests
+```
+
+```shell copy filename="TERMINAL"
+touch tests/mod.rs
+```
+
+```shell copy filename="TERMINAL"
+mkdir tests/multitest
+```
+
+```shell copy filename="TERMINAL"
+touch tests/multitest/mod.rs
+```
+
+```shell copy filename="TERMINAL"
+touch tests/multitest/test_counter.rs
+```
+
+```rust copy filename="tests/mod.rs"
+mod multitest;
+```
+
+```rust copy filename="tests/multitest/mod.rs"
+mod test_counter;
+```
+
+Temporarily, we leave the `tests/multitest/test_counter.rs` file empty. Later on, we place all our
+test cases in this file.
+
 ## Preparing code coverage script
 
-```shell
+```shell copy filename="TERMINAL"
 touch coverage.sh
 ```
 
@@ -60,15 +107,15 @@ cargo tarpaulin --force-clean --out Html --engine llvm --output-dir "$(pwd)/targ
 echo "Report: file://$(pwd)/target/coverage-report/tarpaulin-report.html"
 ```
 
-```shell
+```shell filename="TERMINAL"
 chmod +x coverage.sh
 ```
 
-```shell
+```shell filename="TERMINAL"
 tree
 ```
 
-```ansi {3} filename="counter"
+```ansi {3} filename="counter (directory)"
 [34;1m.[0m
 ├── Cargo.toml
 ├── [32;1mcoverage.sh[0m
@@ -76,7 +123,6 @@ tree
 │   ├── contract.rs
 │   ├── lib.rs
 │   └── msg.rs
-├── taskfile.yml
 └── [34;1mtests[0m
     ├── mod.rs
     └── [34;1mmultitest[0m
@@ -86,7 +132,7 @@ tree
 
 ## Running tests and measuring code coverage
 
-```shell copy
+```shell copy filename="TERMINAL"
 cargo test
 ```
 
@@ -110,7 +156,7 @@ running 0 tests
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-```shell copy
+```shell copy filename="TERMINAL"
 cargo nextest run
 ```
 
@@ -120,7 +166,7 @@ cargo nextest run
      Summary [   0.000s] 0 tests run: 0 passed, 0 skipped
 ```
 
-```shell copy
+```shell copy filename="TERMINAL"
 ./coverage.sh
 ```
 
@@ -138,10 +184,18 @@ cargo nextest run
 (some introduction)
 
 <Cards>
-  <Card title="Writing tests in CosmWasm" href="writing-tests/writing-tests-cosmwasm" icon="">
+  <Card
+    title="Writing tests for smart contracts written using pure CosmWasm"
+    href="writing-tests/writing-tests-cosmwasm"
+    icon=""
+  >
     Writing tests in CosmWasm
   </Card>
-  <Card title="Writing tests in Sylvia" href="writing-tests/writing-tests-sylvia" icon="">
+  <Card
+    title="Writing tests for smart contracts written using Sylvia framework"
+    href="writing-tests/writing-tests-sylvia"
+    icon=""
+  >
     Writing tests in Sylvia
   </Card>
 </Cards>

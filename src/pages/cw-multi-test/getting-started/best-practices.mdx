@@ -10,11 +10,19 @@ tags: ["multitest", "getting started", "best practices"]
 - `/src/multitest` directory suggested variant
 - [The Rust Programming Language - Test Organization](https://doc.rust-lang.org/book/ch11-03-test-organization.html)
 
-## How many tests should I usually write?
+## Where to place test cases
 
-### CosmWasm
+(todo)
 
-```shell copy
+## How many tests cases to write
+
+### Lines of code compared
+
+#### CosmWasm
+
+> Source code of the **counter** smart contract written using pure CosmWasm
+
+```shell copy filename="TERMINAL"
 cloc src
 ```
 
@@ -33,7 +41,9 @@ SUM:                             3              9              0             68
 -------------------------------------------------------------------------------
 ```
 
-```shell copy
+> Tests cases written using **`MultiTest`** and pure CosmWasm
+
+```shell copy filename="TERMINAL"
 cloc tests
 ```
 
@@ -52,9 +62,11 @@ SUM:                             3             41              0            188
 -------------------------------------------------------------------------------
 ```
 
-### Sylvia
+#### Sylvia
 
-```shell copy
+> Source code of the **counter** smart contract written using the Sylvia framework
+
+```shell copy filename="TERMINAL"
 cloc src
 ```
 
@@ -73,7 +85,9 @@ SUM:                             3              9              0             63
 -------------------------------------------------------------------------------
 ```
 
-```shell copy
+> Tests cases written using **`MultiTest`** and the Sylvia framework
+
+```shell copy filename="TERMINAL"
 cloc tests
 ```
 

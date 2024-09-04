@@ -26,7 +26,10 @@ cw-multi-test = "2"
 <Callout emoji="🚨">
   **`MultiTest`** is a **TESTING** library and should always be added to your project as
   **DEVELOPMENT DEPENDENCY** in section **`[dev-dependencies]`** of the **Cargo.toml** file.
-  **`MultiTest`** is **NOT** designed to be used in production code.
+</Callout>
+
+<Callout emoji="🛑">
+  **`MultiTest`** is **NOT** designed to be used in production code on real-life blockchain.
 </Callout>
 
 ## Prerequisities
@@ -36,7 +39,7 @@ cw-multi-test = "2"
 The only prerequisite to test CosmWasm smart contracts using **`MultiTest`** is having [Rust
 and Cargo] installed.
 
-<Callout>
+<Callout type="info">
   We recommend installing Rust using the official [rustup installer]. This makes it easy to stay on
   the most recent version of Rust.
 </Callout>
@@ -48,12 +51,12 @@ running tests faster with clean and beautiful user interface.
 
 Installing **Tarpaulin**:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cargo install cargo-tarpaulin
 ```
 
 Installing **Nextest**:
 
-```shell copy
+```shell copy filename="TERMINAL"
 cargo install cargo-nextest
 ```

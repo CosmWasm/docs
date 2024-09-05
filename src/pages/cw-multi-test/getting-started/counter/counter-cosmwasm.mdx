@@ -2,18 +2,19 @@
 tags: ["multitest", "getting started", "counter", "CosmWasm"]
 ---
 
+import { Card, Cards } from "nextra/components";
+
 # Counter written in CosmWasm
 
 ## Counter source code
 
-The following code snippets present the content of **Cargo.toml**, **lib.rs**, **msg.rs**, and
-**contract.rs** files, respectively. Now, you can just copy and paste the provided content to
-previously created empty files, temporarily skipping the detailed explanations. However, if you're
-curious about what happens inside each file, feel free to check the
-[detailed explanations](#details) provided for each code snippet.
+The following code snippets present the content of [**Cargo.toml**](#cargotoml),
+[**lib.rs**](#librs), [**msg.rs**](#msgrs), and [**contract.rs**](#contractrs) files, respectively.
+You can just copy and paste the provided content to previously created empty files, temporarily
+skipping the detailed explanations. However, if you're curious about what happens inside each file,
+feel free to check the detailed explanations provided for each code snippet.
 
-Having the **counter** smart contract ready, you can begin to [write tests](../writing-tests) using
-**`MultiTest`**.
+### Cargo.toml
 
 ```toml filename="Cargo.toml" copy
 [package]
@@ -41,14 +42,30 @@ serde = "1.0"
 cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
 ```
 
-[Detailed explanation of **Cargo.toml**](#cargotoml)
+**Detailed explanation**
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#librs" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
+### lib.rs
 
 ```rust filename="lib.rs" copy
 pub mod contract;
 pub mod msg;
 ```
 
-[Detailed explanation of **lib.rs**](#librs)
+**Detailed explanation**
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#msgrs" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
+### msg.rs
 
 ```rust filename="msg.rs" copy
 use cosmwasm_schema::cw_serde;
@@ -77,7 +94,15 @@ pub struct CounterResponse {
 }
 ```
 
-[Detailed explanation of **msg.rs**](#msgrs)
+**Detailed explanation**
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#contractrs" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
+### contract.rs
 
 ```rust filename="contract.rs" copy
 #[cfg(not(feature = "library"))]
@@ -133,22 +158,19 @@ pub fn query(deps: Deps, _env: Env, msg: CounterQuery) -> Result<Binary, StdErro
 }
 ```
 
-[Detailed explanation of **contract.rs**](#contractrs)
+**Detailed explanation**
 
-## Counter explained in detail
+<Cards>
+  <Card title="🦘  Skip this time" href="#what-next" icon="" children="" />
+</Cards>
 
-### Cargo.toml
+(todo: extremely detailed explanation)
 
-(todo)
+## What next?
 
-### lib.rs
+Having the **counter** smart contract ready, you can begin [writing tests](../writing-tests) using
+**`MultiTest`**.
 
-(todo)
+Or you can check the Sylvia version.
 
-### msg.rs
-
-(todo)
-
-### contract.rs
-
-(todo)
+(todo: add cards here)

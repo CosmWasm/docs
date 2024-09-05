@@ -52,10 +52,6 @@ fn counter_contract() -> Box<dyn Contract<Empty>> {
 
 ## Testing counter initialization
 
-- `App::default{:rust}`
-- `app.store_code{:rust}`
-- `app.instantiate_contract{:rust}`
-
 ### Testing initialization with zero
 
 ```rust copy showLineNumbers{13} filename="test_counter.rs"
@@ -139,6 +135,12 @@ cargo nextest run
 </Cards>
 
 (todo: extremely detailed explanation)
+
+Topics to cover:
+
+- `App::default{:rust}`
+- `app.store_code{:rust}`
+- `app.instantiate_contract{:rust}`
 
 ### Testing initialization with a specific value
 

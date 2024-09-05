@@ -9,14 +9,19 @@ import { Callout } from "nextra/components";
 [Tarpaulin]: https://github.com/xd009642/tarpaulin
 [cargo-nextest]: https://nexte.st
 [cw-multi-test]: https://crates.io/crates/cw-multi-test
+[crates.io]: https://crates.io
 
 # Installation
 
-## It's a Rust library
+> **`MultiTest`** ships as a Rust library, no special installation procedure is required. Just add
+> it as a **DEVELOPMENT DEPENDENCY** to your project. You might also benefit from installing
+> Tarpaulin and cargo-nextest.
 
-**`MultiTest`** ships as a **Rust library** named [cw-multi-test].
+## MultiTest is a Rust library
 
-To use **`MultiTest`** in your project, add it as a **DEVELOPMENT DEPENDENCY**:
+**`MultiTest`** ships as a **Rust library** named [cw-multi-test] and is hosted on [crates.io].
+
+To use **`MultiTest`** in your project, just add it as a **DEVELOPMENT DEPENDENCY**:
 
 ```toml filename="Cargo.toml" copy
 [dev-dependencies]
@@ -24,7 +29,7 @@ cw-multi-test = "2"
 ```
 
 <Callout emoji="🚨">
-  **`MultiTest`** is a **TESTING** library and should always be added to your project as
+  **`MultiTest`** is a **TESTING** library and should **always** be added to your project as
   **DEVELOPMENT DEPENDENCY** in section **`[dev-dependencies]`** of the **Cargo.toml** file.
 </Callout>
 
@@ -44,7 +49,7 @@ and Cargo] installed.
   the most recent version of Rust.
 </Callout>
 
-### Tarpaulin and Nextest
+### Tarpaulin and cargo-nextest
 
 Optionally, you may want to install [Tarpaulin] for measuring code coverage, and [cargo-nextest] for
 running tests faster with clean and beautiful user interface.

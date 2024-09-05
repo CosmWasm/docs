@@ -2,7 +2,7 @@
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
-import { Callout, Steps } from "nextra/components";
+import { Callout, Card, Cards, Steps } from "nextra/components";
 
 # Writing tests in CosmWasm
 
@@ -122,7 +122,23 @@ cargo nextest run
 55.56% coverage, 10/18 lines covered, +55.56% change in coverage
 ```
 
-![coverage-cosmwasm-01](./coverage-cosmwasm-01.png)
+<details>
+  <summary>📃  Code coverage report</summary>
+  ![coverage-cosmwasm-01](./coverage-cosmwasm-01.png)
+</details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card
+    title="🦘  Skip this time"
+    href="#testing-initialization-with-a-specific-value"
+    icon=""
+    children=""
+  />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ### Testing initialization with a specific value
 
@@ -178,9 +194,17 @@ cargo nextest run
 ```
 
 <details>
-  <summary>Detailed code coverage report</summary>
+  <summary>📃  Code coverage report</summary>
   ![coverage-cosmwasm-02](./coverage-cosmwasm-02.png)
 </details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-increment-by-1" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ## Testing counter increment
 
@@ -217,11 +241,9 @@ fn incrementing_should_work() {
 }
 ```
 
-<details>
-  <summary>Tests and code coverage</summary>
 ```shell copy
 cargo nextest run
-````
+```
 
 ```ansi
     Starting 3 tests across 2 binaries (run ID: 1cc52bb8-f198-4c7e-9bd4-14295d64662b, nextest profile: default)
@@ -243,9 +265,18 @@ cargo nextest run
 88.89% coverage, 16/18 lines covered, +27.78% change in coverage
 ```
 
-![coverage-cosmwasm-03](./coverage-cosmwasm-03.png)
-
+<details>
+  <summary>📃  Code coverage report</summary>
+  ![coverage-cosmwasm-03](./coverage-cosmwasm-03.png)
 </details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-increment-overflow" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ### Testing increment overflow
 
@@ -312,6 +343,19 @@ cargo nextest run
 88.89% coverage, 16/18 lines covered, +0.00% change in coverage
 ```
 
+<details>
+  <summary>📃  Code coverage report</summary>
+  ???
+</details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-decrement-by-1" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
 ## Testing counter decrement
 
 ### Testing decrement by 1
@@ -346,6 +390,19 @@ fn decrementing_should_work() {
     assert_eq!(125, res.value);
 }
 ```
+
+<details>
+  <summary>📃  Code coverage report</summary>
+  ???
+</details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-decrement-underflow" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ### Testing decrement underflow
 
@@ -387,6 +444,19 @@ fn decrementing_should_stop_at_minimum() {
 }
 ```
 
+<details>
+  <summary>📃  Code coverage report</summary>
+  ???
+</details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-counter-value-changes" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
 ## Testing counter value changes
 
 ```rust copy showLineNumbers{195} filename="test_counter.rs"
@@ -424,6 +494,19 @@ fn setting_value_should_work() {
     assert_eq!(126, res.value);
 }
 ```
+
+<details>
+  <summary>📃  Code coverage report</summary>
+  ???
+</details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#test-cases-put-all-together" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ## Test cases put all together
 

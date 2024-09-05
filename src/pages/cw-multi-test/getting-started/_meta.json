@@ -1,5 +1,5 @@
 {
-  "smart-contract": "Contract",
+  "counter": "Counter",
   "writing-tests": "Writing tests",
   "best-practices": "Best practices"
 }

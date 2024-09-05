@@ -16,7 +16,7 @@ Having the **counter** smart contract set up, let's first check if the project c
 cargo build
 ```
 
-```ansi
+```ansi filename="OUTPUT"
  [32;1mUpdating[0m crates.io index
   [32;1mLocking[0m 112 packages to latest compatible versions
     ⋮
@@ -118,7 +118,7 @@ cargo test
 
 The expected output should be similar to the one shown below:
 
-```ansi {6,12,16} showLineNumbers
+```ansi {6,12,16} showLineNumbers filename="OUTPUT"
     [32;1mFinished[0m `test` profile [unoptimized + debuginfo] target(s) in 17.96s
      [32;1mRunning[0m unittests src/lib.rs (target/debug/deps/counter-f350df45a1cd1c74)
 
@@ -153,18 +153,19 @@ cargo nextest run
 
 The expected output is:
 
-```ansi {4} showLineNumbers
+```ansi {4} showLineNumbers filename="OUTPUT"
     [32;1mFinished[0m `test` profile [unoptimized + debuginfo] target(s) in 0.06s
     [32;1mStarting[0m 0 tests across 2 binaries (run ID: 3e0cbabb-3ef9-4b2f-98a8-d375bc510845, nextest profile: default)
 ------------
      [32;1mSummary[0m [   0.000s] 0 tests run: 0 [32;1mpassed[0m, 0 [33;1mskipped[0m
 ```
 
-[cargo-nextest](https://nexte.st) reports in a user-friendly manner that there were no tests to run.
+[cargo-nextest](https://nexte.st) reports in a user-friendly manner that there were no tests to run
+**\<line 4\>**.
 
-Now, you have almost everything you need to start testing the counter smart contract. What’s left is
-to prepare tools for measuring code coverage, which is a handy way to track progress in writing
-tests.
+Now, you have almost everything you need to start testing the **counter** smart contract. What’s
+left is to prepare tools for measuring code coverage, which is a handy way to track progress in
+writing tests.
 
 ## Preparing code coverage script
 
@@ -217,7 +218,7 @@ tree
         └── test_counter.rs
 ```
 
-## Measuring the code coverage
+## Measuring code coverage
 
 With the code coverage script at hand, measuring code coverage is now as simple as typing:
 
@@ -227,7 +228,7 @@ With the code coverage script at hand, measuring code coverage is now as simple 
 
 The result should be similar to this (only the last few lines are shown):
 
-```ansi
+```ansi filename="OUTPUT"
 ⋮
 || Tested/Total Lines:
 || src/contract.rs: 0/18

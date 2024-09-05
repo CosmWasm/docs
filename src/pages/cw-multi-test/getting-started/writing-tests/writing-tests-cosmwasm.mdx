@@ -2,13 +2,43 @@
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
+import { Callout, Steps } from "nextra/components";
+
 # Writing tests in CosmWasm
+
+As a reminder, the file structure of the **counter** project is shown below. In this chapter, you
+will be writing tests for this smart contract, which will be placed in a file named
+`test_counter.rs`, highlighted in **line 12**.
+
+<Callout type="info" emoji="☉">
+  The final content of the `test_counter.rs` file, containing all test cases, is presented [at the
+  end](#test-cases-put-all-together) of this chapter.
+</Callout>
+
+```ansi {12} showLineNumbers filename="counter (directory)"
+[34;1m.[0m
+├── Cargo.toml
+├── [32;1mcoverage.sh[0m
+├── [34;1msrc[0m
+│   ├── contract.rs
+│   ├── lib.rs
+│   └── msg.rs
+└── [34;1mtests[0m
+    ├── mod.rs
+    └── [34;1mmultitest[0m
+        ├── mod.rs
+        └── test_counter.rs
+```
+
+## Imports
 
 ```rust copy showLineNumbers{1} filename="test_counter.rs"
 use cosmwasm_std::Empty;
 use counter::msg::{CounterActionMsg, CounterInitMsg, CounterQuery, CounterResponse};
 use cw_multi_test::{App, Contract, ContractWrapper, Executor, IntoAddr};
 ```
+
+## Wrapping the contact
 
 ```rust copy showLineNumbers{5} filename="test_counter.rs"
 fn counter_contract() -> Box<dyn Contract<Empty>> {
@@ -19,6 +49,14 @@ fn counter_contract() -> Box<dyn Contract<Empty>> {
     ))
 }
 ```
+
+## Testing counter initialization
+
+- `App::default{:rust}`
+- `app.store_code{:rust}`
+- `app.instantiate_contract{:rust}`
+
+### Testing initialization with zero
 
 ```rust copy showLineNumbers{13} filename="test_counter.rs"
 #[test]
@@ -86,6 +124,8 @@ cargo nextest run
 
 ![coverage-cosmwasm-01](./coverage-cosmwasm-01.png)
 
+### Testing initialization with a specific value
+
 ```rust copy showLineNumbers{39} filename="test_counter.rs"
 #[test]
 fn instantiating_with_value_should_work() {
@@ -141,6 +181,10 @@ cargo nextest run
   <summary>Detailed code coverage report</summary>
   ![coverage-cosmwasm-02](./coverage-cosmwasm-02.png)
 </details>
+
+## Testing counter increment
+
+### Testing increment by 1
 
 ```rust copy showLineNumbers{65} filename="test_counter.rs"
 #[test]
@@ -202,6 +246,8 @@ cargo nextest run
 ![coverage-cosmwasm-03](./coverage-cosmwasm-03.png)
 
 </details>
+
+### Testing increment overflow
 
 ```rust copy showLineNumbers{94} filename="test_counter.rs"
 #[test]
@@ -266,6 +312,10 @@ cargo nextest run
 88.89% coverage, 16/18 lines covered, +0.00% change in coverage
 ```
 
+## Testing counter decrement
+
+### Testing decrement by 1
+
 ```rust copy showLineNumbers{130} filename="test_counter.rs"
 #[test]
 fn decrementing_should_work() {
@@ -296,6 +346,8 @@ fn decrementing_should_work() {
     assert_eq!(125, res.value);
 }
 ```
+
+### Testing decrement underflow
 
 ```rust copy showLineNumbers{159} filename="test_counter.rs"
 #[test]
@@ -335,6 +387,8 @@ fn decrementing_should_stop_at_minimum() {
 }
 ```
 
+## Testing counter value change
+
 ```rust copy showLineNumbers{195} filename="test_counter.rs"
 #[test]
 fn setting_value_should_work() {
@@ -371,10 +425,10 @@ fn setting_value_should_work() {
 }
 ```
 
-## All tests put together
+## Test cases put all together
 
 Below is the final content of the `test_counter.rs` file, containing all previously presented test
-cases for smart contract written in CosmWasm.
+cases for **counter** smart contract written in CosmWasm.
 
 ```rust copy showLineNumbers filename="test_counter.rs"
 use cosmwasm_std::Empty;
@@ -605,3 +659,30 @@ fn setting_value_should_work() {
     assert_eq!(126, res.value);
 }
 ```
+
+## Test case structure summary
+
+(todo: find the best place for this)
+
+<Steps>
+  ### Initialize the chain
+
+(todo)
+
+### Store contract's code on chain
+
+(todo)
+
+### Initialize the contract
+
+(todo)
+
+### Interact with the contract
+
+(todo)
+
+### Assert expected results
+
+(todo)
+
+</Steps>

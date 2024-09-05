@@ -2,6 +2,8 @@
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
+import { Steps } from "nextra/components";
+
 # Writing tests in Sylvia
 
 ```rust copy showLineNumbers filename="test_counter.rs"
@@ -137,7 +139,7 @@ fn setting_value_should_work() {
 }
 ```
 
-## All tests put together
+## Test cases put all together
 
 Below is the final content of the `test_counter.rs` file, containing all previously presented test
 cases for smart contract written in Sylvia.
@@ -260,3 +262,30 @@ fn setting_value_should_work() {
     assert_eq!(125, contract.count().unwrap().count);
 }
 ```
+
+## Test case structure summary
+
+(todo: find the best place for this)
+
+<Steps>
+  ### Initialize the chain
+
+(todo)
+
+### Store contract's code on chain
+
+(todo)
+
+### Initialize the contract
+
+(todo)
+
+### Interact with the contract
+
+(todo)
+
+### Assert expected results
+
+(todo)
+
+</Steps>

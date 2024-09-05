@@ -141,9 +141,9 @@ test result: [32mok[0m. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered 
 
 Rust testing framework searches for several types of tests in the project, counts all test cases and
 executes them. In our example, while we haven't written any single test yet, there is nothing to
-execute. The reported number of executed tests is zero for unit tests **\<line 2\>**, zero for
-integration tests (**`MultiTest`** tests) **\<line 12\>** and zero for documentation tests **\<line
-16\>**.
+execute. The reported number of executed tests is zero for unit tests (**line 2**), zero for
+integration tests (= **`MultiTest`** tests) (**line 12**) and zero for documentation tests
+(**line16**).
 
 Similarly, to execute all tests using [cargo-nextest](https://nexte.st), type:
 
@@ -161,7 +161,7 @@ The expected output is:
 ```
 
 [cargo-nextest](https://nexte.st) reports in a user-friendly manner that there were no tests to run
-**\<line 4\>**.
+(**line 4**).
 
 Now, you have almost everything you need to start testing the **counter** smart contract. What’s
 left is to prepare tools for measuring code coverage, which is a handy way to track progress in
@@ -245,7 +245,7 @@ the browser:
 As expected, the current code coverage for the **counter** smart contract is 𝟎 since we haven't
 written any tests yet. Follow the next chapters, to make the code coverage report shine green 🟢.
 
-## Writing tests for smart contract
+## Writing tests for smart contracts
 
 <Callout type="info" emoji="☕">
   Choose below the appropriate card to start writing your first test for **counter** smart contract

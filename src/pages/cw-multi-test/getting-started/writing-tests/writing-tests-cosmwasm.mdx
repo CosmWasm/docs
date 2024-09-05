@@ -26,15 +26,16 @@ fn instantiating_with_zero_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
         .instantiate_contract(
             code_id,
-            owner.clone(),
+            owner,
             &CounterInitMsg::Zero,
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();

@@ -4,18 +4,21 @@ tags: ["multitest", "ContractWrapper"]
 
 # `ContractWrapper`
 
-## new
+- new
+- new_with_empty
+- with_reply
+- with_reply_empty
+- with_migrate
+- with_migrate_empty
+- with_sudo
+- with_sudo_empty
 
-## new_with_empty
-
-## with_reply
-
-## with_reply_empty
-
-## with_migrate
-
-## with_migrate_empty
-
-## with_sudo
-
-## with_sudo_empty
+```rust
+fn counter_contract() -> Box<dyn Contract<Empty>> {
+    Box::new(ContractWrapper::new_with_empty(
+        counter::contract::execute,
+        counter::contract::instantiate,
+        counter::contract::query,
+    ))
+}
+```

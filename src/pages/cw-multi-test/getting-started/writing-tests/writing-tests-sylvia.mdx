@@ -2,9 +2,35 @@
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
-import { Steps } from "nextra/components";
+import { Callout, Steps } from "nextra/components";
 
 # Writing tests in Sylvia
+
+As a reminder, the file structure of the **counter** project is shown below. In this chapter, you
+will be writing tests for this smart contract, which will be placed in a file named
+`test_counter.rs`, highlighted in **line 12**.
+
+<Callout type="info" emoji="☉">
+  The final content of the `test_counter.rs` file, containing all test cases, is presented [at the
+  end](#test-cases-put-all-together) of this chapter.
+</Callout>
+
+```ansi {12} showLineNumbers filename="counter (directory)"
+[34;1m.[0m
+├── Cargo.toml
+├── [32;1mcoverage.sh[0m
+├── [34;1msrc[0m
+│   ├── contract.rs
+│   ├── lib.rs
+│   └── msg.rs
+└── [34;1mtests[0m
+    ├── mod.rs
+    └── [34;1mmultitest[0m
+        ├── mod.rs
+        └── test_counter.rs
+```
+
+## Imports
 
 ```rust copy showLineNumbers filename="test_counter.rs"
 use counter::contract::sv::mt::{CodeId, CounterContractProxy};
@@ -12,6 +38,10 @@ use counter::msg::CounterInitMsg;
 use sylvia::cw_multi_test::IntoAddr;
 use sylvia::multitest::App;
 ```
+
+## Testing counter initialization
+
+### Testing initialization with zero
 
 ```rust copy showLineNumbers{6} filename="test_counter.rs"
 #[test]
@@ -29,6 +59,8 @@ fn instantiating_with_zero_should_work() {
 }
 ```
 
+### Testing initialization with a specific value
+
 ```rust copy showLineNumbers{20} filename="test_counter.rs"
 #[test]
 fn instantiating_with_value_should_work() {
@@ -44,6 +76,10 @@ fn instantiating_with_value_should_work() {
     assert_eq!(12, contract.count().unwrap().count);
 }
 ```
+
+## Testing counter increment
+
+### Testing increment by 1
 
 ```rust copy showLineNumbers{34} filename="test_counter.rs"
 #[test]
@@ -62,6 +98,8 @@ fn incrementing_should_work() {
     assert_eq!(1, contract.count().unwrap().count);
 }
 ```
+
+### Testing increment overflow
 
 ```rust copy showLineNumbers{50} filename="test_counter.rs"
 #[test]
@@ -83,6 +121,10 @@ fn incrementing_should_stop_at_maximum() {
 }
 ```
 
+## Testing counter decrement
+
+### Testing decrement by 1
+
 ```rust copy showLineNumbers{68} filename="test_counter.rs"
 #[test]
 fn decrementing_should_work() {
@@ -100,6 +142,8 @@ fn decrementing_should_work() {
     assert_eq!(125, contract.count().unwrap().count);
 }
 ```
+
+### Testing decrement underflow
 
 ```rust copy showLineNumbers{84} filename="test_counter.rs"
 #[test]
@@ -120,6 +164,8 @@ fn decrementing_should_stop_at_minimum() {
     assert_eq!(0, contract.count().unwrap().count);
 }
 ```
+
+## Testing counter value changes
 
 ```rust copy showLineNumbers{102} filename="test_counter.rs"
 #[test]
@@ -263,7 +309,7 @@ fn setting_value_should_work() {
 }
 ```
 
-## Test case structure summary
+## Test cases summary
 
 (todo: find the best place for this)
 

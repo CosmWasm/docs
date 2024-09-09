@@ -4,6 +4,8 @@ tags: ["multitest", "getting started", "tests", "CosmWasm"]
 
 import { Callout, Card, Cards, Steps } from "nextra/components";
 
+[cargo-nextest]: https://nexte.st
+
 # Writing tests in CosmWasm
 
 As a reminder, the file structure of the **counter** project is shown below. In this chapter, you
@@ -84,29 +86,46 @@ fn instantiating_with_zero_should_work() {
 }
 ```
 
-```shell copy
+Let's run the first test:
+
+```shell copy filename="TERMINAL"
 cargo test
 ```
 
-```ansi
-     Running tests/mod.rs (target/debug/deps/mod-54761c1d31e6d0fe)
+The expected output should look like the example shown below. Note that only the results of
+integration tests are shown. For brevity, the results of unit tests and documentation tests are
+omitted, as we are focusing only on integration tests in this example.
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
 
 running 1 test
-test multitest::test_counter::instantiating_with_zero_should_work ... ok
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: [32;1mok[0m. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-```shell copy
+Now, let's run all tests with [cargo-nextest]():
+
+```shell copy filename="TERMINAL"
 cargo nextest run
 ```
 
-```ansi
-    Starting 1 test across 2 binaries (run ID: c83e5f6c-a237-4eb2-a9af-7b064de231d7, nextest profile: default)
-        PASS [   0.004s] counter::mod multitest::test_counter::instantiating_with_zero_should_work
+Similarly, one test passes:
+
+```ansi filename="OUTPUT"
+    [32;1mFinished[0m `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+    [32;1mStarting[0m 1 test across 2 binaries (run ID: bfc0013c-eb8e-447c-8027-a7c2b8c5cb80, nextest profile: default)
+        [32;1mPASS[0m [   0.005s] [38;5;134;1mcounter::mod[0m [38;5;73;1mmultitest::test_counter::[0m[38;5;39;1minstantiating_with_zero_should_work[0m
 ------------
-     Summary [   0.005s] 1 test run: 1 passed, 0 skipped
+     [32;1mSummary[0m [   0.005s] 1 test run: 1 [32;1mpassed[0m, 0 skipped
 ```
+
+<Callout type="info" emoji="☉">
+  For brevity, in the following test examples, we will skip running tests using [cargo-nextest],
+  although you can always just type: ``` cargo nextest run ``` to run all tests with
+  [cargo-nextest].
+</Callout>
 
 ```shell
 ./coverage.sh

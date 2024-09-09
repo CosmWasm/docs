@@ -123,20 +123,25 @@ Similarly, one test passes:
 
 <Callout type="info" emoji="☉">
   For brevity, in the following test examples, we will skip running tests using [cargo-nextest],
-  although you can always just type: ``` cargo nextest run ``` to run all tests with
-  [cargo-nextest].
+  although you can always just type `cargo nextest run` to run all tests with [cargo-nextest].
 </Callout>
 
-```shell
+Ok, let's check the code coverage after adding the first test case:
+
+```shell copy filename="TERMINAL"
 ./coverage.sh
 ```
 
-```ansi
+Our test covered over 50% of the code of **counter** smart contract:
+
+```ansi filename="OUTPUT"
 || Tested/Total Lines:
-|| src/contract.rs: 10/18 +55.56%
+|| src/contract.rs: 10/18
 ||
-55.56% coverage, 10/18 lines covered, +55.56% change in coverage
+55.56% coverage, 10/18 lines covered
 ```
+
+The detailed report is attached below:
 
 <details>
   <summary>📃  Code coverage report</summary>
@@ -164,21 +169,22 @@ Topics to cover:
 
 ### Testing initialization with a specific value
 
-```rust copy showLineNumbers{39} filename="test_counter.rs"
+```rust copy showLineNumbers{40} filename="test_counter.rs"
 #[test]
 fn instantiating_with_value_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
         .instantiate_contract(
             code_id,
-            owner.clone(),
+            owner,
             &CounterInitMsg::Set(12),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -192,27 +198,29 @@ fn instantiating_with_value_should_work() {
 }
 ```
 
-```shell copy
-cargo nextest run
+```shell copy filename="TERMINAL"
+cargo test
 ```
 
-```ansi
-    Starting 2 tests across 2 binaries (run ID: be1434a3-37f5-4a84-8cd7-bd999780ccd9, nextest profile: default)
-        PASS [   0.004s] counter::mod multitest::test_counter::instantiating_with_zero_should_work
-        PASS [   0.005s] counter::mod multitest::test_counter::instantiating_with_value_should_work
-------------
-     Summary [   0.005s] 2 tests run: 2 passed, 0 skipped
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 2 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-```shell
+```shell copy filename="TERMINAL"
 ./coverage.sh
 ```
 
-```ansi
+```ansi filename="OUTPUT"
 || Tested/Total Lines:
-|| src/contract.rs: 11/18 +61.11%
+|| src/contract.rs: 11/18
 ||
-61.11% coverage, 11/18 lines covered, +61.11% change in coverage
+61.11% coverage, 11/18 lines covered
 ```
 
 <details>
@@ -232,12 +240,13 @@ cargo nextest run
 
 ### Testing increment by 1
 
-```rust copy showLineNumbers{65} filename="test_counter.rs"
+```rust copy showLineNumbers{67} filename="test_counter.rs"
 #[test]
 fn incrementing_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -246,7 +255,7 @@ fn incrementing_should_work() {
             owner.clone(),
             &CounterInitMsg::Zero,
             &[],
-            "counter",
+            "counter-contract",
             None,
         )
         .unwrap();
@@ -263,28 +272,30 @@ fn incrementing_should_work() {
 }
 ```
 
-```shell copy
-cargo nextest run
+```shell copy filename="TERMINAL"
+cargo test
 ```
 
-```ansi
-    Starting 3 tests across 2 binaries (run ID: 1cc52bb8-f198-4c7e-9bd4-14295d64662b, nextest profile: default)
-        PASS [   0.004s] counter::mod multitest::test_counter::instantiating_with_value_should_work
-        PASS [   0.004s] counter::mod multitest::test_counter::instantiating_with_zero_should_work
-        PASS [   0.005s] counter::mod multitest::test_counter::incrementing_should_work
-------------
-     Summary [   0.005s] 3 tests run: 3 passed, 0 skipped
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 3 tests
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-```shell copy
+```shell copy copy filename="TERMINAL"
 ./coverage.sh
 ```
 
-```ansi
+```ansi filename="OUTPUT"
 || Tested/Total Lines:
-|| src/contract.rs: 16/18 +27.78%
+|| src/contract.rs: 16/18
 ||
-88.89% coverage, 16/18 lines covered, +27.78% change in coverage
+88.89% coverage, 16/18 lines covered
 ```
 
 <details>
@@ -302,12 +313,13 @@ cargo nextest run
 
 ### Testing increment overflow
 
-```rust copy showLineNumbers{94} filename="test_counter.rs"
+```rust copy showLineNumbers{97} filename="test_counter.rs"
 #[test]
 fn incrementing_should_stop_at_maximum() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -340,34 +352,36 @@ fn incrementing_should_stop_at_maximum() {
 }
 ```
 
-```shell copy
-cargo nextest run
+```shell copy filename="TERMINAL"
+cargo test
 ```
 
-```ansi
-    Starting 4 tests across 2 binaries (run ID: 893d0a87-f26b-4e32-abb6-a1172c42d93e, nextest profile: default)
-        PASS [   0.004s] counter::mod multitest::test_counter::instantiating_with_zero_should_work
-        PASS [   0.005s] counter::mod multitest::test_counter::incrementing_should_work
-        PASS [   0.004s] counter::mod multitest::test_counter::instantiating_with_value_should_work
-        PASS [   0.005s] counter::mod multitest::test_counter::incrementing_should_stop_at_maximum
-------------
-     Summary [   0.005s] 4 tests run: 4 passed, 0 skipped
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 4 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
-```shell copy
+```shell copy filename="TERMINAL"
 ./coverage.sh
 ```
 
-```ansi
+```ansi filename="OUTPUT"
 || Tested/Total Lines:
-|| src/contract.rs: 16/18 +0.00%
+|| src/contract.rs: 16/18
 ||
-88.89% coverage, 16/18 lines covered, +0.00% change in coverage
+88.89% coverage, 16/18 lines covered
 ```
 
 <details>
   <summary>📃  Code coverage report</summary>
-  ???
+  ![coverage-cosmwasm-04](./coverage-cosmwasm-04.png)
 </details>
 
 #### Detailed explanation
@@ -382,12 +396,13 @@ cargo nextest run
 
 ### Testing decrement by 1
 
-```rust copy showLineNumbers{130} filename="test_counter.rs"
+```rust copy showLineNumbers{134} filename="test_counter.rs"
 #[test]
 fn decrementing_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -396,7 +411,7 @@ fn decrementing_should_work() {
             owner.clone(),
             &CounterInitMsg::Set(126),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -413,9 +428,37 @@ fn decrementing_should_work() {
 }
 ```
 
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 5 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 17/18
+||
+94.44% coverage, 17/18 lines covered
+```
+
 <details>
   <summary>📃  Code coverage report</summary>
-  ???
+  ![coverage-cosmwasm-05](./coverage-cosmwasm-05.png)
 </details>
 
 #### Detailed explanation
@@ -428,12 +471,13 @@ fn decrementing_should_work() {
 
 ### Testing decrement underflow
 
-```rust copy showLineNumbers{159} filename="test_counter.rs"
+```rust copy showLineNumbers{164} filename="test_counter.rs"
 #[test]
 fn decrementing_should_stop_at_minimum() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -442,7 +486,7 @@ fn decrementing_should_stop_at_minimum() {
             owner.clone(),
             &CounterInitMsg::Set(5),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -466,9 +510,38 @@ fn decrementing_should_stop_at_minimum() {
 }
 ```
 
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 6 tests
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 17/18
+||
+94.44% coverage, 17/18 lines covered
+```
+
 <details>
   <summary>📃  Code coverage report</summary>
-  ???
+  ![coverage-cosmwasm-06](./coverage-cosmwasm-06.png)
 </details>
 
 #### Detailed explanation
@@ -481,12 +554,13 @@ fn decrementing_should_stop_at_minimum() {
 
 ## Testing counter value changes
 
-```rust copy showLineNumbers{195} filename="test_counter.rs"
+```rust copy showLineNumbers{201} filename="test_counter.rs"
 #[test]
 fn setting_value_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -495,13 +569,13 @@ fn setting_value_should_work() {
             owner.clone(),
             &CounterInitMsg::Set(5),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
 
     app.execute_contract(
-        owner.clone(),
+        owner,
         contract_addr.clone(),
         &CounterActionMsg::Set(126),
         &[],
@@ -517,9 +591,39 @@ fn setting_value_should_work() {
 }
 ```
 
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 7 tests
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 18/18
+||
+100.00% coverage, 18/18 lines covered
+```
+
 <details>
   <summary>📃  Code coverage report</summary>
-  ???
+  ![coverage-cosmwasm-07](./coverage-cosmwasm-07.png)
 </details>
 
 #### Detailed explanation
@@ -553,15 +657,16 @@ fn instantiating_with_zero_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
         .instantiate_contract(
             code_id,
-            owner.clone(),
+            owner,
             &CounterInitMsg::Zero,
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -579,15 +684,16 @@ fn instantiating_with_value_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
         .instantiate_contract(
             code_id,
-            owner.clone(),
+            owner,
             &CounterInitMsg::Set(12),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -605,6 +711,7 @@ fn incrementing_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -613,7 +720,7 @@ fn incrementing_should_work() {
             owner.clone(),
             &CounterInitMsg::Zero,
             &[],
-            "counter",
+            "counter-contract",
             None,
         )
         .unwrap();
@@ -634,6 +741,7 @@ fn incrementing_should_stop_at_maximum() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -670,6 +778,7 @@ fn decrementing_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -678,7 +787,7 @@ fn decrementing_should_work() {
             owner.clone(),
             &CounterInitMsg::Set(126),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -699,6 +808,7 @@ fn decrementing_should_stop_at_minimum() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -707,7 +817,7 @@ fn decrementing_should_stop_at_minimum() {
             owner.clone(),
             &CounterInitMsg::Set(5),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
@@ -735,6 +845,7 @@ fn setting_value_should_work() {
     let mut app = App::default();
 
     let code_id = app.store_code(counter_contract());
+
     let owner = "owner".into_addr();
 
     let contract_addr = app
@@ -743,13 +854,13 @@ fn setting_value_should_work() {
             owner.clone(),
             &CounterInitMsg::Set(5),
             &[],
-            "counter",
+            "counter-label",
             None,
         )
         .unwrap();
 
     app.execute_contract(
-        owner.clone(),
+        owner,
         contract_addr.clone(),
         &CounterActionMsg::Set(126),
         &[],

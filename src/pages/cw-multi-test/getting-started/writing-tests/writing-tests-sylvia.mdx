@@ -2,7 +2,7 @@
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
-import { Callout, Steps } from "nextra/components";
+import { Callout, Card, Cards, Steps } from "nextra/components";
 
 # Writing tests in Sylvia
 
@@ -105,6 +105,19 @@ cargo nextest run
   ![coverage-sylvia-01](./coverage-sylvia-01.png)
 </details>
 
+#### Detailed explanation
+
+<Cards>
+  <Card
+    title="🦘  Skip this time"
+    href="#testing-initialization-with-a-specific-value"
+    icon=""
+    children=""
+  />
+</Cards>
+
+(todo: extremely detailed explanation)
+
 ### Testing initialization with a specific value
 
 ```rust copy showLineNumbers{22} filename="test_counter.rs"
@@ -154,6 +167,14 @@ test result: [32;1mok[0m. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
   <summary>📃  Code coverage report</summary>
   ![coverage-sylvia-02](./coverage-sylvia-02.png)
 </details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-increment-by-1" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ## Testing counter increment
 
@@ -209,6 +230,14 @@ test result: [32;1mok[0m. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
   <summary>📃  Code coverage report</summary>
   ![coverage-sylvia-03](./coverage-sylvia-03.png)
 </details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-increment-overflow" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ### Testing increment overflow
 
@@ -266,6 +295,14 @@ test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
   ![coverage-sylvia-04](./coverage-sylvia-04.png)
 </details>
 
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-decrement-by-1" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
 ## Testing counter decrement
 
 ### Testing decrement by 1
@@ -322,6 +359,14 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
   <summary>📃  Code coverage report</summary>
   ![coverage-sylvia-05](./coverage-sylvia-05.png)
 </details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-decrement-underflow" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ### Testing decrement underflow
 
@@ -381,6 +426,14 @@ test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
   ![coverage-sylvia-06](./coverage-sylvia-06.png)
 </details>
 
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#testing-counter-value-changes" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
+
 ## Testing counter value changes
 
 ```rust copy showLineNumbers{114} filename="test_counter.rs"
@@ -437,6 +490,14 @@ test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
   <summary>📃  Code coverage report</summary>
   ![coverage-sylvia-07](./coverage-sylvia-07.png)
 </details>
+
+#### Detailed explanation
+
+<Cards>
+  <Card title="🦘  Skip this time" href="#test-cases-put-all-together" icon="" children="" />
+</Cards>
+
+(todo: extremely detailed explanation)
 
 ## Test cases put all together
 

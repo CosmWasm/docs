@@ -8,7 +8,7 @@ import { Callout, Cards, Card } from "nextra/components";
 
 (todo: place here some valuable introduction)
 
-## Compiling the smart contract
+## Compiling the counter smart contract
 
 Having the **counter** smart contract set up, let's first check if the project compiles:
 
@@ -48,7 +48,7 @@ cargo clippy
 
 Nice, `clippy` reported no issues for the **counter** smart contract.
 
-## Preparing directory structure for tests
+## Preparing the directory structure for tests
 
 Before we start writing tests, we need to set up the directories and files for the test cases. The
 final directory and file structure is shown below.
@@ -126,7 +126,7 @@ For now, we will leave this file empty, but later, we will place all our test ca
 
 Now that the directory structure for tests is ready, it's time to run the tests.
 
-## Running tests
+## Running all tests for counter
 
 Once the directories and files are set up for tests, let's execute them all:
 
@@ -185,7 +185,7 @@ Now, you have almost everything you need to start testing the **counter** smart 
 left is to prepare the tools for measuring code coverage, which is a handy way to track progress in
 writing tests.
 
-## Preparing code coverage script
+## Preparing the code coverage script
 
 Typing the entire command for Tarpaulin every time you want to measure current code coverage can be
 quite tedious, so let's prepare a short script to automate this task.
@@ -274,8 +274,8 @@ written any tests yet. Follow the next chapters, and make the code coverage repo
 ## Writing tests for smart contracts
 
 <Callout type="info" emoji="🦘">
-  Choose the appropriate card below to start testing the **counter** smart contract written using
-  pure CosmWasm libraries or the Sylvia framework.
+  Choose the card below to start testing the **counter** smart contract written using pure CosmWasm
+  libraries or the Sylvia framework.
 </Callout>
 
 <Cards>

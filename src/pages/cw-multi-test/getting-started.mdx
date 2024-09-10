@@ -2,13 +2,27 @@
 tags: ["multitest", "getting started"]
 ---
 
+import { Cards, Card } from "nextra/components";
+
 # Getting started
 
 This unit is designed to help you quickly become familiar with the fundamental aspects of testing
 smart contracts using **`MultiTest`**. It provides a practical example and best practices to ensure
-a frictionless start with using **`MultiTest`** for testing smart contracts. In the following
-chapters, you will find a [**counter**](getting-started/counter.mdx) smart contract example for
-which we will be [writing tests](getting-started/writing-tests.mdx), along with some
-[best practices](getting-started/best-practices.mdx) for testing with **`MultiTest`**.
+a smooth start with using **`MultiTest`** for testing smart contracts.
 
-(todo: add the overview of the whole chapter when ready - with links)
+In the following chapters, we will:
+
+- Design an example [**counter**](getting-started/counter.mdx) smart contract.
+- [**Write tests**](getting-started/writing-tests.mdx) for the counter smart contract.
+- Learn some [**best practices**](getting-started/best-practices.mdx) for testing with
+  **`MultiTest`**.
+
+The example **counter** smart contract and all test cases are provided in two versions: one using
+pure CosmWasm libraries and the other using the Sylvia framework. The functionality of the
+**counter** smart contract is identical in both versions.
+
+<Cards>
+  <Card title="Counter smart contract" href="counter" icon="" children="" />
+  <Card title="Writing tests" href="writing-tests" icon="" children="" />
+  <Card title="Best practices" href="best-practices" icon="" children="" />
+</Cards>

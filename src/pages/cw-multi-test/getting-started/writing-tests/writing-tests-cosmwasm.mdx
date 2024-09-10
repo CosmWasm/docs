@@ -280,8 +280,8 @@ cargo test
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
 
 running 3 tests
-test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
 
 test result: [32;1mok[0m. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
@@ -439,8 +439,8 @@ running 5 tests
 test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
 test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
-test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 
 test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
@@ -518,11 +518,11 @@ cargo test
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
 
 running 6 tests
-test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
-test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
 
 test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
@@ -599,13 +599,13 @@ cargo test
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
 
 running 7 tests
-test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
-test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
-test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
 
 test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```

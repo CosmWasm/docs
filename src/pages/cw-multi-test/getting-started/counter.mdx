@@ -6,8 +6,8 @@ import { Callout, Cards, Card } from "nextra/components";
 
 # Counter
 
-The following sections describe how to create the example smart contract, which manages a
-**counter** that can be initialized, incremented, decremented, and queried. Later on, you will
+The following sections describe how to create an example smart contract, which manages a **counter**
+that can be `initialized`, `incremented`, `decremented`, and `queried`. Later on, we will
 [write tests](writing-tests.mdx) for this smart contract using **`MultiTest`**.
 
 <Callout type="info" emoji="☉">
@@ -20,7 +20,7 @@ The following sections describe how to create the example smart contract, which 
 (todo: describe here the counter functionalities from "business point of view", just to make clear
 what we implement)
 
-## Creating the project
+## Creating counter project
 
 Smart contracts written in Rust are developed as Rust libraries, so let's first create a Rust
 library named **counter**.
@@ -105,20 +105,22 @@ tree
 ## Filling the content
 
 In the [previous section](#creating-the-project) we have created a project structure for **counter**
-smart contract, but the source files are still empty. In the following chapters, we provide examples
-of different smart contract implementations.
+smart contract, but the source files are still empty. In the following chapters, we will provide
+examples of two different implementations of the **counter** smart contract: using the pure CosmWasm
+libraries, or using the Sylvia framework.
 
-Whether you're interested in developing smart contracts using pure CosmWasm or exploring the Sylvia
-framework, the provided examples will guide you through the essential content of smart contract.
+Whether you're interested in developing smart contracts using CosmWasm libraries or exploring the
+Sylvia framework, the provided examples will guide you through the essential content of smart
+contract, in our case, the **counter**.
 
 <Callout type="info" emoji="☕">
-  Click on the cards below to dive into the details of smart contracts written in pure CosmWasm or
-  written using the Sylvia framework.
+  Click on the cards below to dive into the details of the **counter** smart contract written using
+  pure CosmWasm libraries or written using the Sylvia framework.
 </Callout>
 
 <Cards>
   <Card
-    title="Smart contract written using pure CosmWasm"
+    title="Smart contract written using pure CosmWasm libraries"
     href="smart-contract/smart-contract-cosmwasm"
     icon=""
     children=""

@@ -11,6 +11,8 @@ tags: ["multitest", "getting started", "best practices"]
 - [The Rust Programming Language - Test Organization](https://doc.rust-lang.org/book/ch11-03-test-organization.html)
 - writing unit tests
 - writing documentation tests
+- measuring code coverage
+- using clippy
 
 ## Where to place test cases
 
@@ -20,22 +22,15 @@ tags: ["multitest", "getting started", "best practices"]
 
 ## How many tests cases to write
 
-### Lines of code compared
+### CosmWasm
 
-#### CosmWasm
-
-> Source code of the **counter** smart contract written using pure CosmWasm
+Lines of code for the **counter** smart contract written using pure CosmWasm libraries:
 
 ```shell copy filename="TERMINAL"
 cloc src
 ```
 
-```ansi
-       3 text files.
-       3 unique files.
-       0 files ignored.
-
-github.com/AlDanial/cloc v 2.02  T=0.01 s (330.0 files/s, 8470.9 lines/s)
+```ansi filename="OUTPUT"
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
@@ -45,18 +40,13 @@ SUM:                             3              9              0             68
 -------------------------------------------------------------------------------
 ```
 
-> Tests cases written using **`MultiTest`** and pure CosmWasm
+Lines of code for tests written using **`MultiTest`** and pure CosmWasm libraries:
 
 ```shell copy filename="TERMINAL"
 cloc tests
 ```
 
-```ansi
-       3 text files.
-       3 unique files.
-       0 files ignored.
-
-github.com/AlDanial/cloc v 2.02  T=0.01 s (409.1 files/s, 31224.5 lines/s)
+```ansi filename="OUTPUT"
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
@@ -66,20 +56,15 @@ SUM:                             3             41              0            188
 -------------------------------------------------------------------------------
 ```
 
-#### Sylvia
+### Sylvia
 
-> Source code of the **counter** smart contract written using the Sylvia framework
+Lines of code for the **counter** smart contract written using the Sylvia framework:
 
 ```shell copy filename="TERMINAL"
 cloc src
 ```
 
-```ansi
-       3 text files.
-       3 unique files.
-       0 files ignored.
-
-github.com/AlDanial/cloc v 2.02  T=0.01 s (414.9 files/s, 9958.4 lines/s)
+```ansi filename="OUTPUT"
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
@@ -89,18 +74,13 @@ SUM:                             3              9              0             63
 -------------------------------------------------------------------------------
 ```
 
-> Tests cases written using **`MultiTest`** and the Sylvia framework
+Lines of code for tests written using **`MultiTest`** and the Sylvia framework:
 
 ```shell copy filename="TERMINAL"
 cloc tests
 ```
 
-```ansi
-       3 text files.
-       3 unique files.
-       0 files ignored.
-
-github.com/AlDanial/cloc v 2.02  T=0.01 s (403.8 files/s, 15881.9 lines/s)
+```ansi filename="OUTPUT"
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------

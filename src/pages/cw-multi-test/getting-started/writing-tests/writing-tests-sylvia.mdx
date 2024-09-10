@@ -212,7 +212,7 @@ test result: [32;1mok[0m. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 
 ### Testing increment overflow
 
-```rust copy showLineNumbers{50} filename="test_counter.rs"
+```rust copy showLineNumbers{56} filename="test_counter.rs"
 #[test]
 fn incrementing_should_stop_at_maximum() {
     let app = App::default();
@@ -239,7 +239,15 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 4 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
 ```shell copy filename="TERMINAL"
@@ -247,19 +255,22 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+|| Tested/Total Lines:
+|| src/contract.rs: 14/22
+||
+63.64% coverage, 14/22 lines covered
 ```
 
 <details>
   <summary>📃  Code coverage report</summary>
-  ![coverage-sylvia-01](./coverage-sylvia-01.png)
+  ![coverage-sylvia-04](./coverage-sylvia-04.png)
 </details>
 
 ## Testing counter decrement
 
 ### Testing decrement by 1
 
-```rust copy showLineNumbers{68} filename="test_counter.rs"
+```rust copy showLineNumbers{76} filename="test_counter.rs"
 #[test]
 fn decrementing_should_work() {
     let app = App::default();
@@ -284,7 +295,16 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 5 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
 ```shell copy filename="TERMINAL"
@@ -292,17 +312,20 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+|| Tested/Total Lines:
+|| src/contract.rs: 19/22
+||
+86.36% coverage, 19/22 lines covered
 ```
 
 <details>
   <summary>📃  Code coverage report</summary>
-  ![coverage-sylvia-01](./coverage-sylvia-01.png)
+  ![coverage-sylvia-05](./coverage-sylvia-05.png)
 </details>
 
 ### Testing decrement underflow
 
-```rust copy showLineNumbers{84} filename="test_counter.rs"
+```rust copy showLineNumbers{94} filename="test_counter.rs"
 #[test]
 fn decrementing_should_stop_at_minimum() {
     let app = App::default();
@@ -329,7 +352,17 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 6 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
 ```shell copy filename="TERMINAL"
@@ -337,17 +370,20 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+|| Tested/Total Lines:
+|| src/contract.rs: 19/22
+||
+86.36% coverage, 19/22 lines covered
 ```
 
 <details>
   <summary>📃  Code coverage report</summary>
-  ![coverage-sylvia-01](./coverage-sylvia-01.png)
+  ![coverage-sylvia-06](./coverage-sylvia-06.png)
 </details>
 
 ## Testing counter value changes
 
-```rust copy showLineNumbers{102} filename="test_counter.rs"
+```rust copy showLineNumbers{114} filename="test_counter.rs"
 #[test]
 fn setting_value_should_work() {
     let app = App::default();
@@ -372,7 +408,18 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 7 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
 ```shell copy filename="TERMINAL"
@@ -380,12 +427,15 @@ cargo test
 ```
 
 ```ansi filename="OUTPUT"
-?
+|| Tested/Total Lines:
+|| src/contract.rs: 22/22
+||
+100.00% coverage, 22/22 lines covered
 ```
 
 <details>
   <summary>📃  Code coverage report</summary>
-  ![coverage-sylvia-01](./coverage-sylvia-01.png)
+  ![coverage-sylvia-07](./coverage-sylvia-07.png)
 </details>
 
 ## Test cases put all together
@@ -402,9 +452,11 @@ use sylvia::multitest::App;
 #[test]
 fn instantiating_with_zero_should_work() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Zero)
         .call(&owner)
@@ -416,9 +468,11 @@ fn instantiating_with_zero_should_work() {
 #[test]
 fn instantiating_with_value_should_work() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Set(12))
         .call(&owner)
@@ -430,9 +484,11 @@ fn instantiating_with_value_should_work() {
 #[test]
 fn incrementing_should_work() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Zero)
         .call(&owner)
@@ -446,9 +502,11 @@ fn incrementing_should_work() {
 #[test]
 fn incrementing_should_stop_at_maximum() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Set(250))
         .call(&owner)
@@ -464,9 +522,11 @@ fn incrementing_should_stop_at_maximum() {
 #[test]
 fn decrementing_should_work() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Set(126))
         .call(&owner)
@@ -480,9 +540,11 @@ fn decrementing_should_work() {
 #[test]
 fn decrementing_should_stop_at_minimum() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Set(5))
         .call(&owner)
@@ -498,9 +560,11 @@ fn decrementing_should_stop_at_minimum() {
 #[test]
 fn setting_value_should_work() {
     let app = App::default();
+
     let code_id = CodeId::store_code(&app);
 
     let owner = "owner".into_addr();
+
     let contract = code_id
         .instantiate(CounterInitMsg::Set(5))
         .call(&owner)

@@ -61,7 +61,7 @@ Newly created library contains the **Cargo.toml** file and **lib.rs** file in `s
 tree
 ```
 
-...so the expected content of the `counter` directory is:
+...so the expected structure of the `counter` directory is:
 
 ```ansi filename="counter (directory)"
 [34;1m.[0m
@@ -71,7 +71,7 @@ tree
 ```
 
 By convention, the source code of the smart contract is placed in the file named **contract.rs**,
-and the messages processed by the contract are usually placed in file named **msg.rs**. Both files
+and the messages processed by this contract are usually placed in file named **msg.rs**. Both files
 should be saved in `src` directory.
 
 Let's create an empty **contract.rs** file...
@@ -86,8 +86,8 @@ touch src/contract.rs
 touch src/msg.rs
 ```
 
-The final structure of the smart contract project placed in `counter` directory should look like
-shown below:
+The final structure of the smart contract project placed in the `counter` directory should look like
+this:
 
 ```shell copy filename="TERMINAL"
 tree
@@ -104,29 +104,29 @@ tree
 
 ## Filling the content
 
-In the [previous section](#creating-the-project) we have created a project structure for **counter**
-smart contract, but the source files are still empty. In the following chapters, we will provide
-examples of two different implementations of the **counter** smart contract: using the pure CosmWasm
-libraries, or using the Sylvia framework.
+In the previous section we have created a project structure for **counter** smart contract, but the
+source files are still empty 🗋 . In the following chapters, we provide examples of two different
+implementations of the **counter** smart contract: using the pure CosmWasm libraries, and using the
+Sylvia framework.
 
 Whether you're interested in developing smart contracts using CosmWasm libraries or exploring the
-Sylvia framework, the provided examples will guide you through the essential content of smart
-contract, in our case, the **counter**.
+Sylvia framework, the following examples will guide you through the essential content of smart
+contract, in our case, the **counter**.
 
-<Callout type="info" emoji="☕">
-  Click on the cards below to dive into the details of the **counter** smart contract written using
+<Callout type="info" emoji="🦘">
+  Click on the cards below to jump into the details of the **counter** smart contract: written using
   pure CosmWasm libraries or written using the Sylvia framework.
 </Callout>
 
 <Cards>
   <Card
-    title="Smart contract written using pure CosmWasm libraries"
+    title="Counter smart contract written using pure CosmWasm libraries"
     href="smart-contract/smart-contract-cosmwasm"
     icon=""
     children=""
   />
   <Card
-    title="Smart contract written using Sylvia framework"
+    title="Counter smart contract written using Sylvia framework"
     href="smart-contract/smart-contract-sylvia"
     icon=""
     children=""

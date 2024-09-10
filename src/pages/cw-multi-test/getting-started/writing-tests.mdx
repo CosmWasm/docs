@@ -28,7 +28,25 @@ cargo build
 ```
 
 If the output is similar to the one shown above, it looks like the **counter** smart contract has
-been built successfully!
+been built successfully.
+
+It is a very good habit to run [Rust linter](https://doc.rust-lang.org/clippy) after each code
+change, so let's run it before we move forward.
+
+```shell copy filename="TERMINAL"
+cargo clippy
+```
+
+```ansi filename="OUTPUT"
+    ⋮
+[32;1mChecking[0m cosmwasm-crypto v2.1.3
+[32;1mChecking[0m cosmwasm-std v2.1.3
+[32;1mChecking[0m cw-storage-plus v2.0.0
+[32;1mChecking[0m counter v0.1.0 (/home/user/mt-test-examples/mte-counter)
+[32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 17.28s
+```
+
+Nice, `clippy` reported no issues for the **counter** smart contract.
 
 ## Preparing directory structure for tests
 
@@ -164,7 +182,7 @@ The expected output is:
 (**line 4**).
 
 Now, you have almost everything you need to start testing the **counter** smart contract. What’s
-left is to prepare tools for measuring code coverage, which is a handy way to track progress in
+left is to prepare the tools for measuring code coverage, which is a handy way to track progress in
 writing tests.
 
 ## Preparing code coverage script
@@ -237,20 +255,16 @@ The result should be similar to this (only the last few lines are shown):
 Report: file:///home/user/counter/target/coverage-report/tarpaulin-report.html
 ```
 
-Additionally, Tarpaulin generates a coverage report in HTML format, that can be viewed directly in
+Additionally, Tarpaulin generates a coverage report in HTML format, that can be viewed directly in a
 browser.
 
 <details>
-  <summary>
-    📃  Code coverage report for <strong> counter </strong> smart contract (CosmWasm version)
-  </summary>
+  <summary>📃  Code coverage report for counter smart contract (CosmWasm version)</summary>
   ![coverage-cosmwasm-00](./coverage-cosmwasm-00.png)
 </details>
 
 <details>
-  <summary>
-    📃  Code coverage report for <strong> counter </strong> smart contract (Sylvia version)
-  </summary>
+  <summary>📃  Code coverage report for counter smart contract (Sylvia version)</summary>
   ![coverage-sylvia-00](./coverage-sylvia-00.png)
 </details>
 
@@ -259,20 +273,20 @@ written any tests yet. Follow the next chapters, and make the code coverage repo
 
 ## Writing tests for smart contracts
 
-<Callout type="info" emoji="☕">
-  Choose below the appropriate card to start writing your first test for **counter** smart contract
-  written using pure CosmWasm or the Sylvia framework.
+<Callout type="info" emoji="🦘">
+  Choose the appropriate card below to start testing the **counter** smart contract written using
+  pure CosmWasm libraries or the Sylvia framework.
 </Callout>
 
 <Cards>
   <Card
-    title="Writing tests for smart contracts written using pure CosmWasm"
+    title="Writing tests for counter smart contract written using pure CosmWasm libraries"
     href="writing-tests/writing-tests-cosmwasm"
     icon=""
     children=""
   />
   <Card
-    title="Writing tests for smart contracts written using Sylvia framework"
+    title="Writing tests for counter smart contract written using the Sylvia framework"
     href="writing-tests/writing-tests-sylvia"
     icon=""
     children=""

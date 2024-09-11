@@ -15,12 +15,25 @@ that can be `initialized`, `incremented`, `decremented`, and `queried`. Later on
   contract created based on the [cw&#8209;template](/core/installation#setting-up-the-contract).
 </Callout>
 
-## Counter specification
+## Specification
 
-(todo: describe here the counter functionalities from "business point of view", just to make clear
-what we implement)
+This example smart contract is a simple **counter** that allows users to initialize the counter,
+perform operations such as incrementing, decrementing, setting a specific value, and querying the
+current counter value. The primary purpose of this contract is to maintain and manipulate a counter
+value on the blockchain. This functionality can be utilized in various scenarios where a count or
+tally needs to be tracked, such as counting votes, tracking the number of actions performed, or
+maintaining a score in a game or competition.
 
-## Creating counter project
+**Features**
+
+- The counter can be initialized with a value of zero or a specific non-negative integer in the
+  range of 0 to 255.
+- Users can increment, decrement, or set the counter to a new value within the range of 0 to 255.
+- Boundary conditions are checked, preventing the counter from going below zero or beyond 255.
+- Users can query the current value of the counter at any time.
+- The counter's value is persisted and limited to 8-bit unsigned integers [0..255].
+
+## Creating the counter project
 
 Smart contracts written in Rust are developed as Rust libraries, so let's first create a Rust
 library named **counter**.
@@ -109,12 +122,12 @@ source files are still empty 🗋 . In the following chapters, we provide exam
 implementations of the **counter** smart contract: using the pure CosmWasm libraries, and using the
 Sylvia framework.
 
-Whether you're interested in developing smart contracts using CosmWasm libraries or exploring the
-Sylvia framework, the following examples will guide you through the essential content of smart
-contract, in our case, the **counter**.
+Whether you're interested in developing smart contracts using pure CosmWasm libraries or exploring
+the Sylvia framework, the following examples will guide you through the essential content of smart
+contract, in this case, the **counter**.
 
 <Callout type="info" emoji="🦘">
-  Click on the cards below to jump into the details of the **counter** smart contract.
+  Click on the card below to jump into the details of the **counter** smart contract.
 </Callout>
 
 <Cards>

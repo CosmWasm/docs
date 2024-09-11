@@ -218,20 +218,60 @@ The **msg** module in file `msg.rs` typically defines the messages and queries t
 contract accepts and responds to. Messages are usually structured as Rust enums or structs and
 define the input and output interfaces of the contract. In our example this includes:
 
-- **`CounterInitMsg{:rust}`** enumeration, used to initialize the contract.
-  `CounterInitMsg::Zero{:rust}` variant initializes the counter with zero value, and
-  `CounterInitMsg::Set{:rust}` variant initializes the counter with an arbitrary value in range 0
-  to 255. This message is passed to `instantiate{:rust}` entry-point of the counter smart contract.
-- **`CounterActionMsg{:rust}`** enumeration, used to perform various actions within the contract,
-  especially incrementing (the `CounterActionMsg::Inc{:rust}` variant), decrementing (the
-  `CounterActionMsg::Dec{:rust}` variant) and setting an arbitrary counter value (the
-  `CounterActionMsg::Set{:rust}` variant). This message is passed to `execute{:rust}` entry-point of
-  the counter smart contract.
-- **`CounterQuery{:rust}`** enumeration, with its single variant `CounterQuery::Value{:rust}`, used
-  to query the state of the contract, in our case to retrieve the current counter value. This
-  message is passed to `query{:rust}` entry-point of the counter smart contract.
-- **`CounterResponse{:rust}`** struct with single field `value{:rust}`, used to pass the responses
-  (results) to queries.
+```rust copy showLineNumbers filename="msg.rs"
+use cosmwasm_schema::cw_serde;
+```
+
+Required imports, like `#[cw_serde]` annotation.
+
+```rust copy showLineNumbers{3} filename="msg.rs (CounterInitMsg)"
+#[cw_serde]
+pub enum CounterInitMsg {
+    Zero,
+    Set(u8),
+}
+```
+
+**`CounterInitMsg{:rust}`** enumeration, used to initialize the contract.
+`CounterInitMsg::Zero{:rust}` variant initializes the counter with zero value, and
+`CounterInitMsg::Set{:rust}` variant initializes the counter with an arbitrary value in range 0
+to 255. This message is passed to `instantiate{:rust}` entry-point of the counter smart contract.
+
+```rust copy showLineNumbers{9} filename="msg.rs (CounterActionMsg)"
+#[cw_serde]
+pub enum CounterActionMsg {
+    Inc,
+    Dec,
+    Set(u8),
+}
+```
+
+**`CounterActionMsg{:rust}`** enumeration, used to perform various actions within the contract,
+especially incrementing (the `CounterActionMsg::Inc{:rust}` variant), decrementing (the
+`CounterActionMsg::Dec{:rust}` variant) and setting an arbitrary counter value (the
+`CounterActionMsg::Set{:rust}` variant). This message is passed to `execute{:rust}` entry-point of
+the counter smart contract.
+
+```rust copy showLineNumbers{16} filename="msg.rs (CounterQuery)"
+#[cw_serde]
+pub enum CounterQuery {
+    Value,
+}
+```
+
+**`CounterQuery{:rust}`** enumeration, with its single variant `CounterQuery::Value{:rust}`, used to
+query the state of the contract, in our case to retrieve the current counter value. This message is
+passed to `query{:rust}` entry-point of the counter smart contract.
+
+```rust copy showLineNumbers{21} filename="msg.rs (CounterResponse)"
+#[cw_serde]
+pub struct CounterResponse {
+    pub value: u8,
+}
+```
+
+**`CounterResponse{:rust}`** struct with single field `value{:rust}`, used to pass the responses
+(results) from queries.
 
 Overall, this `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
 interacts with the outside world by initializing, taking actions, and answering questions. Each

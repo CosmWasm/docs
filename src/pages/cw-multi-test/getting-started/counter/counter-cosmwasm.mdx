@@ -343,6 +343,70 @@ contains the core logic of the contract, including functions (entry-points) for 
 execution, querying and migrating. This is where the main functionality of the smart contract is
 implemented. And this is also the case for our **counter** smart contract.
 
+```rust copy showLineNumbers filename="contract.rs"
+#[cfg(not(feature = "library"))]
+use cosmwasm_std::entry_point;
+```
+
+```rust copy showLineNumbers{4} filename="contract.rs"
+use crate::msg::{CounterActionMsg, CounterInitMsg, CounterQuery, CounterResponse};
+use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+use cw_storage_plus::Item;
+```
+
+```rust copy showLineNumbers{8} filename="contract.rs"
+const COUNTER: Item<u8> = Item::new("value");
+```
+
+```rust copy showLineNumbers{10} filename="contract.rs"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn instantiate(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: CounterInitMsg,
+) -> Result<Response, StdError> {
+    COUNTER.save(
+        deps.storage,
+        &match msg {
+            CounterInitMsg::Zero => 0,
+            CounterInitMsg::Set(value) => value,
+        },
+    )?;
+    Ok(Response::default())
+}
+```
+
+```rust copy showLineNumbers{27} filename="contract.rs"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn execute(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: CounterActionMsg,
+) -> Result<Response, StdError> {
+    COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+        Ok(match msg {
+            CounterActionMsg::Inc => old_value.saturating_add(1),
+            CounterActionMsg::Dec => old_value.saturating_sub(1),
+            CounterActionMsg::Set(new_value) => new_value,
+        })
+    })?;
+    Ok(Response::default())
+}
+```
+
+```rust copy showLineNumbers{44} filename="contract.rs"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(deps: Deps, _env: Env, msg: CounterQuery) -> Result<Binary, StdError> {
+    match msg {
+        CounterQuery::Value => Ok(to_json_binary(&CounterResponse {
+            value: COUNTER.may_load(deps.storage).unwrap().unwrap(),
+        })?),
+    }
+}
+```
+
 ## What next?
 
 Having the **counter** smart contract prepared, you can begin writing tests using **`MultiTest`**,

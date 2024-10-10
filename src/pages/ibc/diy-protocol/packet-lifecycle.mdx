@@ -158,10 +158,6 @@ because the failed receive can then be picked up by another relayer.
 
 ### Async acknowledgement
 
-<Callout type="warning">
-  This feature is currently under development and will be available in a future version of CosmWasm.
-</Callout>
-
 In some cases, you might want to acknowledge a packet asynchronously. This means that you receive
 the packet, but you don't immediately return an acknowledgement. One case where this is useful is if
 you need to perform some other action that requires more than one transaction to complete before you

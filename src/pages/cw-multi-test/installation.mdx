@@ -6,48 +6,60 @@ import { Callout } from "nextra/components";
 
 [rustup installer]: https://rustup.rs
 [Rust and Cargo]: https://www.rust-lang.org/tools/install
+[Rust]: https://www.rust-lang.org
 [Tarpaulin]: https://github.com/xd009642/tarpaulin
-[Nextest]: https://nexte.st
+[cargo-nextest]: https://nexte.st
 [cw-multi-test]: https://crates.io/crates/cw-multi-test
+[crates.io]: https://crates.io
 
 # Installation
 
-**`MultiTest`** ships as a Rust library named [cw-multi-test].
+**`MultiTest`** is as a [Rust] library named [cw-multi-test], and is hosted on [crates.io].
 
-To use **`MultiTest`** for testing smart contracts, add it as a **DEVELOPMENT DEPENDENCY** to your
-project:
+## Usage
 
-```toml filename="Cargo.toml"
+To use **`MultiTest`** in your project, simply add it as a **development dependency** to
+**Cargo.toml** file:
+
+```toml filename="Cargo.toml" copy
 [dev-dependencies]
 cw-multi-test = "2"
 ```
 
-<Callout emoji="🚨">
-  **`MultiTest`** is a **TESTING** library and should always be added to your project as
-  **DEVELOPMENT DEPENDENCY** in section **`[dev-dependencies]`** of the **Cargo.toml** file.
+<Callout type="warning" emoji="🚨">
+  **`MultiTest`** is a **TESTING** library and should **ALWAYS** be added to your project as a
+  **DEVELOPMENT DEPENDENCY** in section **`[dev-dependencies]`** of the **Cargo.toml** file.
+</Callout>
+
+<Callout type="warning" emoji="🚨">
+  **`MultiTest`** **IS NOT** designed to be used in production code on a real-life blockchain.
 </Callout>
 
 ## Prerequisities
 
+### Rust and Cargo
+
 The only prerequisite to test smart contracts using **`MultiTest`** is having [Rust and Cargo]
 installed.
 
-<Callout>
+<Callout type="info" emoji="☉">
   We recommend installing Rust using the official [rustup installer]. This makes it easy to stay on
-  the most recent Rust version.
+  the most recent version of Rust and Cargo.
 </Callout>
 
-Optionally, you may want to install [Tarpaulin] for measuring code coverage and [Nextest] for
-running tests faster, with clean and beautiful user interface.
+### Tarpaulin and cargo-nextest
+
+Optionally, you may want to install [Tarpaulin] for measuring code coverage, and [cargo-nextest] for
+running tests faster with a clean and beautiful user interface.
 
 Installing **Tarpaulin**:
 
-```shell
+```shell copy filename="TERMINAL"
 cargo install cargo-tarpaulin
 ```
 
-Installing **Nextest**:
+Installing **cargo-nextest**:
 
-```shell
+```shell copy filename="TERMINAL"
 cargo install cargo-nextest
 ```

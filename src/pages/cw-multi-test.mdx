@@ -6,31 +6,35 @@ import { Callout } from "nextra/components";
 
 [file an issue]: https://github.com/CosmWasm/cw-multi-test/issues
 
-# Introduction
+# MultiTest
 
-**`MultiTest`** is a suite of testing tools designed to facilitate multi-contract interactions
-within the CosmWasm ecosystem. Its primary focus is on providing developers with a robust framework
-for testing complex smart contract interactions and operations involving various Cosmos modules.
+## Introduction
 
-<Callout type="info">
+**`MultiTest`** is a testing tool designed to facilitate multi-contract interactions within the
+CosmWasm ecosystem. Its primary focus is on providing developers with a robust framework for
+off-chain testing of complex smart contract interactions and operations involving various Cosmos
+modules.
+
+<Callout type="info" emoji="☉">
   **`MultiTest`** is a blockchain **SIMULATOR**, allowing tested smart contracts to interact as if
   they were operating on a real blockchain.
 </Callout>
 
-The most valuable advantage of using **`MultiTest`** is that it allows testing and debugging of
-smart contracts with access to the Rust source code, eliminating the need to run a complete
-blockchain node to begin designing the smart contract functionality. Additionally, **`MultiTest`**
+The most valuable advantages of using **`MultiTest`** is that it allows for testing and debugging
+smart contracts with access to the Rust source code and eliminates the need to run a complete
+blockchain node to begin designing the functionality of the contract. Additionally, **`MultiTest`**
 enables the execution of tests significantly faster than on a real blockchain, as it bypasses the
 overhead associated with network consensus and block production. This results in a more efficient
-development cycle, allowing for quicker iterations and faster identification of issues.
+development cycle, allowing for quicker iterations and faster identification of issues, even before
+the smart contract is deployed on the blockchain.
 
 While **`MultiTest`** is a blockchain **SIMULATOR**, it may happen, that the behavior of the real
 blockchain might slightly differ in some edge cases. We strongly encourage you to [file an issue]
 with a detailed description of such use case to help us improve the **`MultiTest`**.
 
 In the upcoming chapters, we provide detailed instructions on installing and getting started with
-**`MultiTest`**, writing unit tests for smart contracts, testing complex interactions between smart
-contracts and testing smart contract interactions with Cosmos modules.
+**`MultiTest`**, writing integration tests for smart contracts, testing complex interactions between
+smart contracts, and testing smart contract interactions with several Cosmos modules.
 
 By the end of these chapters, you will have a comprehensive understanding of how to use
 **`MultiTest`** for testing and debugging smart contracts in various scenarios.

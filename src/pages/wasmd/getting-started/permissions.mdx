@@ -1,16 +1,16 @@
 # Permissions
 
 This section describes the permission settings, enabling you to manage access to essential
-operations like uploading and instantiating WASM contracts.
+operations like uploading and instantiating Wasm contracts.
 
 ## Chain Permissions
 
-The `wasm` module provides configurable settings to control who can upload and instantiate WASM
+The `wasm` module provides configurable settings to control who can upload and instantiate Wasm
 binaries. These settings are managed through the Cosmos-SDK’s `params` module.
 
 ### Parameters
 
-`"code_upload_access"`: This setting determines who is permitted to upload WASM binaries to the
+`"code_upload_access"`: This setting determines who is permitted to upload Wasm binaries to the
 blockchain.
 
 - `Nobody`: Disables Wasm binary uploads for everyone.
@@ -18,11 +18,11 @@ blockchain.
 - `AnyOfAddresses`: Restricts Wasm binary uploads to specific addresses.
 
 `"instantiate_default_permission"`: This setting defines the default permission for who can
-instantiate a WASM binary if the code owner has not explicitly set this permission.
+instantiate a Wasm binary if the code owner has not explicitly set this permission.
 
-- `Nobody`: No one is allowed to instantiate the WASM binary.
-- `Everybody`: Any user on the blockchain can instantiate the WASM binary.
-- `AnyOfAddresses`: Only the specified addresses can instantiate the WASM binary.
+- `Nobody`: No one is allowed to instantiate the Wasm binary.
+- `Everybody`: Any user on the blockchain can instantiate the Wasm binary.
+- `AnyOfAddresses`: Only the specified addresses can instantiate the Wasm binary.
 
 ### Genesis File Configuration
 
@@ -64,7 +64,7 @@ wasmd tx gov submit-proposal draft_proposal.json  --from alice --keyring-backend
 
 ### Example Scenarios
 
-Below are a few examples demonstrating how to configure different scenarios for WASM code upload
+Below are a few examples demonstrating how to configure different scenarios for Wasm code upload
 permissions using governance proposals:
 
 **Disable Wasm Code Uploads**
@@ -87,12 +87,12 @@ permissions using governance proposals:
   "metadata": "ipfs://CID",
   "deposit": "1000000stake",
   "title": "Disable Wasm Code Uploads",
-  "summary": "This proposal disables the ability for anyone to upload new WASM binaries.",
+  "summary": "This proposal disables the ability for anyone to upload new Wasm binaries.",
   "expedited": false
 }
 ```
 
-**Allow WASM Code Uploads for Everybody**
+**Allow Wasm Code Uploads for Everybody**
 
 ```json
 {
@@ -111,13 +111,13 @@ permissions using governance proposals:
   ],
   "metadata": "ipfs://CID",
   "deposit": "1000000stake",
-  "title": "Allow WASM code uploads for everybody",
-  "summary": "This proposal enables the ability for anyone to upload new WASM binaries.",
+  "title": "Allow Wasm code uploads for everybody",
+  "summary": "This proposal enables the ability for anyone to upload new Wasm binaries.",
   "expedited": false
 }
 ```
 
-**Restrict WASM Code Uploads to Specific Addresses**
+**Restrict Wasm Code Uploads to Specific Addresses**
 
 ```json
 {
@@ -139,8 +139,8 @@ permissions using governance proposals:
   ],
   "metadata": "ipfs://CID",
   "deposit": "1000000stake",
-  "title": "Allow WASM code uploads only for Alice and Bob",
-  "summary": "This proposal enables the ability for Alice and Bob to upload new WASM binaries.",
+  "title": "Allow Wasm code uploads only for Alice and Bob",
+  "summary": "This proposal enables the ability for Alice and Bob to upload new Wasm binaries.",
   "expedited": false
 }
 ```
@@ -167,12 +167,12 @@ The output looks similar to this:
 
 ## Contract Permissions
 
-This section details how to grant and query permissions for storing, executing, and migrating WASM
+This section details how to grant and query permissions for storing, executing, and migrating Wasm
 contracts on the blockchain.
 
 ### Store Code Authorization
 
-To authorize a specific address to store WASM code, use the following command:
+To authorize a specific address to store Wasm code, use the following command:
 
 ```sh
 wasmd tx wasm grant store-code \
@@ -185,9 +185,9 @@ wasmd tx wasm grant store-code \
 ```
 
 This command allows **Alice** to grant **Bob** (`wasm1427kpq9mmnfp0madk5axh2ukmjgpfh6skzdxku`) the
-authorization to **store** a specific WASM code on the blockchain. The WASM code is defined by the
+authorization to **store** a specific Wasm code on the blockchain. The Wasm code is defined by the
 code checksum `3F4CD47C39C57FE1733FB41ED176EEBD9D5C67BAF5DF8A1EEDA1455E758F8514`. The permission
-granted allows `"everybody"` to instantiate this code. This means that once **Bob** uploads the WASM
+granted allows `"everybody"` to instantiate this code. This means that once **Bob** uploads the Wasm
 code, any user on the blockchain will be able to instantiate it.
 
 You can verify the authorization by querying the grants:
@@ -223,7 +223,7 @@ The output looks similar to this:
 
 ### Contract Execution Authorization
 
-To authorize a specific address to execute a WASM contract, use the following command:
+To authorize a specific address to execute a Wasm contract, use the following command:
 
 ```sh
 wasmd tx wasm grant contract \
@@ -240,7 +240,7 @@ wasmd tx wasm grant contract \
 ```
 
 This command allows **Alice** to grant **Bob** (`wasm1427kpq9mmnfp0madk5axh2ukmjgpfh6skzdxku`) the
-authorization to **execute** a specific WASM smart contract
+authorization to **execute** a specific Wasm smart contract
 (wasm14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0phg4d). The granted permission allows
 **Bob** to execute any message on the contract, but only for a single execution (`--max-calls 1`)
 and does not allow token transfers (`--no-token-transfer`). This permission applies to all message
@@ -280,7 +280,7 @@ The authorization can be verified by querying the grants:
 
 ### Contract Migration Authorization
 
-To authorize a specific address to migrate a WASM contract, use the following command:
+To authorize a specific address to migrate a Wasm contract, use the following command:
 
 ```sh
 wasmd tx wasm grant contract wasm1427kpq9mmnfp0madk5axh2ukmjgpfh6skzdxku migration \
@@ -296,7 +296,7 @@ wasmd tx wasm grant contract wasm1427kpq9mmnfp0madk5axh2ukmjgpfh6skzdxku migrati
 ```
 
 This command allows **Alice** to grant **Bob** (`wasm1427kpq9mmnfp0madk5axh2ukmjgpfh6skzdxku`) the
-authorization to **migrate** a specific WASM smart contract
+authorization to **migrate** a specific Wasm smart contract
 (`wasm14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0phg4d`). The granted permission allows
 **Bob** to perform up to five migrations (`--max-calls 5`) with a maximum fund limit of 100,000
 stake tokens (`--max-funds 100000stake`). This permission applies to all message types

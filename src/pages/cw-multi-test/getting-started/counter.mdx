@@ -7,12 +7,12 @@ import { Callout, Cards, Card } from "nextra/components";
 # Counter
 
 The following sections describe how to create an example smart contract, which manages a **counter**
-that can be `initialized`, `incremented`, `decremented`, and `queried`. Later on, we will
-[write tests](writing-tests.mdx) for this smart contract using **`MultiTest`**.
+that can be `initialized`, `incremented`, `decremented`, and `queried`. Later on, you will be
+[writing tests](writing-tests.mdx) for this smart contract using **`MultiTest`**.
 
 <Callout type="info" emoji="☉">
-  The example **counter** smart contract presented in this chapter is a simplified version of the
-  contract created based on the [cw&#8209;template](/core/installation#setting-up-the-contract).
+  **Counter** smart contract is a simplified version of the contract created from the
+  [cw&#8209;template](/core/installation#setting-up-the-contract).
 </Callout>
 
 ## Specification
@@ -85,7 +85,7 @@ tree
 
 By convention, the source code of the smart contract is placed in the file named **contract.rs**,
 and the messages processed by this contract are usually placed in file named **msg.rs**. Both files
-should be saved in `src` directory.
+should be stored in `src` directory.
 
 Let's create an empty **contract.rs** file...
 
@@ -117,18 +117,14 @@ tree
 
 ## Filling the content
 
-In the previous section we have created a project structure for **counter** smart contract, but the
+In the previous section you have created a project structure for **counter** smart contract, but the
 source files are still empty 🗋 . In the following chapters, we provide examples of two different
-implementations of the **counter** smart contract: using the pure CosmWasm libraries, and using the
-Sylvia framework.
+implementations of the **counter** smart contract. The first one is using the pure CosmWasm
+libraries, and the second one is using the Sylvia framework.
 
 Whether you're interested in developing smart contracts using pure CosmWasm libraries or exploring
 the Sylvia framework, the following examples will guide you through the essential content of smart
 contract, in this case, the **counter**.
-
-<Callout type="info" emoji="🦘">
-  Click on the card below to jump into the details of the **counter** smart contract.
-</Callout>
 
 <Cards>
   <Card

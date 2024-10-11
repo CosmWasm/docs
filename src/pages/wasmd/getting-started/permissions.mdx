@@ -167,7 +167,12 @@ The output looks similar to this:
 
 ## Contract Permissions
 
-This section details how to grant and query permissions for storing, executing, and migrating Wasm
+Granting permissions allows an address to delegate abilities such as performing `store-code`,
+`execute`, or `migrate` operations to another address. To grant a permission, the granter must have
+that permission. This means that only users who are authorized to perform an action can delegate
+that ability to others.
+
+This section explains how to grant and query permissions for storing, executing, and migrating Wasm
 contracts on the blockchain.
 
 ### Store Code Authorization

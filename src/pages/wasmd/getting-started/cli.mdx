@@ -514,7 +514,12 @@ sleep 6
 wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json | jq
 ```
 
-### Query Contract State All
+### Query Contract State: All
+
+`All` queries allow you to retrieve all the key-value pairs stored in the contract's state. This
+method directly accesses the contract's underlying key-value storage without invoking any contract
+logic. It's useful for inspecting the entire state of a contract, especially during development or
+debugging.
 
 To query the state of a WASM contract, you can use the following command:
 
@@ -558,7 +563,11 @@ The output will be similar to the following:
 }
 ```
 
-### Query Contract State Raw
+### Query Contract State: Raw
+
+`Raw` queries allow you to fetch data directly from the contract's key-value storage using a
+specific key. This method bypasses the contract's logic and retrieves the raw stored data, which is
+base64-encoded. It's useful when you know the exact key of the data you're interested in.
 
 To query the state of a WASM contract for a specific key, you can use the following command:
 
@@ -594,7 +603,13 @@ The output will be similar to the following:
 }
 ```
 
-### Query Contract State Smart
+### Query Contract State: Smart
+
+`Smart` queries allow you to retrieve structured data by interacting with the contract's query
+endpoints. This method invokes the contract's logic with a specific query message, allowing you to
+get processed and meaningful data from the contract. The content of the query message depends on the
+specific contract you're interacting with, as each contract defines its own set of query messages
+and expected formats (see the [query section](../../core/entrypoints/query) for more details).
 
 To query the state of a WASM contract for specific data, you can use the following command:
 

@@ -44,7 +44,7 @@ cargo clippy
 [32;1mFinished[0m `dev` profile [unoptimized + debuginfo] target(s) in 17.28s
 ```
 
-Nice, `clippy` reported no issues for the **counter** smart contract.
+`clippy` reported no issues for the **counter** smart contract.
 
 ## Preparing the directory structure for tests
 
@@ -66,15 +66,14 @@ final directory and file structure is shown below.
 ```
 
 <Callout>
-  There are several configurations possible for placing tests in Rust, which are discussed in detail
-  in [this chapter](best-practices#where-to-place-test-cases). For the purpose of this example, we
-  have chosen to place all test cases outside **`src`** directory, in a new directory named
-  **`tests`**.
+  There are several configurations possible for placing tests in Rust. For the purpose of this
+  example, we have chosen to place all test cases outside **`src`** directory, in a new directory
+  named **`tests`**.
 </Callout>
 
 <Callout>
-  Note, that both directories **`src`** and **`tests`** are be placed at the root of the project (in
-  `counter` directory).
+  Note, that both directories **`src`** and **`tests`** are placed at the root of the project (in
+  the `counter` directory).
 </Callout>
 
 Let's begin by creating the `tests` directory:
@@ -108,7 +107,7 @@ Inside the `tests/multitest` directory we should also create an empty file named
 touch tests/multitest/mod.rs
 ```
 
-And populate it with the following content (just copy and paste):
+And populate it with the following content (just copy and paste it):
 
 ```rust copy filename="tests/multitest/mod.rs"
 mod test_counter;
@@ -122,11 +121,11 @@ touch tests/multitest/test_counter.rs
 
 For now, we will leave this file empty, but later, we will place all our test cases there.
 
-Now that the directory structure for tests is ready, it's time to run the tests.
+Now that the directory structure for tests is ready, it's time to run all tests.
 
 ## Running all tests for counter
 
-Once the directories and files are set up for tests, let's execute them all:
+Once the directories and files are set up for tests, let's execute them:
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -156,7 +155,7 @@ test result: [32mok[0m. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered 
 ```
 
 Rust testing framework searches for several types of tests in the project, counts all test cases and
-executes them. In our example, while we haven't written any single test yet, there is nothing to
+executes them. In our example - while we haven't written any single test yet - there is nothing to
 execute. The reported number of executed tests is zero for unit tests (**line 2**), zero for
 integration tests (= **`MultiTest`** tests) (**line 12**) and zero for documentation tests
 (**line16**).
@@ -271,10 +270,8 @@ written any tests yet. Follow the next chapters, and make the code coverage repo
 
 ## Writing tests for smart contracts
 
-<Callout type="info" emoji="🦘">
-  Choose the card below to start testing the **counter** smart contract written using pure CosmWasm
-  libraries or the Sylvia framework.
-</Callout>
+Choose the card below to start testing the **counter** smart contract written using pure CosmWasm
+libraries or the Sylvia framework.
 
 <Cards>
   <Card

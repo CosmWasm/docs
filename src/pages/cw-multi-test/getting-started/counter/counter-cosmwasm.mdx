@@ -14,7 +14,9 @@ You can just copy and paste the provided content to previously created empty fi
 skipping the detailed explanations. However, if you're curious about what happens inside each file,
 feel free to check the detailed explanations provided for each code snippet.
 
-### Cargo.toml
+---
+
+### `Cargo.toml`
 
 ```toml copy showLineNumbers filename="Cargo.toml"
 [package]
@@ -41,10 +43,6 @@ serde = "1.0"
 [dev-dependencies]
 cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
 ```
-
-<Cards>
-  <Card title="🦘  Skip explanations this time" href="#librs" icon="" children="" />
-</Cards>
 
 `Cargo.toml` file is a configuration file for a Rust project, in our case for a smart contract
 written in Rust. Here's a detailed explanation of each section and what it's doing.
@@ -139,16 +137,12 @@ effectively within the CosmWasm ecosystem.
 
 ---
 
-### lib.rs
+### `lib.rs`
 
 ```rust copy showLineNumbers filename="lib.rs"
 pub mod contract;
 pub mod msg;
 ```
-
-<Cards>
-  <Card title="🦘  Skip explanations this time" href="#msgrs" icon="" children="" />
-</Cards>
 
 The `lib.rs` file in a Rust project serves as the main entry point for defining the structure of a
 library. In the context of our example **counter** smart contract, the `lib.rs` file is defining and
@@ -181,7 +175,7 @@ and test.
 
 ---
 
-### msg.rs
+### `msg.rs`
 
 ```rust copy showLineNumbers filename="msg.rs"
 use cosmwasm_schema::cw_serde;
@@ -209,10 +203,6 @@ pub struct CounterResponse {
     pub value: u8,
 }
 ```
-
-<Cards>
-  <Card title="🦘  Skip explanations this time" href="#contractrs" icon="" children="" />
-</Cards>
 
 The **msg** module in file `msg.rs` typically defines the messages and queries that the smart
 contract accepts and responds to. Messages are usually structured as Rust enums or structs and
@@ -276,9 +266,11 @@ pub struct CounterResponse {
 Overall, this `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
 interacts with the outside world by initializing, taking actions, and answering questions. Each
 message type is a different way of communicating with the counter, making it an easy-going,
-versatile _contract_ ready for action.
+versatile contract ready for action.
 
-### contract.rs
+---
+
+### `contract.rs`
 
 ```rust copy showLineNumbers filename="contract.rs"
 #[cfg(not(feature = "library"))]
@@ -333,10 +325,6 @@ pub fn query(deps: Deps, _env: Env, msg: CounterQuery) -> Result<Binary, StdErro
     }
 }
 ```
-
-<Cards>
-  <Card title="🦘  Skip explanations this time" href="#what-next" icon="" children="" />
-</Cards>
 
 Typically, in a smart contract project, the **contract** module ‒ placed in the `contract.rs` file ‒
 contains the core logic of the contract, including functions (entry-points) for instantiation,
@@ -411,11 +399,6 @@ pub fn query(deps: Deps, _env: Env, msg: CounterQuery) -> Result<Binary, StdErro
 
 Having the **counter** smart contract prepared, you can begin writing tests using **`MultiTest`**,
 or you might want to check the Sylvia version of the **counter** smart contract first.
-
-<Callout type="info" emoji="🦘">
-  Choose the card below to start writing tests using **`MultiTest`** or to explore the **counter**
-  smart contract written using the Sylvia framework.
-</Callout>
 
 <Cards>
   <Card title="Writing tests" href="../writing-tests" icon="" children="" />

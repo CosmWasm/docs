@@ -514,9 +514,14 @@ sleep 6
 wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json | jq
 ```
 
-### Query contract state
+### Query Contract State: All
 
-To query the state of a WASM contract, you can use the following command.
+`All` queries allow you to retrieve all the key-value pairs stored in the contract's state. This
+method directly accesses the contract's underlying key-value storage without invoking any contract
+logic. It's useful for inspecting the entire state of a contract, especially during development or
+debugging.
+
+To query the state of a WASM contract, you can use the following command:
 
 ```sh
 wasmd query wasm contract-state all "$CONTRACT" -o json
@@ -539,9 +544,10 @@ The output will look similar to this:
 }
 ```
 
-`Models` are key-value pairs representing the state data of the contract base64-encoded.
+The `"models"` array contains key-value pairs representing the state data of the contract, with both
+keys and values base64-encoded.
 
-We can decode the contract state using the following command:
+You can decode the contract state using the following command:
 
 ```sh
 wasmd query wasm contract-state all "$CONTRACT" -o json | jq -r '.models[0].value' | base64 -d
@@ -554,6 +560,72 @@ The output will be similar to the following:
   "verifier": "wasm1hvgm6p76gccgg4dl4caa8a7v03dsqww6r9sk4g",
   "beneficiary": "wasm1pa29lac5s85kgj7pn9z6gc0t4sqgzllcguhf24",
   "funder": "wasm1hvgm6p76gccgg4dl4caa8a7v03dsqww6r9sk4g"
+}
+```
+
+### Query Contract State: Raw
+
+`Raw` queries allow you to fetch data directly from the contract's key-value storage using a
+specific key. This method bypasses the contract's logic and retrieves the raw stored data, which is
+base64-encoded. It's useful when you know the exact key of the data you're interested in.
+
+To query the state of a WASM contract for a specific key, you can use the following command:
+
+```sh
+# Set the state key you want to query
+KEY="636F6E666967"
+wasmd q wasm contract-state raw  $CONTRACT $KEY -o json
+```
+
+The output will look similar to this:
+
+```json
+{
+  "data": "eyJ2ZXJpZmllciI6Indhc20xNzlhdnc5NmFheTcwcHM5OXVtdWFlc3h4Y3p3YzBxbTVnd3VmeGciLCJiZW5lZmljaWFyeSI6Indhc20xNDI3a3BxOW1tbmZwMG1hZGs1YXhoMnVrbWpncGZoNnNremR4a3UiLCJmdW5kZXIiOiJ3YXNtMTc5YXZ3OTZhYXk3MHBzOTl1bXVhZXN4eGN6d2MwcW01Z3d1ZnhnIn0="
+}
+```
+
+`"data"` represents the base64-encoded state data of the contract for the given key.
+
+You can decode the `data` field using the following command:
+
+```sh
+wasmd q wasm contract-state raw  $CONTRACT $KEY -o json | jq -r '.data' | base64 -d
+```
+
+The output will be similar to the following:
+
+```json
+{
+  "verifier": "wasm1hvgm6p76gccgg4dl4caa8a7v03dsqww6r9sk4g",
+  "beneficiary": "wasm1pa29lac5s85kgj7pn9z6gc0t4sqgzllcguhf24",
+  "funder": "wasm1hvgm6p76gccgg4dl4caa8a7v03dsqww6r9sk4g"
+}
+```
+
+### Query Contract State: Smart
+
+`Smart` queries allow you to retrieve structured data by interacting with the contract's query
+endpoints. This method invokes the contract's logic with a specific query message, allowing you to
+get processed and meaningful data from the contract. The content of the query message depends on the
+specific contract you're interacting with, as each contract defines its own set of query messages
+and expected formats (see the [query section](../../core/entrypoints/query) for more details).
+
+To query the state of a WASM contract for specific data, you can use the following command:
+
+```sh
+# Set the query for the data you want to retrieve
+QUERY='{"verifier": {}}'
+wasmd q wasm contract-state smart  $CONTRACT $QUERY -o json
+```
+
+The output will look similar to this:
+
+```json
+{
+  "data": {
+    "verifier": "wasm179avw96aay70ps99umuaesxxczwc0qm5gwufxg"
+  }
 }
 ```
 

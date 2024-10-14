@@ -2,7 +2,7 @@
 
 ## Upload
 
-In this section, you will upload a WASM contract to the blockchain. This involves using the
+In this section, you will upload a Wasm contract to the blockchain. This involves using the
 `wasmd tx wasm store` command to upload the contract file, and then querying the blockchain to
 obtain the unique code ID for the uploaded contract.
 
@@ -21,7 +21,7 @@ wasmd tx wasm store "./x/wasm/keeper/testdata/hackatom.wasm" \
   --keyring-backend=test
 ```
 
-- `./x/wasm/keeper/testdata/hackatom.wasm` is the path to the WASM file to upload
+- `./x/wasm/keeper/testdata/hackatom.wasm` is the path to the Wasm file to upload
 - `--from alice` specifies the sender's account, in this case, `alice`
 - `--gas 1500000` sets the gas limit for the transaction
 - `-y` automatically accepts the transaction
@@ -142,11 +142,11 @@ The command will return a JSON object similar to the following:
 }
 ```
 
-- `"code_id"` is the reference to the stored WASM code
+- `"code_id"` is the reference to the stored Wasm code
 - `"creator"` is the address of the account that uploaded the code
-- `"data_hash"` is the checksum of the stored WASM code
+- `"data_hash"` is the checksum of the stored Wasm code
 - `"instantiate_permission"` is the instantiate permission configuration. It is optional, and the
-  default value is `Everybody`, which means everybody can create an instance of the uploaded WASM
+  default value is `Everybody`, which means everybody can create an instance of the uploaded Wasm
   code
 
 ### Download code
@@ -157,12 +157,12 @@ You can download the code associated with a specific code ID by running the foll
 wasmd q wasm code $CODE_ID downloaded_code.wasm
 ```
 
-This command retrieves the WASM code from the blockchain and saves it to a file named
+This command retrieves the Wasm code from the blockchain and saves it to a file named
 `downloaded_code.wasm`.
 
 ## Instantiation
 
-In this section, you will create a new instance of the uploaded WASM contract. This involves using
+In this section, you will create a new instance of the uploaded Wasm contract. This involves using
 the `wasmd tx wasm instantiate` command to instantiate the contract, and then querying the
 blockchain to obtain the contract's address.
 
@@ -290,7 +290,7 @@ The command will return a JSON object similar to the following:
 
 - `"address"` is the address of the contract on the blockchain. It uniquely identifies the contract
   and is used for interacting with it.
-- `"code_id"` is the reference to the stored WASM code from which the contract was instantiated.
+- `"code_id"` is the reference to the stored Wasm code from which the contract was instantiated.
 - `"creator"` is the blockchain address of the account that initially instantiated the contract. It
   indicates who created the contract instance.
 - `"admin"` is the address of the account that has administrative privileges over the contract, such
@@ -404,7 +404,7 @@ In this example, there are no contract addresses associated with Bob's address.
 
 ## Execution
 
-Executing a command on a WASM contract involves sending a message to the contract.
+Executing a command on a Wasm contract involves sending a message to the contract.
 
 ### Execute a command on a wasm contract
 
@@ -491,7 +491,7 @@ output will look similar to the following:
 `"events"` are logs emitted by the contract during its execution, providing detailed information
 about the actions performed and the resulting state changes.
 
-Below is the full script that combines all the steps for executing a command on a WASM contract and
+Below is the full script that combines all the steps for executing a command on a Wasm contract and
 querying the events:
 
 ```sh
@@ -516,7 +516,7 @@ wasmd q tx $(echo "$RESP" | jq -r '.txhash') -o json | jq
 
 ### Query contract state
 
-To query the state of a WASM contract, you can use the following command.
+To query the state of a Wasm contract, you can use the following command.
 
 ```sh
 wasmd query wasm contract-state all "$CONTRACT" -o json
@@ -753,7 +753,7 @@ authority to migrate the contract to a new code version or further update the ad
 
 ### Clear contract admin
 
-Clearing the admin address from a WASM contract removes the ability to migrate the contract to a new
+Clearing the admin address from a Wasm contract removes the ability to migrate the contract to a new
 code version. This action effectively locks the contract, preventing any further migrations.
 
 Run the following command to clear the contract admin:

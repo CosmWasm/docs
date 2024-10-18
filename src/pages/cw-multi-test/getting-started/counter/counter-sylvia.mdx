@@ -145,16 +145,51 @@ effectively on the blockchain within the CosmWasm ecosystem.
 
 ### `lib.rs`
 
-```rust filename="lib.rs" copy
+```rust showLineNumbers filename="lib.rs" copy
 pub mod contract;
 pub mod msg;
 ```
+
+The `lib.rs` file in a Rust project serves as the main entry point for defining the structure of a
+library. In the context of our example **counter** smart contract, the `lib.rs` file is defining and
+organizing the modules that make up the contract. Recall the **counter** project file structure:
+
+```ansi {4,6} filename="counter (directory)"
+[34;1m.[0m
+├── Cargo.toml
+└── [34;1msrc[0m
+    ├── contract.rs
+    ├── lib.rs
+    └── msg.rs
+```
+
+There are two modules in the project: `contract.rs` and `msg.rs`. That's why in the `lib.rs` file
+there are two declarations:
+
+- **`pub mod contract;`**<br/> This line declares a public module named **contract**; tells Rust to
+  include the code from a file named `contract.rs` located in the same directory and makes the
+  module publicly accessible (`pub` keyword), which means that other modules or external code can
+  access the entry-points of our smart contract.
+- **`pub mod msg;`**<br/> This line declares a public module named **msg**; includes the code from a
+  file named `msg.rs` and also makes this module public which allows other parts of the code
+  (especially our **counter** smart contract) to access the messages defined here.
+
+Overall, this `lib.rs` file is setting up the main structure of the smart contract by defining its
+key components as separate modules. This organization helps in keeping the code clean, modular, and
+maintainable by separating the core contract logic (`contract.rs`) from the message and query
+definitions (`msg.rs`). This modular approach makes the smart contract easier to understand, extend,
+and test.
 
 ---
 
 ### `msg.rs`
 
-```rust filename="msg.rs" copy
+The **msg** module in file `msg.rs` typically defines the messages and queries that the smart
+contract accepts and responds to. Messages are usually structured as Rust enums or structs and
+define the input and output interfaces of the contract. In our example this includes messages shown
+below.
+
+```rust showLineNumbers filename="msg.rs" copy
 use cosmwasm_schema::cw_serde;
 
 #[cw_serde]
@@ -165,15 +200,66 @@ pub enum CounterInitMsg {
 
 #[cw_serde]
 pub struct CounterResponse {
-    pub count: u8,
+    pub value: u8,
 }
 ```
+
+Let's take a detailed look at the implementation of messages.
+
+**Imports**
+
+```rust copy showLineNumbers filename="msg.rs"
+use cosmwasm_schema::cw_serde;
+```
+
+Required imports, like `cw_serde` annotation.
+
+**Instantiation message**
+
+This message is passed to `instantiate` entry-point.
+
+```rust copy showLineNumbers{3} filename="msg.rs (CounterInitMsg)"
+#[cw_serde]
+pub enum CounterInitMsg {
+    Zero,
+    Set(u8),
+}
+```
+
+**`CounterInitMsg{:rust}`** enumeration is used to initialize the contract.
+`CounterInitMsg::Zero{:rust}` variant initializes the counter with the zero value, and
+`CounterInitMsg::Set{:rust}` variant initializes the counter with an arbitrary value in range 0
+to 255. This message is passed to `instantiate{:rust}` entry-point of the counter smart contract.
+
+**Response message**
+
+This message is returned from `query` entry-point and passed to the user.
+
+```rust copy showLineNumbers{9} filename="msg.rs (CounterResponse)"
+#[cw_serde]
+pub struct CounterResponse {
+    pub value: u8,
+}
+```
+
+**`CounterResponse{:rust}`** struct with a single field `value{:rust}`, used to pass the responses
+(results) from the queries.
+
+<Callout>
+  Designing smart contracts using the Sylvia framework, we usually do not have to directly define
+  messages passed to `execute` and `query` entry-points. Sylvia generates them automatically.
+</Callout>
+
+Overall, the `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
+interacts with the outside world by initializing, executing actions, and answering questions. Each
+message type is a different way of communicating with the counter, making it an easy-going,
+versatile smart contract, ready for action.
 
 ---
 
 ### `contract.rs`
 
-```rust filename="contract.rs" copy
+```rust showLineNumbers filename="contract.rs" copy
 use crate::msg::{CounterInitMsg, CounterResponse};
 use cosmwasm_std::{Response, StdResult};
 use cw_storage_plus::Item;

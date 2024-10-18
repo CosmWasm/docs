@@ -56,9 +56,9 @@ version = "0.1.0"
 edition = "2021"
 ```
 
-- **`[package]`** section provides metadata about the Rust package (smart contract library in our
+- **`[package]`** section provides metadata about the Rust crate (smart contract library in our
   case).
-- **`name = "counter"`** specifies the name of the package, it's named **counter** like our smart
+- **`name = "counter"`** specifies the name of the crate, it's named **counter** like our smart
   contract.
 - **`version = "0.1.0"`** indicates the current version of the package and the counter smart
   contract.
@@ -90,7 +90,9 @@ library = []
 
 - **`[features]`** section defines optional features for the Rust package.
 - **`library = []`** defines a feature named **library**, which when set, disables exporting smart
-  contract entry-points.
+  contract entry-points. Exporting entry points is necessary for interacting with the smart contract
+  on the blockchain. However, when the contract is used as a dependency by other contracts,
+  exporting these entry-points should be disabled to prevent unintended function name clashes.
 
 **\[dependencies\]**
 
@@ -126,14 +128,14 @@ cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
 
 - **`[dev-dependencies]`** section lists dependencies that are only needed for development and
   testing.
-- **`cw-multi-test`** is a name of **`MultiTest`** library, and should **ALWAYS** 🚨 be placed in
-  `[dev-dependencies]` section.
+- **`cw-multi-test`** is a name of **`MultiTest`** library, and should **ALWAYS** be placed in
+  **[dev-dependencies]** section.
 
 Overall, this `Cargo.toml` file configures a Rust project for a CosmWasm-based smart contract. It
 sets up the basic package details, specifies how the contract should be compiled, defines
 dependencies for core functionality and testing, and includes features to enable or disable certain
 parts of the contract code. This setup ensures the contract can be developed, tested, and deployed
-effectively within the CosmWasm ecosystem.
+effectively on the blockchain within the CosmWasm ecosystem.
 
 ---
 
@@ -157,15 +159,16 @@ organizing the modules that make up the contract. Recall the **counter** project
     └── msg.rs
 ```
 
-We have two modules in our project `contract.rs` and `msg.rs`, so in the `lib.rs` file:
+There are two modules in the project: `contract.rs` and `msg.rs`. That's why in the `lib.rs` file
+there are two declarations:
 
-- **`pub mod contract;`** line declares a public module named **contract**; tells Rust to include
-  the code from a file named `contract.rs` located in the same directory and makes the module
-  publicly accessible (`pub` keyword), this means other modules or external code can access the
-  entry-points of our smart contract.
-- **`pub mod msg;`** line declares a public module named **msg**; includes the code from a file
-  named `msg.rs` and also makes this module public which allows other parts of the code (especially
-  our **counter** smart contract) to access the messages defined here.
+- **`pub mod contract;`**<br/> This line declares a public module named **contract**; tells Rust to
+  include the code from a file named `contract.rs` located in the same directory and makes the
+  module publicly accessible (`pub` keyword), which means that other modules or external code can
+  access the entry-points of our smart contract.
+- **`pub mod msg;`**<br/> This line declares a public module named **msg**; includes the code from a
+  file named `msg.rs` and also makes this module public which allows other parts of the code
+  (especially our **counter** smart contract) to access the messages defined here.
 
 Overall, this `lib.rs` file is setting up the main structure of the smart contract by defining its
 key components as separate modules. This organization helps in keeping the code clean, modular, and
@@ -178,7 +181,7 @@ and test.
 ### `msg.rs`
 
 ```rust copy showLineNumbers filename="msg.rs"
-use cosmwasm_schema::cw_serde;
+use cosmwasm_schema::{cw_serde, QueryResponses};
 
 #[cw_serde]
 pub enum CounterInitMsg {
@@ -187,14 +190,16 @@ pub enum CounterInitMsg {
 }
 
 #[cw_serde]
-pub enum CounterActionMsg {
+pub enum CounterExecMsg {
     Inc,
     Dec,
     Set(u8),
 }
 
 #[cw_serde]
-pub enum CounterQuery {
+#[derive(QueryResponses)]
+pub enum CounterQueryMsg {
+    #[returns(CounterResponse)]
     Value,
 }
 
@@ -222,36 +227,40 @@ pub enum CounterInitMsg {
 }
 ```
 
-**`CounterInitMsg{:rust}`** enumeration, used to initialize the contract.
-`CounterInitMsg::Zero{:rust}` variant initializes the counter with zero value, and
+**`CounterInitMsg{:rust}`** enumeration is used to initialize the contract.
+`CounterInitMsg::Zero{:rust}` variant initializes the counter with the zero value, and
 `CounterInitMsg::Set{:rust}` variant initializes the counter with an arbitrary value in range 0
 to 255. This message is passed to `instantiate{:rust}` entry-point of the counter smart contract.
 
-```rust copy showLineNumbers{9} filename="msg.rs (CounterActionMsg)"
+```rust copy showLineNumbers{9} filename="msg.rs (CounterExecMsg)"
 #[cw_serde]
-pub enum CounterActionMsg {
+pub enum CounterExecMsg {
     Inc,
     Dec,
     Set(u8),
 }
 ```
 
-**`CounterActionMsg{:rust}`** enumeration, used to perform various actions within the contract,
-especially incrementing (the `CounterActionMsg::Inc{:rust}` variant), decrementing (the
-`CounterActionMsg::Dec{:rust}` variant) and setting an arbitrary counter value (the
-`CounterActionMsg::Set{:rust}` variant). This message is passed to `execute{:rust}` entry-point of
-the counter smart contract.
+**`CounterExecMsg{:rust}`** enumeration is used to perform various actions within the contract,
+especially incrementing (the `CounterExecMsg::Inc{:rust}` variant), decrementing (the
+`CounterExecMsg::Dec{:rust}` variant) and setting an arbitrary counter value (the
+`CounterExecMsg::Set{:rust}` variant). This message is passed to `execute{:rust}` entry-point of the
+counter smart contract.
 
-```rust copy showLineNumbers{16} filename="msg.rs (CounterQuery)"
+```rust copy showLineNumbers{16} filename="msg.rs (CounterQueryMsg)"
 #[cw_serde]
-pub enum CounterQuery {
+#[derive(QueryResponses)]
+pub enum CounterQueryMsg {
+    #[returns(CounterResponse)]
     Value,
 }
 ```
 
-**`CounterQuery{:rust}`** enumeration, with its single variant `CounterQuery::Value{:rust}`, used to
-query the state of the contract, in our case to retrieve the current counter value. This message is
-passed to `query{:rust}` entry-point of the counter smart contract.
+**`CounterQueryMsg{:rust}`** enumeration, with its single variant `CounterQueryMsg::Value{:rust}` is
+used to query the state of the contract, in our case to retrieve the current counter value. This
+message is passed to `query{:rust}` entry-point of the counter smart contract. The
+`#[derive(QueryResponses)]` annotation informs the schema generator about the type of the value
+returned by the query.
 
 ```rust copy showLineNumbers{21} filename="msg.rs (CounterResponse)"
 #[cw_serde]
@@ -260,8 +269,8 @@ pub struct CounterResponse {
 }
 ```
 
-**`CounterResponse{:rust}`** struct with single field `value{:rust}`, used to pass the responses
-(results) from queries.
+**`CounterResponse{:rust}`** struct with a single field `value{:rust}`, used to pass the responses
+(results) from the queries.
 
 Overall, this `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
 interacts with the outside world by initializing, taking actions, and answering questions. Each

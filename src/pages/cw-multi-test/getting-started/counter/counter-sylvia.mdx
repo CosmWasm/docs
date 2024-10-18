@@ -18,7 +18,7 @@ feel free to check the detailed explanations provided for each code snippet.
 
 ### `Cargo.toml`
 
-```toml filename="Cargo.toml" copy
+```toml showLineNumbers filename="Cargo.toml" copy
 [package]
 name = "counter"
 version = "0.1.0"
@@ -39,11 +39,107 @@ cosmwasm-std = { version = "2" }
 cw-storage-plus = "2"
 schemars = "0.8"
 serde = "1.0"
-sylvia = { version = "1", features = ["mt"] }
+sylvia = { version = "1" }
 
 [dev-dependencies]
-cw-multi-test = { version = "2", features = ["cosmwasm_2_0"] }
+sylvia = { version = "1", features = ["mt", "cosmwasm_2_0"] }
 ```
+
+`Cargo.toml` is the configuration file for a Rust project — in our case, for a smart contract
+written using Rust and the Sylvia framework. Below is a detailed explanation of each section and its
+purpose.
+
+**\[package\]**
+
+```toml copy showLineNumbers{1} filename="Cargo.toml"
+[package]
+name = "counter"
+version = "0.1.0"
+edition = "2021"
+```
+
+- **`[package]`** section provides metadata about the Rust crate (smart contract library in our
+  case).
+- **`name = "counter"`** specifies the name of the crate, it's named **counter** like our smart
+  contract.
+- **`version = "0.1.0"`** indicates the current version of the package and the counter smart
+  contract.
+- **`edition = "2021"`** specifies the Rust edition being used; editions in Rust are sets of
+  language and compiler improvements, with 2021 being one of the latest editions at the time,
+  providing the latest features and enhancements.
+
+**\[lib\]**
+
+```toml copy showLineNumbers{8} filename="Cargo.toml"
+[lib]
+crate-type = ["cdylib", "rlib"]
+```
+
+- **`[lib]`** section specifies settings for building the library.
+- **`crate-type`** enumerates types of libraries to be produced during compiling.
+- **`"cdylib"`** specifies that the package will be compiled as a C-compatible dynamic library;
+  which is required for smart contracts to run on the CosmWasm runtime.
+- **`"rlib"`** specifies a Rust library file that can be used as a dependency for other Rust
+  projects, in our case for other smart contracts.
+
+**\[features\]**
+
+```toml copy showLineNumbers{11} filename="Cargo.toml"
+[features]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+```
+
+- **`[features]`** section defines optional features for the Rust package.
+- **`library = []`** defines a feature named **library**, which when set, disables exporting smart
+  contract entry-points. Exporting entry points is necessary for interacting with the smart contract
+  on the blockchain. However, when the contract is used as a dependency by other contracts,
+  exporting these entry-points should be disabled to prevent unintended function name clashes.
+
+**\[dependencies\]**
+
+```toml copy showLineNumbers{15} filename="Cargo.toml"
+[dependencies]
+cosmwasm-schema = "2"
+cosmwasm-std = { version = "2" }
+cw-storage-plus = "2"
+schemars = "0.8"
+serde = "1.0"
+sylvia = { version = "1" }
+```
+
+- **`[dependencies]`** section lists the libraries that the package depends on.
+- **`cosmwasm-schema`** is used for generating JSON schemas from Rust data structures, which is
+  useful for documentation and ensuring compatibility of messages and queries.
+- **`cosmwasm-std`** is the standard library for CosmWasm contracts, providing common types and
+  utilities needed for interacting with the CosmWasm runtime.
+- **`cw-storage-plus`** is a library that provides advanced storage abstractions and utilities on
+  top of the basic storage capabilities in CosmWasm, making it easier to manage state within
+  contracts.
+- **`schemars`** is a library for generating JSON schemas, which complements `cosmwasm-schema` by
+  providing additional features for schema generation.
+- **`serde`** is a widely used serialization library in Rust, allowing easy conversion of Rust data
+  structures to and from formats like JSON, which is crucial for data interchange in smart
+  contracts.
+- **`sylvia`** the Sylvia framework itself, needed to implement the smart contract.
+
+**\[dev-dependencies\]**
+
+```toml copy showLineNumbers{23} filename="Cargo.toml"
+[dev-dependencies]
+sylvia = { version = "1", features = ["mt", "cosmwasm_2_0"] }
+```
+
+- **`[dev-dependencies]`** section lists dependencies that are only needed for development and
+  testing.
+- **`sylvia`** the Sylvia framework with features required for testing smart contracts using
+  **`MultiTest`**. Feature `"mt"` in Sylvia should be used only in **[dev-dependencies]** section.
+
+Overall, this `Cargo.toml` file configures a Rust project for a CosmWasm-based smart contract. It
+sets up the basic package details, specifies how the contract should be compiled, defines
+dependencies for core functionality and testing, and includes features to enable or disable certain
+parts of the contract code. This setup ensures the contract can be developed, tested, and deployed
+effectively on the blockchain within the CosmWasm ecosystem.
 
 ---
 

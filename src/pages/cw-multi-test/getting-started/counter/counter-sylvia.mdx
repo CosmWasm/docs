@@ -259,6 +259,12 @@ versatile smart contract, ready for action.
 
 ### `contract.rs`
 
+Typically, in a smart contract project, the **contract** module (placed in the `contract.rs` file)
+contains the core logic of the contract, including functions (entry-points) for instantiation,
+execution, querying and migrating. This is where the main functionality of the smart contract is
+implemented. And this is also the case for our **counter** smart contract. The full source code is
+shown below.
+
 ```rust showLineNumbers filename="contract.rs" copy
 use crate::msg::{CounterInitMsg, CounterResponse};
 use cosmwasm_std::{Response, StdResult};
@@ -280,7 +286,7 @@ impl CounterContract {
     }
 
     #[sv::msg(instantiate)]
-    fn zero(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+    fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
         match msg {
             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
@@ -313,9 +319,9 @@ impl CounterContract {
     }
 
     #[sv::msg(query)]
-    fn count(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
-        let count = self.count.load(ctx.deps.storage)?;
-        Ok(CounterResponse { count })
+    fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+        let value = self.count.load(ctx.deps.storage)?;
+        Ok(CounterResponse { value })
     }
 }
 ```

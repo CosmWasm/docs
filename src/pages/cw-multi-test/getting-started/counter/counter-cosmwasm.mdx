@@ -281,6 +281,12 @@ versatile contract ready for action.
 
 ### `contract.rs`
 
+Typically, in a smart contract project, the **contract** module (placed in the `contract.rs` file)
+contains the core logic of the contract, including functions (entry-points) for instantiation,
+execution, querying and migrating. This is where the main functionality of the smart contract is
+implemented. And this is also the case for our **counter** smart contract. The full source code is
+shown below.
+
 ```rust copy showLineNumbers filename="contract.rs"
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
@@ -335,15 +341,23 @@ pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdE
 }
 ```
 
-Typically, in a smart contract project, the **contract** module (placed in the `contract.rs` file)
-contains the core logic of the contract, including functions (entry-points) for instantiation,
-execution, querying and migrating. This is where the main functionality of the smart contract is
-implemented. And this is also the case for our **counter** smart contract.
+Let's take a detailed look at this implementation.
+
+**Conditional imports**
 
 ```rust copy showLineNumbers filename="contract.rs"
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 ```
+
+The import shown above is used for conditional compilation in CosmWasm smart contracts. It ensures
+that the `entry_point` annotation is only included when the contract is being compiled as a
+standalone WASM binary, not as a library. The `entry_point` annotation is essential for defining the
+main functions of the smart contract, such as instantiate, execute, and query, which are responsible
+for interacting with the contract. If you're using this smart contract in another project, this
+configuration ensures that unnecessary code isn't included when compiling it as a library.
+
+**Imports**
 
 ```rust copy showLineNumbers{4} filename="contract.rs"
 use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
@@ -351,9 +365,32 @@ use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Resp
 use cw_storage_plus::Item;
 ```
 
+In lines 4-6 there are additional imports required to compile the contract. The first `use`
+statement imports message structures for handling execution, initialization, and queries related to
+a counter-based smart contract. The second `use` imports essential tools and types from the CosmWasm
+standard library, required for interacting with the blockchain environment, converting data, and
+accessing dependencies. The third `use` brings in the `Item` type, which is needed for storing
+single values in the contract’s persistent storage.
+
+**Storage variable definition**
+
 ```rust copy showLineNumbers{8} filename="contract.rs"
 const COUNTER: Item<u8> = Item::new("value");
 ```
+
+`COUNTER` is a storage variable (although declared as `const`) for a counter, represented as an
+8-bit unsigned integer. The `"value"` string is the key used to store and retrieve the counter value
+in the contract's persistent storage. This is used for tracking a counter value that can be
+incremented, decremented, queried, or reset by the smart contract. More details about the
+[Item](../../../cw-storage-plus/containers/item) type can be found in
+[cw-storage-plus](../../../cw-storage-plus) documentation.
+
+**`instantiate` entry-point**
+
+The `instantiate` function (entry-point) is called during the instantiation of the smart contract.
+Depending on the value of the message passed in `msg` argument, the counter will be initialized with
+zero or with the value provided in `CounterInitMsg::Set` variant. Using the `COUNTER` variable, the
+initial value is saved in the contract's persistent storage for future use.
 
 ```rust copy showLineNumbers{10} filename="contract.rs"
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -374,6 +411,15 @@ pub fn instantiate(
 }
 ```
 
+**`execute` entry-point**
+
+The `execute` function (entry-point) is called whenever the user wants to interact with the
+contract, especially when the value of the counter should be incremented, decremented or reset.
+Depending on the `msg` value passed as an argument, the "old value" of the counter will be
+incremented by one for `CounterExecMsg::Inc` variant, decremented by one for `CounterExecMsg::Dec`
+variant, or replaced with the new value for `CounterExecMsg::Set` variant. The new value will be
+saved in the contract's persistent storage by calling `update` function of the `COUNTER` variable.
+
 ```rust copy showLineNumbers{27} filename="contract.rs"
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
@@ -392,6 +438,12 @@ pub fn execute(
     Ok(Response::default())
 }
 ```
+
+**`query` entry-point**
+
+The `query` function (entry-point) is called whenever the user asks the counter smart contract for
+the current value. The counter value is retrieved from the contract's persistent storage, wrapped
+with `CounterResponse` type and returned to the user.
 
 ```rust copy showLineNumbers{44} filename="contract.rs"
 #[cfg_attr(not(feature = "library"), entry_point)]

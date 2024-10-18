@@ -326,6 +326,78 @@ impl CounterContract {
 }
 ```
 
+Let's take a detailed look at this implementation using Sylvia framework.
+
+**Imports**
+
+```rust copy showLineNumbers{1} filename="contract.rs"
+use crate::msg::{CounterInitMsg, CounterResponse};
+use cosmwasm_std::{Response, StdResult};
+use cw_storage_plus::Item;
+use sylvia::contract;
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+```
+
+The first `use` statement imports message structures for handling initialization of the contract,
+and responses from queries. The second `use` imports essential types from the CosmWasm standard
+library. The third `use` brings in the `Item` type, which is needed for storing single values in the
+contract’s persistent storage. The last two `use` statements import Sylvia types and components
+essential to build a contract.
+
+**The contract**
+
+```rust copy showLineNumbers{7} filename="contract.rs"
+pub struct CounterContract {
+    pub count: Item<u8>,
+}
+```
+
+The `CounterContract` is a public structure that represents a counter smart contract. It contains
+one public field, `count`, which is of type `Item` and serves as a "variable" for tracking a value
+that can be incremented, decremented, queried, or reset by the smart contract. More details about
+the [Item](../../../cw-storage-plus/containers/item) type can be found in
+[cw-storage-plus](../../../cw-storage-plus) documentation. This field stores an 8-bit unsigned
+integer representing a counter value.
+
+More detailed explanation of the smart contract structure written in Sylvia can be found in
+[Sylvia documentation](../../../sylvia/basics/contract-structure), but for testing purposes we will
+just mention the key elements of this contract.
+
+**Constructor**
+
+```rust copy showLineNumbers{14} filename="contract.rs"
+    pub const fn new() -> Self {
+        Self {
+            count: Item::new("count"),
+        }
+    }
+```
+
+Creates a new instance of the contract and binds the `count` variable with the key `"count"` in the
+contract's persistent storage.
+
+```rust copy showLineNumbers{20} filename="contract.rs"
+    #[sv::msg(instantiate)]
+    fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+        match msg {
+            CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+            CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+        }
+        Ok(Response::new())
+    }
+```
+
+```rust copy showLineNumbers{20} filename="contract.rs"
+    #[sv::msg(instantiate)]
+    fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+        match msg {
+            CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+            CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+        }
+        Ok(Response::new())
+    }
+```
+
 ---
 
 ## What next?

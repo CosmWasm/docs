@@ -166,12 +166,12 @@ organizing the modules that make up the contract. Recall the **counter** project
 There are two modules in the project: `contract.rs` and `msg.rs`. That's why in the `lib.rs` file
 there are two declarations:
 
-- **`pub mod contract;`**<br/> This line declares a public module named **contract**; tells Rust to
-  include the code from a file named `contract.rs` located in the same directory and makes the
+- `pub mod contract;{:rust}`<br/> This line declares a public module named **contract**; tells Rust
+  to include the code from a file named `contract.rs` located in the same directory and makes the
   module publicly accessible (`pub` keyword), which means that other modules or external code can
   access the entry-points of our smart contract.
-- **`pub mod msg;`**<br/> This line declares a public module named **msg**; includes the code from a
-  file named `msg.rs` and also makes this module public which allows other parts of the code
+- `pub mod msg;{:rust}`<br/> This line declares a public module named **msg**; includes the code
+  from a file named `msg.rs` and also makes this module public which allows other parts of the code
   (especially our **counter** smart contract) to access the messages defined here.
 
 Overall, this `lib.rs` file is setting up the main structure of the smart contract by defining its
@@ -328,7 +328,7 @@ impl CounterContract {
 
 Let's take a detailed look at this implementation using Sylvia framework.
 
-**Imports**
+#### imports
 
 ```rust copy showLineNumbers{1} filename="contract.rs"
 use crate::msg::{CounterInitMsg, CounterResponse};
@@ -338,13 +338,13 @@ use sylvia::contract;
 use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
 ```
 
-The first `use` statement imports message structures for handling initialization of the contract,
-and responses from queries. The second `use` imports essential types from the CosmWasm standard
-library. The third `use` brings in the `Item` type, which is needed for storing single values in the
-contract’s persistent storage. The last two `use` statements import Sylvia types and components
-essential to build a contract.
+The first `use{:rust}` statement imports message structures for handling initialization of the
+contract, and responses from queries. The second `use{:rust}` imports essential types from the
+CosmWasm standard library. The third `use{:rust}` brings in the `Item{:rust}` type, which is needed
+for storing single values in the contract’s persistent storage. The last two `use{:rust}` statements
+import Sylvia types and components essential to build a contract.
 
-**The contract**
+#### contract struct
 
 ```rust copy showLineNumbers{7} filename="contract.rs"
 pub struct CounterContract {
@@ -352,10 +352,10 @@ pub struct CounterContract {
 }
 ```
 
-The `CounterContract` is a public structure that represents a counter smart contract. It contains
-one public field, `count`, which is of type `Item` and serves as a "variable" for tracking a value
-that can be incremented, decremented, queried, or reset by the smart contract. More details about
-the [Item](../../../cw-storage-plus/containers/item) type can be found in
+The `CounterContract{:rust}` is a public structure that represents a counter smart contract. It
+contains one public field `count{:rust}`, which is of type `Item{:rust}` and serves as a "variable"
+for tracking a value that can be incremented, decremented, queried, or reset by the smart contract.
+More details about the [Item](../../../cw-storage-plus/containers/item) type can be found in
 [cw-storage-plus](../../../cw-storage-plus) documentation. This field stores an 8-bit unsigned
 integer representing a counter value.
 
@@ -363,7 +363,7 @@ More detailed explanation of the smart contract structure written in Sylvia can 
 [Sylvia documentation](../../../sylvia/basics/contract-structure), but for testing purposes we will
 just mention the key elements of this contract.
 
-**Constructor**
+#### constructor
 
 ```rust copy showLineNumbers{14} filename="contract.rs"
     pub const fn new() -> Self {
@@ -373,8 +373,16 @@ just mention the key elements of this contract.
     }
 ```
 
-Creates a new instance of the contract and binds the `count` variable with the key `"count"` in the
-contract's persistent storage.
+Creates a new instance of the contract and binds the `count{:rust}` variable with the key
+`"count"{:rust}` in the contract's persistent storage.
+
+#### `instantiate` entry-point
+
+The `init{:rust}` function, annotated as `#[sv::msg(instantiate)]{:rust}` is called during the
+instantiation of the smart contract. Depending on the message passed in `msg{:rust}` argument, the
+counter will be initialized with zero or with the value provided in `CounterInitMsg::Set{:rust}`
+variant. Using the `self.count{:rust}` variable, the initial value is saved in the contract's
+persistent storage.
 
 ```rust copy showLineNumbers{20} filename="contract.rs"
     #[sv::msg(instantiate)]
@@ -387,14 +395,68 @@ contract's persistent storage.
     }
 ```
 
-```rust copy showLineNumbers{20} filename="contract.rs"
-    #[sv::msg(instantiate)]
-    fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
-        match msg {
-            CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
-            CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
-        }
+#### `inc` variant of `execute` entry-point
+
+The `inc{:rust}` function, annotated as `#[sv::msg(exec)]` is called during evaluation of the
+`execute` entrypoint of the smart contract for the `"inc":{}` message variant. It increments the
+counter by one and stores the new value in the contract's persistent storage, utilizing
+`update{:rust}` function of the `self.count{:rust}` variable.
+
+```rust copy showLineNumbers{29} filename="contract.rs"
+    #[sv::msg(exec)]
+    fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_add(1))
+            })?;
         Ok(Response::new())
+    }
+```
+
+#### `dec` variant of `execute` entry-point
+
+The `dec{:rust}` function, annotated as `#[sv::msg(exec)]` is called during evaluation of the
+`execute` entrypoint of the smart contract for the `"dec":{}` message variant. It decrements the
+counter by one and stores the new value in the contract's persistent storage, utilizing
+`update{:rust}` function of the `self.count{:rust}` variable, similarly like `inc{:rust}` function.
+
+```rust copy showLineNumbers{38} filename="contract.rs"
+    #[sv::msg(exec)]
+    fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_sub(1))
+            })?;
+        Ok(Response::new())
+    }
+```
+
+#### `set` variant of `execute` entry-point
+
+The `set{:rust}` function, also annotated as `#[sv::msg(exec)]` is called during evaluation of the
+`execute` entrypoint of the smart contract for the `"set":{"value":N}` message variant. It resets
+the counter value and stores the new value in the contract's persistent storage, utilizing
+`save{:rust}` function of the `self.count{:rust}` variable.
+
+```rust copy showLineNumbers{47} filename="contract.rs"
+    #[sv::msg(exec)]
+    fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+        self.count.save(ctx.deps.storage, &value)?;
+        Ok(Response::new())
+    }
+```
+
+#### `query` entry-point
+
+The `value{:rust}` function, annotated as `#[sv::msg(query)]` is called during querying the value of
+the counter contract. The current value is retrieved from the contract's persistent storage, wrapped
+in `CounterResponse{:rust}` message and returned to the calling user.
+
+```rust copy showLineNumbers{53} filename="contract.rs"
+    #[sv::msg(query)]
+    fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+        let value = self.count.load(ctx.deps.storage)?;
+        Ok(CounterResponse { value })
     }
 ```
 

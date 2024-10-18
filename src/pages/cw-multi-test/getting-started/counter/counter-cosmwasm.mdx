@@ -162,12 +162,12 @@ organizing the modules that make up the contract. Recall the **counter** project
 There are two modules in the project: `contract.rs` and `msg.rs`. That's why in the `lib.rs` file
 there are two declarations:
 
-- **`pub mod contract;`**<br/> This line declares a public module named **contract**; tells Rust to
-  include the code from a file named `contract.rs` located in the same directory and makes the
+- `pub mod contract;{:rust}`<br/> This line declares a public module named **contract**; tells Rust
+  to include the code from a file named `contract.rs` located in the same directory and makes the
   module publicly accessible (`pub` keyword), which means that other modules or external code can
   access the entry-points of our smart contract.
-- **`pub mod msg;`**<br/> This line declares a public module named **msg**; includes the code from a
-  file named `msg.rs` and also makes this module public which allows other parts of the code
+- `pub mod msg;{:rust}`<br/> This line declares a public module named **msg**; includes the code
+  from a file named `msg.rs` and also makes this module public which allows other parts of the code
   (especially our **counter** smart contract) to access the messages defined here.
 
 Overall, this `lib.rs` file is setting up the main structure of the smart contract by defining its

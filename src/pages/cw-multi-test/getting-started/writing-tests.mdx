@@ -253,20 +253,124 @@ Report: file:///home/user/counter/target/coverage-report/tarpaulin-report.html
 ```
 
 Additionally, Tarpaulin generates a coverage report in HTML format, that can be viewed directly in a
-browser.
+browser. As expected, the current code coverage for the **counter** smart contract is 𝟎 since we
+haven't written any tests yet. Follow the next chapters, and make the code coverage report shine
+green 🟢.
 
-<details>
-  <summary>📃  Code coverage report for counter smart contract (CosmWasm version)</summary>
-  ![coverage-cosmwasm-00](./coverage-cosmwasm-00.png)
-</details>
+```ansi {11-25,28-42,45-51} showLineNumbers  filename="Code coverage report (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;31m pub fn instantiate(
+[1;31m     deps: DepsMut,
+[1;31m     _env: Env,
+[1;31m     _info: MessageInfo,
+[1;31m     msg: CounterInitMsg,
+[1;31m ) -> Result<Response, StdError> {
+[1;31m     COUNTER.save(
+[1;31m         deps.storage,
+[1;31m         &match msg {
+[1;31m             CounterInitMsg::Zero => 0,
+[1;31m             CounterInitMsg::Set(new_value) => new_value,
+[1;31m         },
+[1;31m     )?;
+[1;31m     Ok(Response::default())
+[1;31m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;31m pub fn execute(
+[1;31m     deps: DepsMut,
+[1;31m     _env: Env,
+[1;31m     _info: MessageInfo,
+[1;31m     msg: CounterExecMsg,
+[1;31m ) -> Result<Response, StdError> {
+[1;31m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;31m         Ok(match msg {
+[1;31m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;31m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;31m             CounterExecMsg::Set(new_value) => new_value,
+[1;31m         })
+[1;31m     })?;
+[1;31m     Ok(Response::default())
+[1;31m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;31m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;31m     match msg {
+[1;31m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;31m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[1;31m         })?),
+[1;31m     }
+[1;31m }
+```
 
-<details>
-  <summary>📃  Code coverage report for counter smart contract (Sylvia version)</summary>
-  ![coverage-sylvia-00](./coverage-sylvia-00.png)
-</details>
-
-As expected, the current code coverage for the **counter** smart contract is 𝟎 since we haven't
-written any tests yet. Follow the next chapters, and make the code coverage report shine green 🟢.
+```ansi {14-18,21-27,30-36,39-45,48-51,54-57} showLineNumbers  filename="Code coverage report (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;31m     pub const fn new() -> Self {
+[1;31m         Self {
+[1;31m             count: Item::new("count"),
+[1;31m         }
+[1;31m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;31m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;31m         match msg {
+[1;31m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;31m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[1;31m         }
+[1;31m         Ok(Response::new())
+[1;31m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_add(1))
+[1;31m             })?;
+[1;31m         Ok(Response::new())
+[1;31m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_sub(1))
+[1;31m             })?;
+[1;31m         Ok(Response::new())
+[1;31m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;31m         self.count.save(ctx.deps.storage, &value)?;
+[1;31m         Ok(Response::new())
+[1;31m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;31m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;31m         let value = self.count.load(ctx.deps.storage)?;
+[1;31m         Ok(CounterResponse { value })
+[1;31m     }
+[0;30m }
+```
 
 ## Writing tests for smart contracts
 

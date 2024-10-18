@@ -12,7 +12,9 @@ that can be `initialized`, `incremented`, `decremented`, and `queried`. Later on
 
 <Callout type="info" emoji="☉">
   **Counter** smart contract is a simplified version of the contract created from the
-  [cw&#8209;template](/core/installation#setting-up-the-contract).
+  [cw&#8209;template](https://github.com/CosmWasm/cw-template).
+  <br />
+  Check [Setting up the contract](/core/installation#setting-up-the-contract) for more details.
 </Callout>
 
 ## Specification
@@ -24,12 +26,11 @@ value on the blockchain. This functionality can be utilized in various scenarios
 tally needs to be tracked, such as counting votes, tracking the number of actions performed, or
 maintaining a score in a game or competition.
 
-**Features**
+**Features:**
 
-- The counter can be initialized with a value of zero or a specific non-negative integer in the
-  range of 0 to 255.
+- The counter can be initialized with a value of zero or any non-negative integer between 0 and 255.
 - Users can increment, decrement, or set the counter to a new value within the range of 0 to 255.
-- Boundary conditions are checked, preventing the counter from going below zero or beyond 255.
+- Boundary conditions are checked, preventing the counter from going below 0 or beyond 255.
 - Users can query the current value of the counter at any time.
 - The counter's value is persisted and limited to 8-bit unsigned integers [0..255].
 
@@ -118,7 +119,7 @@ tree
 ## Filling the content
 
 In the previous section you have created a project structure for **counter** smart contract, but the
-source files are still empty 🗋 . In the following chapters, we provide examples of two different
+source files are still empty. In the following chapters, we provide examples of two different
 implementations of the **counter** smart contract. The first one is using the pure CosmWasm
 libraries, and the second one is using the Sylvia framework.
 

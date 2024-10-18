@@ -180,6 +180,11 @@ and test.
 
 ### `msg.rs`
 
+The **msg** module in file `msg.rs` typically defines the messages and queries that the smart
+contract accepts and responds to. Messages are usually structured as Rust enums or structs and
+define the input and output interfaces of the contract. In our example this includes messages shown
+below.
+
 ```rust copy showLineNumbers filename="msg.rs"
 use cosmwasm_schema::{cw_serde, QueryResponses};
 
@@ -209,15 +214,19 @@ pub struct CounterResponse {
 }
 ```
 
-The **msg** module in file `msg.rs` typically defines the messages and queries that the smart
-contract accepts and responds to. Messages are usually structured as Rust enums or structs and
-define the input and output interfaces of the contract. In our example this includes:
+Let's take a detailed look at the implementation of these messages.
+
+**Imports**
 
 ```rust copy showLineNumbers filename="msg.rs"
 use cosmwasm_schema::cw_serde;
 ```
 
 Required imports, like `#[cw_serde]` annotation.
+
+**Instantiation message**
+
+This message is passed to `instantiate` entry-point.
 
 ```rust copy showLineNumbers{3} filename="msg.rs (CounterInitMsg)"
 #[cw_serde]
@@ -231,6 +240,10 @@ pub enum CounterInitMsg {
 `CounterInitMsg::Zero{:rust}` variant initializes the counter with the zero value, and
 `CounterInitMsg::Set{:rust}` variant initializes the counter with an arbitrary value in range 0
 to 255. This message is passed to `instantiate{:rust}` entry-point of the counter smart contract.
+
+**Execution message**
+
+This message is passed to `execute` entry-point.
 
 ```rust copy showLineNumbers{9} filename="msg.rs (CounterExecMsg)"
 #[cw_serde]
@@ -247,6 +260,10 @@ especially incrementing (the `CounterExecMsg::Inc{:rust}` variant), decrementing
 `CounterExecMsg::Set{:rust}` variant). This message is passed to `execute{:rust}` entry-point of the
 counter smart contract.
 
+**Query message**
+
+This message is passed to `query` entry-point.
+
 ```rust copy showLineNumbers{16} filename="msg.rs (CounterQueryMsg)"
 #[cw_serde]
 #[derive(QueryResponses)]
@@ -262,6 +279,10 @@ message is passed to `query{:rust}` entry-point of the counter smart contract. T
 `#[derive(QueryResponses)]` annotation informs the schema generator about the type of the value
 returned by the query.
 
+**Response message**
+
+This message is returned from `query` entry-point and passed to the user.
+
 ```rust copy showLineNumbers{21} filename="msg.rs (CounterResponse)"
 #[cw_serde]
 pub struct CounterResponse {
@@ -272,10 +293,10 @@ pub struct CounterResponse {
 **`CounterResponse{:rust}`** struct with a single field `value{:rust}`, used to pass the responses
 (results) from the queries.
 
-Overall, this `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
-interacts with the outside world by initializing, taking actions, and answering questions. Each
+Overall, the `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
+interacts with the outside world by initializing, executing actions, and answering questions. Each
 message type is a different way of communicating with the counter, making it an easy-going,
-versatile contract ready for action.
+versatile smart contract, ready for action.
 
 ---
 

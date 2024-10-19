@@ -39,6 +39,8 @@ use sylvia::cw_multi_test::IntoAddr;
 use sylvia::multitest::App;
 ```
 
+(topics to cover)?
+
 ## Testing counter initialization
 
 ### Testing initialization with zero
@@ -60,6 +62,8 @@ fn instantiating_with_zero_should_work() {
     assert_eq!(0, contract.value().unwrap().value);
 }
 ```
+
+(topics to cover)?
 
 Having the first test case ready, let's run it:
 
@@ -182,6 +186,8 @@ fn instantiating_with_value_should_work() {
 }
 ```
 
+(topics to cover)?
+
 ```shell copy filename="TERMINAL"
 cargo test
 ```
@@ -205,6 +211,67 @@ test result: [32;1mok[0m. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 || src/contract.rs: 9/22
 ||
 40.91% coverage, 9/22 lines covered
+```
+
+```ansi {30-33,35,39-42,44,48-50} showLineNumbers filename="Code coverage report (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;32m     pub const fn new() -> Self {
+[0;30m         Self {
+[1;32m             count: Item::new("count"),
+[0;30m         }
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;32m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;32m         match msg {
+[1;32m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;32m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[0;30m         }
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_add(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_sub(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;31m         self.count.save(ctx.deps.storage, &value)?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;32m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;32m         let value = self.count.load(ctx.deps.storage)?;
+[0;30m         Ok(CounterResponse { value })
+[0;30m     }
+[0;30m }
 ```
 
 (comment the coverage report)
@@ -232,6 +299,8 @@ fn incrementing_should_work() {
     assert_eq!(1, contract.value().unwrap().value);
 }
 ```
+
+(topics to cover)?
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -285,6 +354,8 @@ fn incrementing_should_stop_at_maximum() {
 }
 ```
 
+(topics to cover)?
+
 ```shell copy filename="TERMINAL"
 cargo test
 ```
@@ -337,6 +408,8 @@ fn decrementing_should_work() {
     assert_eq!(125, contract.value().unwrap().value);
 }
 ```
+
+(topics to cover)?
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -392,6 +465,8 @@ fn decrementing_should_stop_at_minimum() {
 }
 ```
 
+(topics to cover)?
+
 ```shell copy filename="TERMINAL"
 cargo test
 ```
@@ -444,6 +519,8 @@ fn setting_value_should_work() {
     assert_eq!(125, contract.value().unwrap().value);
 }
 ```
+
+(topics to cover)?
 
 ```shell copy filename="TERMINAL"
 cargo test

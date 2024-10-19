@@ -692,7 +692,7 @@ fn decrementing_should_stop_at_minimum() {
         app.execute_contract(
             owner.clone(),
             contract_addr.clone(),
-            &CounterActionMsg::Dec,
+            &CounterExecMsg::Dec,
             &[],
         )
         .unwrap();
@@ -700,12 +700,20 @@ fn decrementing_should_stop_at_minimum() {
 
     let res: CounterResponse = app
         .wrap()
-        .query_wasm_smart(contract_addr, &CounterQuery::Value)
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
         .unwrap();
 
     assert_eq!(0, res.value);
 }
 ```
+
+(topics to cover)
+
+- initialization with 5
+- multiple decrementation
+- handling underflow in the contract
+
+(rest was explained in the previous test cases)
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -736,18 +744,8 @@ test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 94.44% coverage, 17/18 lines covered
 ```
 
-<details>
-  <summary>📃  Code coverage report</summary>
-  ![coverage-cosmwasm-06](./coverage-cosmwasm-06.png)
-</details>
-
-#### Detailed explanation
-
-<Cards>
-  <Card title="🦘  Skip this time" href="#testing-counter-value-changes" icon="" children="" />
-</Cards>
-
-(todo: extremely detailed explanation)
+The code coverage did not change after adding this test case, but a very important use case was
+tested: handling underflow during counter decrementation.
 
 ---
 

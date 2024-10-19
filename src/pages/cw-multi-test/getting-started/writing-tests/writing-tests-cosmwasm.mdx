@@ -497,6 +497,14 @@ fn incrementing_should_stop_at_maximum() {
 }
 ```
 
+(topics to cover)
+
+- initialization with 250
+- multiple call of `execute` endpoint
+- how the overflowing was handled in the smart contract
+
+(rest was explained in the previous test cases)
+
 ```shell copy filename="TERMINAL"
 cargo test
 ```
@@ -524,18 +532,8 @@ test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 88.89% coverage, 16/18 lines covered
 ```
 
-<details>
-  <summary>📃  Code coverage report</summary>
-  ![coverage-cosmwasm-04](./coverage-cosmwasm-04.png)
-</details>
-
-#### Detailed explanation
-
-<Cards>
-  <Card title="🦘  Skip this time" href="#testing-decrement-by-1" icon="" children="" />
-</Cards>
-
-(todo: extremely detailed explanation)
+The code coverage did not change after adding this test case, but a very important use case was
+tested: handling overflow during counter incrementation.
 
 ---
 

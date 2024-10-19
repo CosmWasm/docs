@@ -14,8 +14,6 @@ You can just copy and paste the provided content to previously created empty fi
 skipping the detailed explanations. However, if you're curious about what happens inside each file,
 feel free to check the detailed explanations provided for each code snippet.
 
----
-
 ### `Cargo.toml`
 
 ```toml copy showLineNumbers filename="Cargo.toml"
@@ -137,8 +135,6 @@ dependencies for core functionality and testing, and includes features to enable
 parts of the contract code. This setup ensures the contract can be developed, tested, and deployed
 effectively on the blockchain within the CosmWasm ecosystem.
 
----
-
 ### `lib.rs`
 
 ```rust copy showLineNumbers filename="lib.rs"
@@ -175,8 +171,6 @@ key components as separate modules. This organization helps in keeping the code 
 maintainable by separating the core contract logic (`contract.rs`) from the message and query
 definitions (`msg.rs`). This modular approach makes the smart contract easier to understand, extend,
 and test.
-
----
 
 ### `msg.rs`
 
@@ -297,8 +291,6 @@ Overall, the `msg.rs` file is basically setting up the contract’s _social skil
 interacts with the outside world by initializing, executing actions, and answering questions. Each
 message type is a different way of communicating with the counter, making it an easy-going,
 versatile smart contract, ready for action.
-
----
 
 ### `contract.rs`
 

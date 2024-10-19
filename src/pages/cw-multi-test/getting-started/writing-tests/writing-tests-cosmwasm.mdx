@@ -561,17 +561,24 @@ fn decrementing_should_work() {
         )
         .unwrap();
 
-    app.execute_contract(owner, contract_addr.clone(), &CounterActionMsg::Dec, &[])
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Dec, &[])
         .unwrap();
 
     let res: CounterResponse = app
         .wrap()
-        .query_wasm_smart(contract_addr, &CounterQuery::Value)
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
         .unwrap();
 
     assert_eq!(125, res.value);
 }
 ```
+
+(topics to cover)
+
+- initialization with 126
+- `CounterExecMsg::Dec{:rust}`
+
+(rest was explained in the previous test cases)
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -601,18 +608,61 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 94.44% coverage, 17/18 lines covered
 ```
 
-<details>
-  <summary>📃  Code coverage report</summary>
-  ![coverage-cosmwasm-05](./coverage-cosmwasm-05.png)
-</details>
+```ansi {38} showLineNumbers  filename="Code coverage report (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn instantiate(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterInitMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.save(
+[1;32m         deps.storage,
+[1;32m         &match msg {
+[1;32m             CounterInitMsg::Zero => 0,
+[1;32m             CounterInitMsg::Set(new_value) => new_value,
+[0;30m         },
+[0;30m     )?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn execute(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterExecMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;32m         Ok(match msg {
+[1;32m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;32m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;31m             CounterExecMsg::Set(new_value) => new_value,
+[0;30m         })
+[0;30m     })?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;32m     match msg {
+[1;32m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;32m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[0;30m         })?),
+[0;30m     }
+[0;30m }
+```
 
-#### Detailed explanation
-
-<Cards>
-  <Card title="🦘  Skip this time" href="#testing-decrement-underflow" icon="" children="" />
-</Cards>
-
-(todo: extremely detailed explanation)
+(comment the coverage report)
 
 ---
 

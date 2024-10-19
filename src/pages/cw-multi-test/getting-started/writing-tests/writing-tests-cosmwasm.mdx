@@ -482,7 +482,7 @@ fn incrementing_should_stop_at_maximum() {
         app.execute_contract(
             owner.clone(),
             contract_addr.clone(),
-            &CounterActionMsg::Inc,
+            &CounterExecMsg::Inc,
             &[],
         )
         .unwrap();
@@ -490,7 +490,7 @@ fn incrementing_should_stop_at_maximum() {
 
     let res: CounterResponse = app
         .wrap()
-        .query_wasm_smart(contract_addr, &CounterQuery::Value)
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
         .unwrap();
 
     assert_eq!(255, res.value);

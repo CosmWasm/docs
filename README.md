@@ -12,7 +12,7 @@ CosmJS/InterchainJS, Sylvia framework, etc.
 ## Where is it?
 
 The website is hosted at
-[https://cosmwasm-docs.vercel.app](https://cosmwasm-docs.vercel.app/).
+[docs.cosmwasm.com](https://docs.cosmwasm.com/).
 
 ## How is it made?
 

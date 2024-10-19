@@ -232,7 +232,7 @@ fn instantiating_with_value_should_work() {
 
     let res: CounterResponse = app
         .wrap()
-        .query_wasm_smart(contract_addr, &CounterQuery::Value)
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
         .unwrap();
 
     assert_eq!(12, res.value);

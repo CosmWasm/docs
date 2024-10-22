@@ -5,6 +5,7 @@ tags: ["multitest", "getting started", "tests", "CosmWasm"]
 import { Callout, Card, Cards } from "nextra/components";
 
 [cargo-nextest]: https://nexte.st
+[cw-multi-test]: https://crates.io/crates/cw-multi-test
 
 # Writing tests in CosmWasm
 
@@ -36,6 +37,19 @@ as highlighted on line 12.
 
 At the beginning of the `test_counter.rs` file, the necessary imports for implementing all test
 cases are included.
+
+The `cosmwasm_std` library is used to import only the `Empty` type, which serves as a placeholder
+for messages that do not carry any additional data.
+
+Additionally, all message types from the counter smart contract are imported. These include
+initialization (`CounterInitMsg{:rust}`), execution (`CounterExecMsg{:rust}`), and query
+(`CounterQueryMsg{:rust}`) messages, as well as the query response (`CounterResponse{:rust}`), which
+are essential for interacting with and verifying the state of the contract during testing.
+
+Finally, basic utilities from **`MultiTest`** (the [cw-multi-test] crate) are imported. These tools
+allow you to set up a blockchain simulator, execute contract messages and test interactions.
+
+Just copy and paste the code presented below to your `test_counter.rs` file:
 
 ```rust copy showLineNumbers{1} filename="test_counter.rs"
 use cosmwasm_std::Empty;

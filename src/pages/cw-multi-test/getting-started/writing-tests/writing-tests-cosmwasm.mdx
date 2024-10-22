@@ -69,10 +69,13 @@ fn counter_contract() -> Box<dyn Contract<Empty>> {
 }
 ```
 
-`☕` Topics to cover
+The function `counter_contract` presented above is a boilerplate that wraps the contract's entry
+points (`instantiate`, `execute`, `query`) in a standard way, making the contract compatible with
+the `Contract` trait. This allows it to be easily stored or interacted with in a **`MultiTest`**
+blockchain simulation environment. Whenever you want to test your smart contract using
+**`MultiTest`**, the first step is to wrap it in this manner.
 
-- `Contract{:rust}`
-- `ContractWrapper{:rust}`
+See also: [`Contract`](../../contract) [`ContractWrapper`](../../contract-wrapper)
 
 ## Testing counter initialization
 

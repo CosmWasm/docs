@@ -122,7 +122,7 @@ Creating an instance of the `App{:rust}` simulates running a blockchain. There a
 instantiate the `App{:rust}`, but the simplest method, shown below, uses the `default{:rust}`
 function.
 
-```rust showLineNumbers{15}
+```rust showLineNumbers{15} filename="test_counter.rs"
 let mut app = App::default();
 ```
 
@@ -134,7 +134,7 @@ wrapped contract is passed to this function. `store_code{:rust}` returns the ide
 contract code assigned to `code_id{:rust}`. This `code_id{:rust}` is used to reference the stored
 contract code later in test.
 
-```rust showLineNumbers{17}
+```rust showLineNumbers{17} filename="test_counter.rs"
 let code_id = app.store_code(counter_contract());
 ```
 
@@ -143,7 +143,7 @@ let code_id = app.store_code(counter_contract());
 Every instance of the contract has an owner represented as an address. In this test the string
 `"owner"{:rust}` is converted to Bech32 address recognized by the blockchain.
 
-```rust showLineNumbers{19}
+```rust showLineNumbers{19} filename="test_counter.rs"
 let owner = "owner".into_addr();
 ```
 
@@ -164,7 +164,7 @@ The `unwrap(){:rust}` function is used to handle the result of instantiating the
 the test fails if an error occurs. `instantiate_contract{:rust}` function returns the address of the
 contract instance referenced later in this test.
 
-```rust showLineNumbers{21}
+```rust showLineNumbers{21} filename="test_counter.rs"
 let contract_addr = app
     .instantiate_contract(
         code_id,
@@ -184,7 +184,7 @@ message `CounterQueryMsg::Value{:rust}`, which is expected to return the current
 counter. The result is unwrapped into a `CounterResponse{:rust}` object. The instance of the
 contract that is queried depends on the address obtained during instantiation in the previous step.
 
-```rust showLineNumbers{32}
+```rust showLineNumbers{32} filename="test_counter.rs"
 let res: CounterResponse = app
     .wrap()
     .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
@@ -196,7 +196,7 @@ let res: CounterResponse = app
 The final step of this test asserts that the value returned by the contract is `0{:rust}`. If the
 value is not zero, the test will fail.
 
-```rust showLineNumbers{37}
+```rust showLineNumbers{37} filename="test_counter.rs"
 assert_eq!(0, res.value);
 ```
 
@@ -367,7 +367,7 @@ test are the same as in the previous one, but let's summarize them shortly:
 
 The `App{:rust}` is created using the `default{:rust}` function.
 
-```rust showLineNumbers{42}
+```rust showLineNumbers{42} filename="test_counter.rs"
 let mut app = App::default();
 ```
 
@@ -376,7 +376,7 @@ let mut app = App::default();
 Contract code is stored on chain using `store_code{:rust}` function provided by `App{:rust}`.
 `code_id{:rust}` is saved for later use.
 
-```rust showLineNumbers{44}
+```rust showLineNumbers{44} filename="test_counter.rs"
 let code_id = app.store_code(counter_contract());
 ```
 
@@ -384,7 +384,7 @@ let code_id = app.store_code(counter_contract());
 
 The `owner{:rust}` variable is assigned an address of the contract instance's owner.
 
-```rust showLineNumbers{46}
+```rust showLineNumbers{46} filename="test_counter.rs"
 let owner = "owner".into_addr();
 ```
 
@@ -401,7 +401,7 @@ This time the contract is instantiated using `CounterInitMsg::Zero{:rust}` messa
 - **`"counter-label"{:rust}`** a label for the contract instance,
 - **`None{:rust}`** no admin permissions.
 
-```rust showLineNumbers{48}
+```rust showLineNumbers{48} filename="test_counter.rs"
 let contract_addr = app
     .instantiate_contract(
       code_id,
@@ -418,7 +418,7 @@ let contract_addr = app
 
 Like in the previous test the contract is queried to retrieve the current value of the counter.
 
-```rust showLineNumbers{59}
+```rust showLineNumbers{59} filename="test_counter.rs"
 let res: CounterResponse = app
     .wrap()
     .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
@@ -429,7 +429,7 @@ let res: CounterResponse = app
 
 The expected value of the counter should be **12**.
 
-```rust showLineNumbers{64}
+```rust showLineNumbers{64} filename="test_counter.rs"
 assert_eq!(12, res.value);
 ```
 
@@ -578,7 +578,7 @@ examples is the additional step of invoking the `execute` entrypoint.
 <Steps>
 #### Executing the increment action
 
-```rust showLineNumbers{86}
+```rust showLineNumbers{86} filename="test_counter.rs"
 app.execute_contract(owner, contract_addr.clone(), &CounterActionMsg::Inc, &[])
     .unwrap();
 ```

@@ -1,4 +1,4 @@
----
+NO---
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
@@ -325,12 +325,12 @@ was not called in test and still `[1;31mshines red{:ansi}` in this report.
 
 ### Testing initialization with a specific value
 
-The second test verifies the initialization of the **counter** contract using a specific value that
-must be in range 0..255, let say **12**. It's done using `CounterInitMsg::Set{:rust}` message.
+The second test verifies the initialization of the **counter** contract using a specific value
+that must be in range 0..255, let say **12**. It's done using `CounterInitMsg::Set{:rust}` message.
 
-The second test verifies the initialization of the **counter** contract with a specific value that
-must be in range 0..255, such as **12**. This is done using the `CounterInitMsg::Set(12){:rust}`
-message.
+The second test verifies the initialization of the **counter** contract with a specific value
+that must be in range 0..255, such as **12**.
+This is done using the `CounterInitMsg::Set(12){:rust}` message.
 
 ```rust copy showLineNumbers{40} filename="test_counter.rs"
 #[test]
@@ -361,91 +361,95 @@ fn instantiating_with_value_should_work() {
 }
 ```
 
-Except for the message used to instantiate the contract and the value assertion, all steps in this
-test are the same as in the previous one, but let's summarize them shortly:
+Except for the message used to instantiate the contract and the value assertion,
+all steps in this test are the same as in the previous one, but let's summarize them shortly:
 
 <Steps>
   #### Chain initialization
 
-The `App{:rust}` is created using the `default{:rust}` function.
+  The `App{:rust}` is created using the `default{:rust}` function.
 
-```rust showLineNumbers{42}
-let mut app = App::default();
-```
+  ```rust showLineNumbers{15}
+  let mut app = App::default();
+  ```
 
-#### Storing contract on chain
+  #### Storing contract on chain
 
-Contract code is stored on chain using `store_code{:rust}` function provided by `App{:rust}`.
-`code_id{:rust}` is saved for later use.
+  Contract code is stored on chain using `store_code{:rust}` function provided by `App{:rust}`.
+  `code_id{:rust}` is saved for later use.
 
-```rust showLineNumbers{44}
-let code_id = app.store_code(counter_contract());
-```
+  ```rust showLineNumbers{17}
+  let code_id = app.store_code(counter_contract());
+  ```
 
-#### Defining the contract owner
+  #### Defining the contract owner
 
-The `owner{:rust}` variable is assigned an address of the contract instance's owner.
+  The `owner{:rust}` variable is assigned an address of the contract instance's owner.
 
-```rust showLineNumbers{46}
-let owner = "owner".into_addr();
-```
+  ```rust showLineNumbers{19}
+  let owner = "owner".into_addr();
+  ```
 
-#### Contract instantiation
+  #### Contract instantiation
 
-This time the contract is instantiated using `CounterInitMsg::Zero{:rust}` message passed to
-`instantiate_contract{:rust}` function provided by `App{:rust}`:
+  This time the contract is instantiated using `CounterInitMsg::Zero{:rust}` message
+  passed to `instantiate_contract{:rust}` function provided by `App{:rust}:
 
-- **`code_id{:rust}`** the identifier for the stored contract code,
-- **`owner{:rust}`** the owner address of the contract instance,
-- **`&CounterInitMsg::Set(12){:rust}`** initialization message, that sets the counter's initial
-  value to **12**,
-- **`&[]{:rust}`** no funds are sent to the contract during initialization,
-- **`"counter-label"{:rust}`** a label for the contract instance,
-- **`None{:rust}`** no admin permissions.
+  - **`code_id{:rust}`** the identifier for the stored contract code,
+  - **`owner{:rust}`** the owner address of the contract instance,
+  - **`&CounterInitMsg::Set(12){:rust}`** initialization message, that sets the counter's initial value
+  to **12**,
+  - **`&[]{:rust}`** no funds are sent to the contract during initialization,
+  - **`"counter-label"{:rust}`** a label for the contract instance,
+  - **`None{:rust}`** no admin permissions.
 
-```rust showLineNumbers{48}
-let contract_addr = app
-    .instantiate_contract(
-      code_id,
-      owner,
-      &CounterInitMsg::Set(12),
-      &[],
-      "counter-label",
-      None,
-    )
-    .unwrap();
-```
+  ```rust showLineNumbers{21}
+  let contract_addr = app
+      .instantiate_contract(
+        code_id,
+        owner,
+        &CounterInitMsg::Set(12),
+        &[],
+        "counter-label",
+        None,
+      )
+      .unwrap();
+  ```
 
-#### Querying the contract
+  #### Querying the contract
 
-Like in the previous test the contract is queried to retrieve the current value of the counter.
+  After the contract is instantiated, this test queries it using `query_wasm_smart` function with a
+  message `CounterQueryMsg::Value{:rust}`, which is expected to return the current value of the
+  counter. The result is unwrapped into a `CounterResponse{:rust}` object. The instance of the
+  contract that is queried depends on the address obtained during instantiation in the previous step.
 
-```rust showLineNumbers{59}
-let res: CounterResponse = app
-    .wrap()
-    .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
-    .unwrap();
-```
+  ```rust showLineNumbers{32}
+  let res: CounterResponse = app
+  .wrap()
+  .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+  .unwrap();
+  ```
 
-#### Asserting the value
+  #### Asserting the value
 
-The expected value of the counter should be **12**.
+  The final step of this test asserts that the value returned by the contract is `0{:rust}`. If the
+  value is not zero, the test will fail.
 
-```rust showLineNumbers{64}
-assert_eq!(12, res.value);
-```
+  ```rust showLineNumbers{37}
+  assert_eq!(0, res.value);
+  ```
 
 </Steps>
 
-#### Running tests
+`☕` Topics to cover
 
-To execute all test type in terminal:
+- `CounterInitMsg::Set{:rust}`
+
+(rest was explained in the previous test cases)
 
 ```shell copy filename="TERMINAL"
 cargo test
 ```
-
-The expected output should be similar to the one shown below, with both tests passing.
 
 ```ansi filename="OUTPUT"
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
@@ -456,10 +460,6 @@ test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok
 
 test result: [32;1mok[0m. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
-
-#### Code coverage
-
-To make sure that the entire `instantiate` entry-point is tested, let's run the code coverage:
 
 ```shell copy filename="TERMINAL"
 ./coverage.sh
@@ -526,9 +526,7 @@ To make sure that the entire `instantiate` entry-point is tested, let's run the 
 [0;30m }
 ```
 
-As expected, the `instantiate` entry-point is tested, including all accepted initialization
-messages. The `execute` entry-point still `[1;31mshines red{:ansi}`. Let's take care of it in the
-next test.
+`☕` Comment the coverage report
 
 ## Testing counter increment
 

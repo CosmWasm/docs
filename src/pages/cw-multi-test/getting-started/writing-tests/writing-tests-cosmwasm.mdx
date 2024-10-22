@@ -788,7 +788,11 @@ handling overflow during counter incrementation.
 
 ### Testing decrement by 1
 
-```rust copy showLineNumbers{134} filename="test_counter.rs"
+One of the message variants for the `execute` entry-point that hasn't been tested yet is
+`CounterExecMsg::Dec{:rust}`. The following test is similar to the one you wrote for testing counter
+incrementation, with changes in the highlighted lines:
+
+```rust copy {13,20,28} showLineNumbers{134} filename="test_counter.rs"
 #[test]
 fn decrementing_should_work() {
     let mut app = App::default();
@@ -820,12 +824,12 @@ fn decrementing_should_work() {
 }
 ```
 
-`☕` Topics to cover
+In line 146 the counter smart contract is initialized with the value 126, then in line 153 it is
+decremented and in line 161 it is asserted that the final value of the counter is 125.
 
-- initialization with 126
-- `CounterExecMsg::Dec{:rust}`
+#### Running tests
 
-(rest was explained in the previous test cases)
+The only way to confirm that the counter is properly decremented is by running all the tests:
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -844,6 +848,10 @@ test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
 test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
 
+#### Code coverage
+
+Run the code coverage script:
+
 ```shell copy filename="TERMINAL"
 ./coverage.sh
 ```
@@ -854,6 +862,8 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 ||
 94.44% coverage, 17/18 lines covered
 ```
+
+Check the code coverage report:
 
 ```ansi {38} showLineNumbers filename="CODE COVERAGE REPORT (CosmWasm version)"
 [0;30m #[cfg(not(feature = "library"))]
@@ -909,11 +919,16 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 [0;30m }
 ```
 
-`☕` Comment the coverage report
+As expected, processing the `CounterExecMsg::Dec{:rust}` message is already tested.
 
 ### Testing decrement underflow
 
-```rust copy showLineNumbers{164} filename="test_counter.rs"
+Similar to the incrementation overflow test, the following test checks for underflow during counter
+decrementation. The counter is initialized to 5, decremented 10 times, and the final value is
+asserted to be 0. This test passes without errors because the `u8` type in the smart contract is
+decremented using the `saturating_sub` function.
+
+```rust copy {13,20-28,35} showLineNumbers{164} filename="test_counter.rs"
 #[test]
 fn decrementing_should_stop_at_minimum() {
     let mut app = App::default();
@@ -952,17 +967,15 @@ fn decrementing_should_stop_at_minimum() {
 }
 ```
 
-`☕` Topics to cover
+#### Running tests
 
-- initialization with 5
-- multiple decrementation
-- handling underflow in the contract
-
-(rest was explained in the previous test cases)
+Like in previous examples, let's run all tests:
 
 ```shell copy filename="TERMINAL"
 cargo test
 ```
+
+All tests should pass:
 
 ```ansi filename="OUTPUT"
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
@@ -977,6 +990,10 @@ test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok
 
 test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
+
+#### Code coverage
+
+Run the code coverage script:
 
 ```shell copy filename="TERMINAL"
 ./coverage.sh
@@ -994,7 +1011,12 @@ tested: handling underflow during counter decrementation.
 
 ## Testing counter value changes
 
-```rust copy showLineNumbers{201} filename="test_counter.rs"
+The last red line in the test coverage report highlights the `CounterExecMsg::Set{:rust}` message in
+the `execute` entry-point. The test below sets the counter directly to 126 using the
+`CounterExecMsg::Set(126){:rust}` message. The final value of the counter is then asserted to
+be 126.
+
+```rust copy {13,20-21,28} showLineNumbers{201} filename="test_counter.rs"
 #[test]
 fn setting_value_should_work() {
     let mut app = App::default();
@@ -1026,15 +1048,15 @@ fn setting_value_should_work() {
 }
 ```
 
-`☕` Topics to cover
+#### Running tests
 
-- `CounterInitMsg::Set{:rust}`
-
-(rest was explained in the previous test cases)
+Let’s run the final tests:
 
 ```shell copy filename="TERMINAL"
 cargo test
 ```
+
+All tests should pass:
 
 ```ansi filename="OUTPUT"
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
@@ -1050,6 +1072,10 @@ test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
 
 test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 ```
+
+#### Code coverage
+
+Let's create the final code coverage report:
 
 ```shell copy filename="TERMINAL"
 ./coverage.sh
@@ -1118,7 +1144,8 @@ Nice, you have reached 💯% code coverage.
 [0;30m }
 ```
 
-All functionalities of the **counter** smart contract has been tested.
+All functionalities of the **counter** smart contract has been tested, the code coverage report
+`[1;32mshines green{:ansi}`.
 
 ## Test cases put all together
 
@@ -1359,7 +1386,11 @@ fn setting_value_should_work() {
 
 ## Summary
 
-`☕` Write summary
+In this chapter, you learned how to prepare (wrap) a smart contract for testing
+using \*_`MultiTest`_, how to structure effective test cases, and how to measure testing progress
+with code coverage reports. You also became familiar with the `cargo test` tool. We recommend trying
+to write tests for a smart contract built with the Sylvia framework to experience the differences
+between these two approaches.
 
 <Cards>
   <Card

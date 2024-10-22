@@ -2,7 +2,7 @@
 tags: ["multitest", "getting started", "tests", "CosmWasm"]
 ---
 
-import { Callout, Card, Cards } from "nextra/components";
+import { Callout, Card, Cards, Steps } from "nextra/components";
 
 [cargo-nextest]: https://nexte.st
 [cw-multi-test]: https://crates.io/crates/cw-multi-test
@@ -81,6 +81,11 @@ See also: [`Contract`](../../contract) [`ContractWrapper`](../../contract-wrappe
 
 ### Testing initialization with zero
 
+This first test verifies that the counter contract can be instantiated with an initial value of zero
+using the `CounterInitMsg::Zero{:rust}` message. It ensures that the contract correctly stores the
+initial value and that the query mechanism returns the expected counter value. It exemplifies a
+well-structured test with clear setup, execution, and validation steps.
+
 ```rust copy showLineNumbers{13} filename="test_counter.rs"
 #[test]
 fn instantiating_with_zero_should_work() {
@@ -109,6 +114,59 @@ fn instantiating_with_zero_should_work() {
     assert_eq!(0, res.value);
 }
 ```
+
+Let's take a closer look at this test's flow.
+
+<Steps>
+#### Chain initialization
+
+```rust showLineNumbers{15}
+let mut app = App::default();
+```
+
+#### Storing contract on chain
+
+```rust showLineNumbers{17}
+let code_id = app.store_code(counter_contract());
+```
+
+#### Defining the contract owner
+
+```rust showLineNumbers{19}
+let owner = "owner".into_addr();
+```
+
+#### Contract instantiation
+
+```rust showLineNumbers{21}
+let contract_addr = app
+    .instantiate_contract(
+        code_id,
+        owner,
+        &CounterInitMsg::Zero,
+        &[],
+        "counter-label",
+        None,
+  )
+  .unwrap();
+```
+
+#### Querying the contract
+
+```rust showLineNumbers{32}
+let res: CounterResponse = app
+    .wrap()
+    .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+    .unwrap();
+```
+
+#### Asserting the value
+
+```rust showLineNumbers{37}
+assert_eq!(0, res.value);
+```
+
+</Steps>
 
 `☕` Topics to cover
 

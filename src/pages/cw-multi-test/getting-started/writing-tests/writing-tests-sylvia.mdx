@@ -1,0 +1,921 @@
+---
+tags: ["multitest", "getting started", "tests", "CosmWasm"]
+---
+
+import { Callout, Card, Cards } from "nextra/components";
+
+# Writing tests in Sylvia
+
+As a reminder, the file structure of the **counter** project is shown below. In this chapter, we
+will be writing tests for this smart contract, which will be placed in a file named
+`test_counter.rs`, highlighted in **line 12**.
+
+```ansi {12} showLineNumbers filename="counter (directory)"
+[34;1m.[0m
+├── Cargo.toml
+├── [32;1mcoverage.sh[0m
+├── [34;1msrc[0m
+│   ├── contract.rs
+│   ├── lib.rs
+│   └── msg.rs
+└── [34;1mtests[0m
+    ├── mod.rs
+    └── [34;1mmultitest[0m
+        ├── mod.rs
+        └── test_counter.rs
+```
+
+<Callout emoji="🏃">
+  If you're in a hurry, you can find the [final version](#test-cases-put-all-together) of the
+  `test_counter.rs` file at the end of this chapter.
+</Callout>
+
+## Imports
+
+```rust copy showLineNumbers filename="test_counter.rs"
+use counter::contract::sv::mt::{CodeId, CounterContractProxy};
+use counter::msg::CounterInitMsg;
+use sylvia::cw_multi_test::IntoAddr;
+use sylvia::multitest::App;
+```
+
+`☕` Topics to cover
+
+## Testing counter initialization
+
+### Testing initialization with zero
+
+```rust copy showLineNumbers{6} filename="test_counter.rs"
+#[test]
+fn instantiating_with_zero_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(0, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+Having the first test ready, let's run it:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 1 test
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+```shell copy filename="TERMINAL"
+cargo nextest run
+```
+
+```ansi filename="OUTPUT"
+    [32;1mFinished[0m `test` profile [unoptimized + debuginfo] target(s) in 27.67s
+    [32;1mStarting[0m 1 test across 2 binaries (run ID: b2a72818-8d25-4194-9333-3af93c360132, nextest profile: default)
+        [32;1mPASS[0m [   0.004s] [38;5;134;1mcounter::mod[0m [38;5;73;1mmultitest::test_counter::[0m[38;5;39;1minstantiating_with_zero_should_work[0m
+------------
+     [32;1mSummary[0m [   0.004s] 1 test run: 1 [32;1mpassed[0m, 0 skipped
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 8/22
+||
+36.36% coverage, 8/22 lines covered
+```
+
+```ansi {24,30-33,35,39-42,44,48-50} showLineNumbers filename="CODE COVERAGE REPORT (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;32m     pub const fn new() -> Self {
+[0;30m         Self {
+[1;32m             count: Item::new("count"),
+[0;30m         }
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;32m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;32m         match msg {
+[1;32m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;31m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[0;30m         }
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_add(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_sub(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;31m         self.count.save(ctx.deps.storage, &value)?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;32m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;32m         let value = self.count.load(ctx.deps.storage)?;
+[0;30m         Ok(CounterResponse { value })
+[0;30m     }
+[0;30m }
+```
+
+`☕` Comment the coverage report
+
+### Testing initialization with a specific value
+
+```rust copy showLineNumbers{22} filename="test_counter.rs"
+#[test]
+fn instantiating_with_value_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(12))
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(12, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 2 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 9/22
+||
+40.91% coverage, 9/22 lines covered
+```
+
+```ansi {30-33,35,39-42,44,48-50} showLineNumbers filename="CODE COVERAGE REPORT (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;32m     pub const fn new() -> Self {
+[0;30m         Self {
+[1;32m             count: Item::new("count"),
+[0;30m         }
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;32m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;32m         match msg {
+[1;32m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;32m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[0;30m         }
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_add(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_sub(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;31m         self.count.save(ctx.deps.storage, &value)?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;32m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;32m         let value = self.count.load(ctx.deps.storage)?;
+[0;30m         Ok(CounterResponse { value })
+[0;30m     }
+[0;30m }
+```
+
+`☕` Comment the coverage report
+
+## Testing counter increment
+
+### Testing increment by 1
+
+```rust copy showLineNumbers{38} filename="test_counter.rs"
+#[test]
+fn incrementing_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    contract.inc().call(&owner).unwrap();
+
+    assert_eq!(1, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 3 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 14/22
+||
+63.64% coverage, 14/22 lines covered
+```
+
+```ansi {39-42,44,48-50} showLineNumbers filename="CODE COVERAGE REPORT (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;32m     pub const fn new() -> Self {
+[0;30m         Self {
+[1;32m             count: Item::new("count"),
+[0;30m         }
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;32m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;32m         match msg {
+[1;32m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;32m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[0;30m         }
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;32m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;32m         self.count
+[1;32m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;32m                 Ok(count.saturating_add(1))
+[0;30m             })?;
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;31m         self.count
+[1;31m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;31m                 Ok(count.saturating_sub(1))
+[0;30m             })?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;31m         self.count.save(ctx.deps.storage, &value)?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;32m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;32m         let value = self.count.load(ctx.deps.storage)?;
+[0;30m         Ok(CounterResponse { value })
+[0;30m     }
+[0;30m }
+```
+
+`☕` Comment the coverage report
+
+### Testing increment overflow
+
+```rust copy showLineNumbers{56} filename="test_counter.rs"
+#[test]
+fn incrementing_should_stop_at_maximum() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(250))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.inc().call(&owner).unwrap();
+    }
+
+    assert_eq!(255, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 4 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 14/22
+||
+63.64% coverage, 14/22 lines covered
+```
+
+The code coverage did not change after adding this test case, but a very important use case was
+tested: handling overflow during counter incrementation.
+
+## Testing counter decrement
+
+### Testing decrement by 1
+
+```rust copy showLineNumbers{76} filename="test_counter.rs"
+#[test]
+fn decrementing_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(126))
+        .call(&owner)
+        .unwrap();
+
+    contract.dec().call(&owner).unwrap();
+
+    assert_eq!(125, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 5 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 19/22
+||
+86.36% coverage, 19/22 lines covered
+```
+
+```ansi {48-50} showLineNumbers filename="CODE COVERAGE REPORT (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;32m     pub const fn new() -> Self {
+[0;30m         Self {
+[1;32m             count: Item::new("count"),
+[0;30m         }
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;32m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;32m         match msg {
+[1;32m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;32m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[0;30m         }
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;32m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;32m         self.count
+[1;32m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;32m                 Ok(count.saturating_add(1))
+[0;30m             })?;
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;32m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;32m         self.count
+[1;32m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;32m                 Ok(count.saturating_sub(1))
+[0;30m             })?;
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;31m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;31m         self.count.save(ctx.deps.storage, &value)?;
+[1;31m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;32m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;32m         let value = self.count.load(ctx.deps.storage)?;
+[0;30m         Ok(CounterResponse { value })
+[0;30m     }
+[0;30m }
+```
+
+`☕` Comment the coverage report
+
+### Testing decrement underflow
+
+```rust copy showLineNumbers{94} filename="test_counter.rs"
+#[test]
+fn decrementing_should_stop_at_minimum() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.dec().call(&owner).unwrap();
+    }
+
+    assert_eq!(0, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 6 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 19/22
+||
+86.36% coverage, 19/22 lines covered
+```
+
+The code coverage did not change after adding this test case, but a very important use case was
+tested: handling underflow during counter decrementation.
+
+## Testing counter value changes
+
+```rust copy showLineNumbers{114} filename="test_counter.rs"
+#[test]
+fn setting_value_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    contract.set(125).call(&owner).unwrap();
+
+    assert_eq!(125, contract.value().unwrap().value);
+}
+```
+
+`☕` Topics to cover
+
+#### Running tests
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
+
+running 7 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 22/22
+||
+100.00% coverage, 22/22 lines covered
+```
+
+Nice, you have reached 💯% code coverage.
+
+```ansi showLineNumbers filename="CODE COVERAGE REPORT (Sylvia version)"
+[0;30m use crate::msg::{CounterInitMsg, CounterResponse};
+[0;30m use cosmwasm_std::{Response, StdResult};
+[0;30m use cw_storage_plus::Item;
+[0;30m use sylvia::contract;
+[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m
+[0;30m pub struct CounterContract {
+[0;30m     pub count: Item<u8>,
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+[0;30m #[contract]
+[0;30m impl CounterContract {
+[1;32m     pub const fn new() -> Self {
+[0;30m         Self {
+[1;32m             count: Item::new("count"),
+[0;30m         }
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(instantiate)]
+[1;32m     fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+[1;32m         match msg {
+[1;32m             CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+[1;32m             CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+[0;30m         }
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;32m     fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;32m         self.count
+[1;32m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;32m                 Ok(count.saturating_add(1))
+[0;30m             })?;
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;32m     fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+[1;32m         self.count
+[1;32m             .update(ctx.deps.storage, |count| -> StdResult<u8> {
+[1;32m                 Ok(count.saturating_sub(1))
+[0;30m             })?;
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(exec)]
+[1;32m     fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+[1;32m         self.count.save(ctx.deps.storage, &value)?;
+[1;32m         Ok(Response::new())
+[0;30m     }
+[0;30m
+[0;30m     #[sv::msg(query)]
+[1;32m     fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+[1;32m         let value = self.count.load(ctx.deps.storage)?;
+[0;30m         Ok(CounterResponse { value })
+[0;30m     }
+[0;30m }
+```
+
+All functionalities of the **counter** smart contract has been tested.
+
+## Test cases put all together
+
+Below is the final version of the `test_counter.rs` file, containing all previously presented test
+cases for the **counter** smart contract written using the Sylvia framework.
+
+```rust copy showLineNumbers filename="test_counter.rs"
+use counter::contract::sv::mt::{CodeId, CounterContractProxy};
+use counter::msg::CounterInitMsg;
+use sylvia::cw_multi_test::IntoAddr;
+use sylvia::multitest::App;
+
+#[test]
+fn instantiating_with_zero_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(0, contract.value().unwrap().value);
+}
+
+#[test]
+fn instantiating_with_value_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(12))
+        .call(&owner)
+        .unwrap();
+
+    assert_eq!(12, contract.value().unwrap().value);
+}
+
+#[test]
+fn incrementing_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Zero)
+        .call(&owner)
+        .unwrap();
+
+    contract.inc().call(&owner).unwrap();
+
+    assert_eq!(1, contract.value().unwrap().value);
+}
+
+#[test]
+fn incrementing_should_stop_at_maximum() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(250))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.inc().call(&owner).unwrap();
+    }
+
+    assert_eq!(255, contract.value().unwrap().value);
+}
+
+#[test]
+fn decrementing_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(126))
+        .call(&owner)
+        .unwrap();
+
+    contract.dec().call(&owner).unwrap();
+
+    assert_eq!(125, contract.value().unwrap().value);
+}
+
+#[test]
+fn decrementing_should_stop_at_minimum() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    for _ in 1..=10 {
+        contract.dec().call(&owner).unwrap();
+    }
+
+    assert_eq!(0, contract.value().unwrap().value);
+}
+
+#[test]
+fn setting_value_should_work() {
+    let app = App::default();
+
+    let code_id = CodeId::store_code(&app);
+
+    let owner = "owner".into_addr();
+
+    let contract = code_id
+        .instantiate(CounterInitMsg::Set(5))
+        .call(&owner)
+        .unwrap();
+
+    contract.set(125).call(&owner).unwrap();
+
+    assert_eq!(125, contract.value().unwrap().value);
+}
+```
+
+## Summary
+
+`☕` Write summary
+
+<Cards>
+  <Card
+    title="Writing tests for counter smart contract written using pure CosmWasm libraries"
+    href="writing-tests/writing-tests-cosmwasm"
+    icon=""
+    children=""
+  />
+</Cards>

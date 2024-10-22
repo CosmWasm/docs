@@ -1,0 +1,1400 @@
+---
+tags: ["multitest", "getting started", "tests", "CosmWasm"]
+---
+
+import { Callout, Card, Cards, Steps } from "nextra/components";
+
+[cargo-nextest]: https://nexte.st
+[cw-multi-test]: https://crates.io/crates/cw-multi-test
+
+# Writing tests in CosmWasm
+
+As a reminder, the file structure of the **counter** project is shown below. In this chapter, you
+will write tests for this smart contract, which should be placed in a file named `test_counter.rs`,
+as highlighted on line 12.
+
+```ansi {12} showLineNumbers filename="counter (directory)"
+[34;1m.[0m
+├── Cargo.toml
+├── [32;1mcoverage.sh[0m
+├── [34;1msrc[0m
+│   ├── contract.rs
+│   ├── lib.rs
+│   └── msg.rs
+└── [34;1mtests[0m
+    ├── mod.rs
+    └── [34;1mmultitest[0m
+        ├── mod.rs
+        └── test_counter.rs
+```
+
+<Callout emoji="🏃">
+  If you're in a hurry, you can find the [final version](#test-cases-put-all-together) of the
+  `test_counter.rs` file at the end of this chapter.
+</Callout>
+
+## Imports
+
+At the beginning of the `test_counter.rs` file, the necessary imports for implementing all test
+cases are included.
+
+The `cosmwasm_std` library is used to import only the `Empty` type, which serves as a placeholder
+for messages that do not carry any additional data.
+
+Additionally, all message types from the counter smart contract are imported. These include
+initialization (`CounterInitMsg{:rust}`), execution (`CounterExecMsg{:rust}`), and query
+(`CounterQueryMsg{:rust}`) messages, as well as the query response (`CounterResponse{:rust}`), which
+are essential for interacting with and verifying the state of the contract during testing.
+
+Finally, basic utilities from **`MultiTest`** (the [cw-multi-test] crate) are imported. These tools
+allow you to set up a blockchain simulator, execute contract messages and test interactions.
+
+Just copy and paste the code presented below to your `test_counter.rs` file:
+
+```rust copy showLineNumbers{1} filename="test_counter.rs"
+use cosmwasm_std::Empty;
+use counter::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+use cw_multi_test::{App, Contract, ContractWrapper, Executor, IntoAddr};
+```
+
+## Wrapping the contact
+
+```rust copy showLineNumbers{5} filename="test_counter.rs"
+fn counter_contract() -> Box<dyn Contract<Empty>> {
+    Box::new(ContractWrapper::new_with_empty(
+        counter::contract::execute,
+        counter::contract::instantiate,
+        counter::contract::query,
+    ))
+}
+```
+
+The function `counter_contract` presented above is a boilerplate that wraps the contract's entry
+points (`instantiate`, `execute`, `query`) in a standard way, making the contract compatible with
+the `Contract` trait. This allows it to be easily stored or interacted with in a **`MultiTest`**
+blockchain simulation environment. Whenever you want to test your smart contract using
+**`MultiTest`**, the first step is to wrap it in this manner.
+
+## Testing counter initialization
+
+### Testing initialization with zero
+
+This first test verifies that the counter contract can be instantiated with an initial value of zero
+using the `CounterInitMsg::Zero{:rust}` message. It ensures that the contract correctly stores the
+initial value and that the query mechanism returns the expected counter value. It exemplifies a
+well-structured test with clear setup, execution, and validation steps.
+
+```rust copy showLineNumbers{13} filename="test_counter.rs"
+#[test]
+fn instantiating_with_zero_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner,
+            &CounterInitMsg::Zero,
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(0, res.value);
+}
+```
+
+Let's take a closer look at this test's flow.
+
+<Steps>
+#### Chain initialization
+
+Creating an instance of the `App{:rust}` simulates running a blockchain. There are multiple ways to
+instantiate the `App{:rust}`, but the simplest method, shown below, uses the `default{:rust}`
+function.
+
+```rust showLineNumbers{15} filename="test_counter.rs"
+let mut app = App::default();
+```
+
+#### Storing contract on chain
+
+The next step is to store the contract code on the chain. The `App{:rust}` provides a
+`store_code{:rust}` function for this purpose. Instead of a WASM binary, as in a real blockchain, a
+wrapped contract is passed to this function. `store_code{:rust}` returns the identifier of the
+contract code assigned to `code_id{:rust}`. This `code_id{:rust}` is used to reference the stored
+contract code later in test.
+
+```rust showLineNumbers{17} filename="test_counter.rs"
+let code_id = app.store_code(counter_contract());
+```
+
+#### Defining the contract owner
+
+Every instance of the contract has an owner represented as an address. In this test the string
+`"owner"{:rust}` is converted to Bech32 address recognized by the blockchain.
+
+```rust showLineNumbers{19} filename="test_counter.rs"
+let owner = "owner".into_addr();
+```
+
+#### Contract instantiation
+
+The contract is instantiated using `instantiate_contract` provided by `App{:rust}` with the
+following parameters:
+
+- **`code_id{:rust}`** the identifier for the stored contract code,
+- **`owner{:rust}`** the owner address of the contract instance,
+- **`&CounterInitMsg::Zero{:rust}`** initialization message, that sets the counter's initial value
+  to zero,
+- **`&[]{:rust}`** no funds are sent to the contract during initialization,
+- **`"counter-label"{:rust}`** a label for the contract instance,
+- **`None{:rust}`** no admin permissions.
+
+The `unwrap(){:rust}` function is used to handle the result of instantiating the contract, ensuring
+the test fails if an error occurs. `instantiate_contract{:rust}` function returns the address of the
+contract instance referenced later in this test.
+
+```rust showLineNumbers{21} filename="test_counter.rs"
+let contract_addr = app
+    .instantiate_contract(
+        code_id,
+        owner,
+        &CounterInitMsg::Zero,
+        &[],
+        "counter-label",
+        None,
+  )
+  .unwrap();
+```
+
+#### Querying the contract
+
+After the contract is instantiated, this test queries it using `query_wasm_smart` function with a
+message `CounterQueryMsg::Value{:rust}`, which is expected to return the current value of the
+counter. The result is unwrapped into a `CounterResponse{:rust}` object. The instance of the
+contract that is queried depends on the address obtained during instantiation in the previous step.
+
+```rust showLineNumbers{32} filename="test_counter.rs"
+let res: CounterResponse = app
+    .wrap()
+    .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+    .unwrap();
+```
+
+#### Asserting the value
+
+The final step of this test asserts that the value returned by the contract is `0{:rust}`. If the
+value is not zero, the test will fail.
+
+```rust showLineNumbers{37} filename="test_counter.rs"
+assert_eq!(0, res.value);
+```
+
+</Steps>
+
+#### Running tests
+
+Now it's time to execute the first test:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+The expected output should look like the example shown below. Note that only the results of
+integration tests are shown. For brevity, the results of unit tests and documentation tests are
+omitted, as we are focusing only on integration tests in this example.
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 1 test
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+Now, let's run all tests with [cargo-nextest]():
+
+```shell copy filename="TERMINAL"
+cargo nextest run
+```
+
+Similarly, one test passes:
+
+```ansi filename="OUTPUT"
+    [32;1mFinished[0m `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+    [32;1mStarting[0m 1 test across 2 binaries (run ID: bfc0013c-eb8e-447c-8027-a7c2b8c5cb80, nextest profile: default)
+        [32;1mPASS[0m [   0.005s] [38;5;134;1mcounter::mod[0m [38;5;73;1mmultitest::test_counter::[0m[38;5;39;1minstantiating_with_zero_should_work[0m
+------------
+     [32;1mSummary[0m [   0.005s] 1 test run: 1 [32;1mpassed[0m, 0 skipped
+```
+
+<Callout type="info" emoji="☉">
+  For brevity, in the upcoming test cases in this chapter, we will skip running tests using
+  [cargo-nextest]. However, you can always run all tests by typing `cargo nextest run`.
+</Callout>
+
+#### Code coverage
+
+Let's check the code coverage after adding the first test:
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 10/18
+||
+55.56% coverage, 10/18 lines covered
+```
+
+Our first test case covered over 50% of the code in the **counter** smart contract. The detailed
+code coverage report (similar to the one generated by Tarpaulin) is attached below.
+
+```ansi {21,28,34-38,41} showLineNumbers filename="CODE COVERAGE REPORT (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn instantiate(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterInitMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.save(
+[1;32m         deps.storage,
+[1;32m         &match msg {
+[1;32m             CounterInitMsg::Zero => 0,
+[1;31m             CounterInitMsg::Set(new_value) => new_value,
+[0;30m         },
+[0;30m     )?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;31m pub fn execute(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterExecMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;31m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;31m         Ok(match msg {
+[1;31m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;31m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;31m             CounterExecMsg::Set(new_value) => new_value,
+[0;30m         })
+[0;30m     })?;
+[1;31m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;32m     match msg {
+[1;32m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;32m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[0;30m         })?),
+[0;30m     }
+[0;30m }
+```
+
+The code coverage report reflects exactly the scope of the first test. The `instantiate` and `query`
+entry-points of the contract were called. There is one more message variant (line 21) to be tested
+during contract instantiation and this will be covered in the next test. The `execute` entry-point
+was not called in test and still `[1;31mshines red{:ansi}` in this report.
+
+### Testing initialization with a specific value
+
+The second test verifies the initialization of the **counter** contract using a specific value that
+must be in range 0..255, let say **12**. It's done using `CounterInitMsg::Set{:rust}` message.
+
+The second test verifies the initialization of the **counter** contract with a specific value that
+must be in range 0..255, such as **12**. This is done using the `CounterInitMsg::Set(12){:rust}`
+message.
+
+```rust copy showLineNumbers{40} filename="test_counter.rs"
+#[test]
+fn instantiating_with_value_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner,
+            &CounterInitMsg::Set(12),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(12, res.value);
+}
+```
+
+Except for the message used to instantiate the contract and the value assertion, all steps in this
+test are the same as in the previous one, but let's summarize them shortly:
+
+<Steps>
+#### Chain initialization
+
+The `App{:rust}` is created using the `default{:rust}` function.
+
+```rust showLineNumbers{42} filename="test_counter.rs"
+let mut app = App::default();
+```
+
+#### Storing contract on chain
+
+Contract code is stored on chain using `store_code{:rust}` function provided by `App{:rust}`.
+`code_id{:rust}` is saved for later use.
+
+```rust showLineNumbers{44} filename="test_counter.rs"
+let code_id = app.store_code(counter_contract());
+```
+
+#### Defining the contract owner
+
+The `owner{:rust}` variable is assigned an address of the contract instance's owner.
+
+```rust showLineNumbers{46} filename="test_counter.rs"
+let owner = "owner".into_addr();
+```
+
+#### Contract instantiation
+
+This time the contract is instantiated using `CounterInitMsg::Zero{:rust}` message passed to
+`instantiate_contract{:rust}` function provided by `App{:rust}`:
+
+- **`code_id{:rust}`** the identifier for the stored contract code,
+- **`owner{:rust}`** the owner address of the contract instance,
+- **`&CounterInitMsg::Set(12){:rust}`** initialization message, that sets the counter's initial
+  value to **12**,
+- **`&[]{:rust}`** no funds are sent to the contract during initialization,
+- **`"counter-label"{:rust}`** a label for the contract instance,
+- **`None{:rust}`** no admin permissions.
+
+```rust showLineNumbers{48} filename="test_counter.rs"
+let contract_addr = app
+    .instantiate_contract(
+      code_id,
+      owner,
+      &CounterInitMsg::Set(12),
+      &[],
+      "counter-label",
+      None,
+    )
+    .unwrap();
+```
+
+#### Querying the contract
+
+Like in the previous test the contract is queried to retrieve the current value of the counter.
+
+```rust showLineNumbers{59} filename="test_counter.rs"
+let res: CounterResponse = app
+    .wrap()
+    .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+    .unwrap();
+```
+
+#### Asserting the value
+
+The expected value of the counter should be **12**.
+
+```rust showLineNumbers{64} filename="test_counter.rs"
+assert_eq!(12, res.value);
+```
+
+</Steps>
+
+#### Running tests
+
+To execute all test type in terminal:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+The expected output should be similar to the one shown below, with both tests passing.
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 2 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+To make sure that the entire `instantiate` entry-point is tested, let's run the code coverage:
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 11/18
+||
+61.11% coverage, 11/18 lines covered
+```
+
+The detailed code coverage report (similar to the one generated by Tarpaulin) is shown below:
+
+```ansi {28,34-38,41} showLineNumbers filename="CODE COVERAGE REPORT (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn instantiate(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterInitMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.save(
+[1;32m         deps.storage,
+[1;32m         &match msg {
+[1;32m             CounterInitMsg::Zero => 0,
+[1;32m             CounterInitMsg::Set(new_value) => new_value,
+[0;30m         },
+[0;30m     )?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;31m pub fn execute(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterExecMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;31m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;31m         Ok(match msg {
+[1;31m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;31m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;31m             CounterExecMsg::Set(new_value) => new_value,
+[0;30m         })
+[0;30m     })?;
+[1;31m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;32m     match msg {
+[1;32m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;32m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[0;30m         })?),
+[0;30m     }
+[0;30m }
+```
+
+As expected, the `instantiate` entry-point is fully tested, including all accepted initialization
+messages. However, the `execute` entry-point still `[1;31mshines red{:ansi}`. Let's address that in
+the next test.
+
+## Testing counter increment
+
+### Testing increment by 1
+
+In this test, the contract is instantiated with an initial value of zero, similar to the first test.
+However, this time, an increment action is performed by invoking the contract's `execute` entrypoint
+with the `CounterExecMsg::Inc{:rust}` message. This action is expected to increment the counter
+by 1. Finally, the counter's value is queried to confirm that it has been correctly incremented and
+now holds the value 1.
+
+```rust copy showLineNumbers{67} filename="test_counter.rs"
+#[test]
+fn incrementing_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Zero,
+            &[],
+            "counter-contract",
+            None,
+        )
+        .unwrap();
+
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Inc, &[])
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(1, res.value);
+}
+```
+
+You should already be familiar with the flow of this test; the only difference from the previous
+examples is the additional step of invoking the `execute` entrypoint.
+
+<Steps>
+#### Executing the increment action
+
+```rust showLineNumbers{86} filename="test_counter.rs"
+app.execute_contract(owner, contract_addr.clone(), &CounterActionMsg::Inc, &[])
+    .unwrap();
+```
+
+The `execute` entrypoint of the contract is evaluated by calling the `execute_contract{:rust}`
+function provided by `App{:rust}` with the following arguments:
+
+- **`owner{:rust}`** the owner address of the contract instance,
+- **`contract_addr{:rust}`** address of the contract instance the message will be executed on,
+- **`&CounterExecMsg::Inc{:rust}`** message to be executed, that increments the counter's value by
+  1,
+- **`&[]{:rust}`** no funds are sent to the contract during message execution.
+
+</Steps>
+
+#### Running tests
+
+Let's execute all tests by typing in the terminal:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+All 3 tests should pass:
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 3 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+Like in the previous examples let's run the code coverage script:
+
+```shell copy copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 16/18
+||
+88.89% coverage, 16/18 lines covered
+```
+
+The code coverage report (similar to the one generated by Tarpaulin):
+
+```ansi {37-38} showLineNumbers filename="CODE COVERAGE REPORT (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn instantiate(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterInitMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.save(
+[1;32m         deps.storage,
+[1;32m         &match msg {
+[1;32m             CounterInitMsg::Zero => 0,
+[1;32m             CounterInitMsg::Set(new_value) => new_value,
+[0;30m         },
+[0;30m     )?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn execute(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterExecMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;32m         Ok(match msg {
+[1;32m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;31m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;31m             CounterExecMsg::Set(new_value) => new_value,
+[0;30m         })
+[0;30m     })?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;32m     match msg {
+[1;32m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;32m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[0;30m         })?),
+[0;30m     }
+[0;30m }
+```
+
+As expected, the `execute` entry-point of the smart contract was called, and the
+`CounterExecMsg::Inc{:rust}` message was processed. Notice that there are two additional message
+variants that still need to be tested for this entry-point. However, before that, let's address the
+issue of the counter overflow during incrementation.
+
+### Testing increment overflow
+
+When you recall the **counter** smart contract specification, you will notice that the counter value
+is of type `u8`, which means that the maximum value this counter can hold is 255. What happens when
+you increment the counter beyond 255? The following test initializes the counter with value 250 and
+then increments it 10 times by calling the `execute` entry-point.
+
+```rust copy {20-28} showLineNumbers{97} filename="test_counter.rs"
+#[test]
+fn incrementing_should_stop_at_maximum() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(250),
+            &[],
+            "counter",
+            None,
+        )
+        .unwrap();
+
+    for _ in 1..=10 {
+        app.execute_contract(
+            owner.clone(),
+            contract_addr.clone(),
+            &CounterExecMsg::Inc,
+            &[],
+        )
+        .unwrap();
+    }
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(255, res.value);
+}
+```
+
+In the highlighted lines 116 to 124, the loop is executed 10 times, after which the counter value is
+queried and asserted to be 255. As you will see, this test will pass, indicating that the counter
+stops incrementing once it reaches 255. This happens because the counter is incremented using the
+`saturating_add{:rust}` function on the `u8` type.
+
+As an exercise, modify this test by initializing the counter to zero and incrementing it, say, 1000
+times. This will demonstrate how quick and simple it is to test boundary values on constrained types
+using **`MultiTest`**.
+
+#### Running tests
+
+Make sure all tests pass:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 4 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 16/18
+||
+88.89% coverage, 16/18 lines covered
+```
+
+The code coverage did not change after adding this test, but a very important use case was tested:
+handling overflow during counter incrementation.
+
+## Testing counter decrement
+
+### Testing decrement by 1
+
+One of the message variants for the `execute` entry-point that hasn't been tested yet is
+`CounterExecMsg::Dec{:rust}`. The following test is similar to the one you wrote for testing counter
+incrementation, with changes in the highlighted lines:
+
+```rust copy {13,20,28} showLineNumbers{134} filename="test_counter.rs"
+#[test]
+fn decrementing_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(126),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Dec, &[])
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(125, res.value);
+}
+```
+
+In line 146 the counter smart contract is initialized with the value 126, then in line 153 it is
+decremented and in line 161 it is asserted that the final value of the counter is 125.
+
+#### Running tests
+
+The only way to confirm that the counter is properly decremented is by running all the tests:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 5 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+Run the code coverage script:
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 17/18
+||
+94.44% coverage, 17/18 lines covered
+```
+
+Check the code coverage report:
+
+```ansi {38} showLineNumbers filename="CODE COVERAGE REPORT (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn instantiate(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterInitMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.save(
+[1;32m         deps.storage,
+[1;32m         &match msg {
+[1;32m             CounterInitMsg::Zero => 0,
+[1;32m             CounterInitMsg::Set(new_value) => new_value,
+[0;30m         },
+[0;30m     )?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn execute(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterExecMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;32m         Ok(match msg {
+[1;32m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;32m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;31m             CounterExecMsg::Set(new_value) => new_value,
+[0;30m         })
+[0;30m     })?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;32m     match msg {
+[1;32m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;32m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[0;30m         })?),
+[0;30m     }
+[0;30m }
+```
+
+As expected, processing the `CounterExecMsg::Dec{:rust}` message is already tested.
+
+### Testing decrement underflow
+
+Similar to the incrementation overflow test, the following test checks for underflow during counter
+decrementation. The counter is initialized to 5, decremented 10 times, and the final value is
+asserted to be 0. This test passes without errors because the `u8` type in the smart contract is
+decremented using the `saturating_sub` function.
+
+```rust copy {13,20-28,35} showLineNumbers{164} filename="test_counter.rs"
+#[test]
+fn decrementing_should_stop_at_minimum() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(5),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    for _ in 1..=10 {
+        app.execute_contract(
+            owner.clone(),
+            contract_addr.clone(),
+            &CounterExecMsg::Dec,
+            &[],
+        )
+        .unwrap();
+    }
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(0, res.value);
+}
+```
+
+#### Running tests
+
+Like in previous examples, let's run all tests:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+All tests should pass:
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 6 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+
+test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+Run the code coverage script:
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 17/18
+||
+94.44% coverage, 17/18 lines covered
+```
+
+The code coverage did not change after adding this test case, but a very important use case was
+tested: handling underflow during counter decrementation.
+
+## Testing counter value changes
+
+The last red line in the test coverage report highlights the `CounterExecMsg::Set{:rust}` message in
+the `execute` entry-point. The test below sets the counter directly to 126 using the
+`CounterExecMsg::Set(126){:rust}` message. The final value of the counter is then asserted to
+be 126.
+
+```rust copy {13,20-21,28} showLineNumbers{201} filename="test_counter.rs"
+#[test]
+fn setting_value_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(5),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Set(126), &[])
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(126, res.value);
+}
+```
+
+#### Running tests
+
+Let’s run the final tests:
+
+```shell copy filename="TERMINAL"
+cargo test
+```
+
+All tests should pass:
+
+```ansi filename="OUTPUT"
+     [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-319eb78408f3e46f)
+
+running 7 tests
+test multitest::test_counter::instantiating_with_zero_should_work ... [32;1mok[0m
+test multitest::test_counter::instantiating_with_value_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::incrementing_should_stop_at_maximum ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_work ... [32;1mok[0m
+test multitest::test_counter::decrementing_should_stop_at_minimum ... [32;1mok[0m
+test multitest::test_counter::setting_value_should_work ... [32;1mok[0m
+
+test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+```
+
+#### Code coverage
+
+Let's create the final code coverage report:
+
+```shell copy filename="TERMINAL"
+./coverage.sh
+```
+
+```ansi filename="OUTPUT"
+|| Tested/Total Lines:
+|| src/contract.rs: 18/18
+||
+100.00% coverage, 18/18 lines covered
+```
+
+Nice, you have reached 💯% code coverage.
+
+```ansi showLineNumbers filename="CODE COVERAGE REPORT (CosmWasm version)"
+[0;30m #[cfg(not(feature = "library"))]
+[0;30m use cosmwasm_std::entry_point;
+[0;30m
+[0;30m use crate::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+[0;30m use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError};
+[0;30m use cw_storage_plus::Item;
+[0;30m
+[0;30m const COUNTER: Item<u8> = Item::new("value");
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn instantiate(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterInitMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.save(
+[1;32m         deps.storage,
+[1;32m         &match msg {
+[1;32m             CounterInitMsg::Zero => 0,
+[1;32m             CounterInitMsg::Set(new_value) => new_value,
+[0;30m         },
+[0;30m     )?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn execute(
+[0;30m     deps: DepsMut,
+[0;30m     _env: Env,
+[0;30m     _info: MessageInfo,
+[0;30m     msg: CounterExecMsg,
+[0;30m ) -> Result<Response, StdError> {
+[1;32m     COUNTER.update::<_, StdError>(deps.storage, |old_value| {
+[1;32m         Ok(match msg {
+[1;32m             CounterExecMsg::Inc => old_value.saturating_add(1),
+[1;32m             CounterExecMsg::Dec => old_value.saturating_sub(1),
+[1;32m             CounterExecMsg::Set(new_value) => new_value,
+[0;30m         })
+[0;30m     })?;
+[1;32m     Ok(Response::default())
+[0;30m }
+[0;30m
+[0;30m #[cfg_attr(not(feature = "library"), entry_point)]
+[1;32m pub fn query(deps: Deps, _env: Env, msg: CounterQueryMsg) -> Result<Binary, StdError> {
+[1;32m     match msg {
+[1;32m         CounterQueryMsg::Value => Ok(to_json_binary(&CounterResponse {
+[1;32m             value: COUNTER.may_load(deps.storage)?.unwrap(),
+[0;30m         })?),
+[0;30m     }
+[0;30m }
+```
+
+All functionalities of the **counter** smart contract has been tested, the code coverage report
+`[1;32mshines green{:ansi}`.
+
+## Test cases put all together
+
+Below is the final version of the `test_counter.rs` file, containing all previously presented test
+cases for the **counter** smart contract written using pure CosmWasm libraries.
+
+```rust copy showLineNumbers filename="test_counter.rs"
+use cosmwasm_std::Empty;
+use counter::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterResponse};
+use cw_multi_test::{App, Contract, ContractWrapper, Executor, IntoAddr};
+
+fn counter_contract() -> Box<dyn Contract<Empty>> {
+    Box::new(ContractWrapper::new_with_empty(
+        counter::contract::execute,
+        counter::contract::instantiate,
+        counter::contract::query,
+    ))
+}
+
+#[test]
+fn instantiating_with_zero_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner,
+            &CounterInitMsg::Zero,
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(0, res.value);
+}
+
+#[test]
+fn instantiating_with_value_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner,
+            &CounterInitMsg::Set(12),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(12, res.value);
+}
+
+#[test]
+fn incrementing_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Zero,
+            &[],
+            "counter-contract",
+            None,
+        )
+        .unwrap();
+
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Inc, &[])
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(1, res.value);
+}
+
+#[test]
+fn incrementing_should_stop_at_maximum() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(250),
+            &[],
+            "counter",
+            None,
+        )
+        .unwrap();
+
+    for _ in 1..=10 {
+        app.execute_contract(
+            owner.clone(),
+            contract_addr.clone(),
+            &CounterExecMsg::Inc,
+            &[],
+        )
+        .unwrap();
+    }
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(255, res.value);
+}
+
+#[test]
+fn decrementing_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(126),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Dec, &[])
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(125, res.value);
+}
+
+#[test]
+fn decrementing_should_stop_at_minimum() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(5),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    for _ in 1..=10 {
+        app.execute_contract(
+            owner.clone(),
+            contract_addr.clone(),
+            &CounterExecMsg::Dec,
+            &[],
+        )
+        .unwrap();
+    }
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(0, res.value);
+}
+
+#[test]
+fn setting_value_should_work() {
+    let mut app = App::default();
+
+    let code_id = app.store_code(counter_contract());
+
+    let owner = "owner".into_addr();
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            owner.clone(),
+            &CounterInitMsg::Set(5),
+            &[],
+            "counter-label",
+            None,
+        )
+        .unwrap();
+
+    app.execute_contract(owner, contract_addr.clone(), &CounterExecMsg::Set(126), &[])
+        .unwrap();
+
+    let res: CounterResponse = app
+        .wrap()
+        .query_wasm_smart(contract_addr, &CounterQueryMsg::Value)
+        .unwrap();
+
+    assert_eq!(126, res.value);
+}
+```
+
+## Summary
+
+In this chapter, you learned how to prepare (wrap) a smart contract for testing using
+**`MultiTest`**, how to structure effective test cases, and how to measure testing progress with
+code coverage reports. You also became familiar with the `cargo test` tool. We recommend trying to
+write tests for a smart contract built with the Sylvia framework to experience the differences
+between these two approaches.
+
+<Cards>
+  <Card
+    title="Writing tests for counter smart contract written using the Sylvia framework"
+    href="writing-tests-sylvia"
+    icon=""
+    children=""
+  />
+</Cards>

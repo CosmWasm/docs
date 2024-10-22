@@ -118,7 +118,7 @@ fn instantiating_with_zero_should_work() {
 Let's take a closer look at this test's flow.
 
 <Steps>
-  #### Chain initialization
+#### Chain initialization
 
 Creating an instance of the `App{:rust}` simulates running a blockchain. There are multiple ways to
 instantiate the `App{:rust}`, but the simplest method, shown below, uses the `default{:rust}`
@@ -365,7 +365,7 @@ Except for the message used to instantiate the contract and the value assertion,
 test are the same as in the previous one, but let's summarize them shortly:
 
 <Steps>
-  #### Chain initialization
+#### Chain initialization
 
 The `App{:rust}` is created using the `default{:rust}` function.
 
@@ -578,7 +578,7 @@ You should already be familiar with the flow of this test; the only difference f
 examples is the additional step of invoking the `execute` entrypoint.
 
 <Steps>
-  #### Executing the increment action
+#### Executing the increment action
 
 ```rust showLineNumbers{86}
 app.execute_contract(owner, contract_addr.clone(), &CounterActionMsg::Inc, &[])

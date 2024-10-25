@@ -45,6 +45,7 @@ jobs:
           cargo update -p cw-storage-plus
           cargo update -p cw-storey
           cargo update -p serde
+          cargo update -p sylvia
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
@@ -55,3 +56,6 @@ jobs:
       - name: Run all the generated tests
         working-directory: ./docs-test-gen
         run: cargo test
+      - name: Clippy all the generated tests
+        working-directory: ./docs-test-gen
+        run: cargo clippy --all-targets -- -D warnings

@@ -12,7 +12,7 @@ CosmWasm contract.
 
 You can define the logic inside the contract and call the method from the entry point.
 
-```rust {14-21, 32, 30}
+```rust {14-21, 32, 30}, template="sylvia-empty"
 pub struct IbcContract;
 
 #[contract]
@@ -33,6 +33,7 @@ impl IbcContract {
         msg: IbcChannelOpenMsg,
     ) -> StdResult<IbcChannelOpenResponse> {
         // Your logic here
+        Ok(Default::default())
     }
 }
 
@@ -48,7 +49,7 @@ pub fn ibc_channel_open(
 
 You can also define a trait for the IBC methods and implement it for on the contract.
 
-```rust {7, 10, 12-13, 21-22}
+```rust {7, 10, 12-13, 21-22}, template="sylvia-empty"
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_channel_open(
     deps: DepsMut,
@@ -77,6 +78,19 @@ impl Ibc for IbcContract {
         msg: IbcChannelOpenMsg,
     ) -> StdResult<IbcChannelOpenResponse> {
         // Your logic here
+        Ok(Default::default())
+    }
+}
+
+#[contract]
+impl IbcContract {
+    pub fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, _ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
     }
 }
 ```

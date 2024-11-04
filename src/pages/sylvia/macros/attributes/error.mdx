@@ -26,10 +26,7 @@ List of macros supporting the `sv::error` attribute:
 
 ## Usage
 
-```rust
-use sylvia::contract;
-use sylvia::cw_std::{Response, StdError};
-use sylvia::types::InstantiateCtx;
+```rust {5-9, 13}, template="sylvia-empty"
 use thiserror::Error;
 
 pub struct CounterContract;

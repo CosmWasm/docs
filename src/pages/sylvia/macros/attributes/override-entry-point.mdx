@@ -25,17 +25,10 @@ List of macros supporting the `sv::override_entry_point` attribute:
 
 ## Usage
 
-```rust
-use sylvia::contract;
-use sylvia::cw_schema::cw_serde;
-use sylvia::cw_std::{Response, StdResult};
-use sylvia::types::InstantiateCtx;
+```rust, template="sylvia-empty"
+use self::sv::ContractExecMsg;
 
 pub mod entrypoints {
-    use sylvia::cw_std::{entry_point, DepsMut, Env, MessageInfo};
-
-    use super::sv::ContractExecMsg;
-
     use super::*;
 
     #[cfg_attr(not(feature = "library"), entry_point)]
@@ -88,12 +81,7 @@ that in the entry point.
 
 An example of such an approach:
 
-```rust
-use sylvia::contract;
-use sylvia::cw_schema::cw_serde;
-use sylvia::cw_std::{Response, StdResult};
-use sylvia::types::{ExecCtx, InstantiateCtx};
-
+```rust, template="sylvia-empty"
 use self::sv::ContractExecMsg;
 
 pub mod entrypoints {

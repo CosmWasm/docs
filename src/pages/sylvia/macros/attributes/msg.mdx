@@ -23,13 +23,7 @@ List of macros supporting the `sv::msg` attribute:
 
 ## Usage
 
-```rust
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Reply, Response, StdResult};
-
-use sylvia::contract;
-use sylvia::types::{ExecCtx, InstantiateCtx, MigrateCtx, QueryCtx, ReplyCtx, SudoCtx};
-
+```rust, template="sylvia-empty"
 pub struct CounterContract;
 
 #[cw_serde]
@@ -89,9 +83,9 @@ requires however additional action. Due to
 macro derive on generated `query` message, we have to explicitly provide the return type, as the
 macro wouldn't be able to deduce that from the alias.
 
-```rust
-    #[sv::msg(query, resp=SomeResponse)]
-    fn some_query(&self, ctx: QueryCtx) -> SomeResult {
-        Ok(SomeResponse)
-    }
+```rust, template="sylvia-cw-storage-contract"
+#[sv::msg(query, resp=SomeResponse)]
+fn some_query(&self, ctx: QueryCtx) -> SomeResult {
+    Ok(SomeResponse)
+}
 ```

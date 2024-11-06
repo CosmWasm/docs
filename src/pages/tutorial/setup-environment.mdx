@@ -1,0 +1,93 @@
+---
+tags: ["tutorial"]
+---
+
+import { Callout } from "nextra/components";
+
+# Environment setup
+
+## Rust installation
+
+To work with CosmWasm smart contract, you will need rust installed on your machine. If you don't
+have one, you can find installation instructions on
+[the Rust website](https://www.rust-lang.org/tools/install).
+
+I assume you are working with a stable Rust channel in this book.
+
+Additionally, you will need the Wasm rust compiler backend installed to build Wasm binaries. To
+install it, run:
+
+```shell copy filename="TERMINAL"
+rustup target add wasm32-unknown-unknown
+```
+
+## The cosmwasm-check utility
+
+An additional helpful tool for building smart contracts is the
+[`cosmwasm-check`](https://github.com/CosmWasm/cosmwasm/tree/main/packages/check) utility. It allows
+you to check if the wasm binary is a proper smart contract ready to upload into the blockchain. You
+can install it using cargo:
+
+```shell copy filename="TERMINAL"
+cargo install cosmwasm-check
+```
+
+If the installation succeeds, you should be able to execute the utility from your command line.
+
+```shell copy filename="TERMINAL"
+cosmwasm-check --version
+```
+
+The output should look like this:
+
+```shell
+Contract checking 1.2.3
+```
+
+## Verifying the installation
+
+To guarantee you are ready to build your smart contracts, you need to make sure you can build
+examples. Checkout the [`cw-plus`](https://github.com/CosmWasm/cw-plus) repository and run the
+testing command in its folder:
+
+```shell copy filename="TERMINAL"
+git clone git@github.com:CosmWasm/cw-plus.git && cd ./cw-plus && cargo test
+```
+
+You should see that everything in the repository gets compiled and all tests pass.
+
+THe [`cw-plus`](https://github.com/CosmWasm/cw-plus) is a great place to find example contracts -
+look for them in contracts directory. The repository is maintained by CosmWasm creators, so
+contracts in there should follow good practices.
+
+To verify the [`cosmwasm-check`](https://github.com/CosmWasm/cosmwasm/tree/main/packages/check)
+utility, first, you need to build a smart contract. Go to some contract directory, for example,
+`contracts/cw1-whitelist`, and call `cargo wasm`:
+
+```shell copy filename="TERMINAL"
+cd contracts/cw1-whitelist && cargo wasm
+```
+
+<Callout>
+  Due to reference types feature enabled by default in the Rust compiler since version `1.82` it is
+  required to use the previous Rust compiler releases until the CosmWasm `2.2` version is released.
+  The CosmWasm `2.2` will enable support for the reference types.
+</Callout>
+
+You should be able to find your output binary in the `target/wasm32-unknown-unknown/release/` of the
+root repo directory - not in the contract directory itself! Now you can check if contract validation
+passes:
+
+```shell copy filename="TERMINAL"
+cosmwasm-check ../../target/wasm32-unknown-unknown/release/
+```
+
+```shell
+cw-plus/contracts/cw1-whitelist $ cosmwasm-check
+../../target/wasm32-unknown-unknown/release/cw1_whitelist.wasm Available capabilities: {"iterator",
+"cosmwasm_1_1", "cosmwasm_1_2", "stargate", "staking"}
+
+../../target/wasm32-unknown-unknown/release/cw1_whitelist.wasm: pass
+
+All contracts (1) passed checks!
+```

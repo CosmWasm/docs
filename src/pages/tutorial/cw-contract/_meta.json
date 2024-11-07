@@ -1,4 +1,6 @@
 {
   "contract-creation": "Contract creation",
-  "entry-points": "Entry points"
+  "entry-points": "Entry points",
+  "building-contract": "Building contract",
+  "query": "Creating a query"
 }

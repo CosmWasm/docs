@@ -18,7 +18,7 @@ To start, we will go with three basic entry points:
 We will start with the instantiate entry point:
 
 ```rust copy filename="src/lib.rs" template="empty"
-use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{entry_point, DepsMut, Empty, Env, MessageInfo, Response, StdResult};
 
 #[entry_point]
 pub fn instantiate(_deps: DepsMut, _env: Env, _info: MessageInfo, _msg: Empty) -> StdResult<Response> {

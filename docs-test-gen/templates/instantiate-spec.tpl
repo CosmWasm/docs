@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports)]
+
 use sha2::{Digest, Sha256};
 use cosmwasm_std::{Api, testing::*};
 
@@ -36,7 +38,7 @@ fn doctest() {
     };
 
     let expected = cosmwasm_std::instantiate2_address(
-        &checksum,
+        checksum,
         &canon_creator,
         salt,
     ).unwrap();

@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables)]
+#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports)]
 
 use cosmwasm_std::*;
 use cosmwasm_schema::cw_serde;
@@ -62,8 +62,9 @@ struct MigrateMsg {}
 #[cw_serde]
 struct SudoMsg {}
 
-fn transform(_old_data: OldData) -> () {
-    ()
+// Return any data to silence clippy
+fn transform(_old_data: OldData) -> u32 {
+    0
 }
 
 #[cw_serde]

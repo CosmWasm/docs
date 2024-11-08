@@ -12,6 +12,9 @@ static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "ibc-channel" => include_str!("../templates/ibc-channel.tpl"),
     "ibc-packet" => include_str!("../templates/ibc-packet.tpl"),
     "storage" => include_str!("../templates/storage.tpl"),
+    "sylvia-storey-contract" => include_str!("../templates/sylvia/storey_contract.tpl"),
+    "sylvia-cw-storage-contract" => include_str!("../templates/sylvia/cw_storage_contract.tpl"),
+    "sylvia-empty" => include_str!("../templates/sylvia/empty.tpl"),
 };
 
 #[inline]

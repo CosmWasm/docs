@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports)]
+
 use cosmwasm_std::*;
 use cosmwasm_schema::cw_serde;
 
@@ -19,7 +21,7 @@ fn doctest() {
 
     let mut deps = mock_dependencies();
     let env = mock_env();
-    let info = mock_info("sender", &[]);
+    let info = message_info(&Addr::unchecked("sender"), &[]);
     let msg = Empty {};
 
     // prepare channel info

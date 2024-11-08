@@ -21,7 +21,7 @@ List of macros supporting the `sv::messages` attribute:
 
 ## Usage
 
-```rust
+```rust, template="sylvia-empty"
 pub mod interface {
     use cosmwasm_schema::cw_serde;
     use sylvia::cw_std::{Response, StdError, StdResult};
@@ -71,11 +71,13 @@ pub mod contract {
         type Error = StdError;
 
         fn interface_exec(&self, ctx: ExecCtx) -> StdResult<Response> {
-            // some code
+            // Your logic here
+            Ok(Response::new())
         }
 
         fn interface_query(&self, ctx: QueryCtx) -> StdResult<InterfaceQueryResp> {
-            // some code
+            // Your logic here
+            Ok(Response::new())
         }
     }
 }

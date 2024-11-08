@@ -27,20 +27,14 @@ List of attributes supported by
 
 ## Usage
 
-```rust
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Reply, Response, StdResult};
-
-use sylvia::contract;
-use sylvia::types::{ExecCtx, InstantiateCtx, MigrateCtx, QueryCtx, ReplyCtx, SudoCtx};
-
-pub struct CounterContract;
+```rust, template="sylvia-empty"
+pub struct Contract;
 
 #[cw_serde]
 pub struct SomeResponse;
 
 #[contract]
-impl CounterContract {
+impl Contract {
     pub const fn new() -> Self {
         Self
     }
@@ -95,17 +89,10 @@ functionality of one contract with another one. In such a case you might want to
 possibility for the user to use it with types that suits their purpose. You can do that by defining
 generics on your contract.
 
-```rust
-use std::marker::PhantomData;
-
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Response, StdResult};
-
+```rust, template="sylvia-empty"
 use cw_storage_plus::Item;
-use sylvia::contract;
-use sylvia::types::{CustomMsg, ExecCtx, InstantiateCtx};
 
-pub struct CounterContract<ExecParamT, FieldT> {
+pub struct Contract<ExecParamT, FieldT> {
     field: Item<FieldT>,
     _phantom: PhantomData<ExecParamT>,
 }
@@ -114,7 +101,7 @@ pub struct CounterContract<ExecParamT, FieldT> {
 pub struct SomeResponse;
 
 #[contract]
-impl<ExecParamT, FieldT> CounterContract<ExecParamT, FieldT>
+impl<ExecParamT, FieldT> Contract<ExecParamT, FieldT>
 where
     ExecParamT: CustomMsg + 'static,
     FieldT: 'static,
@@ -165,7 +152,8 @@ fn instantiate(
 
 The output of the above code will be:
 
-```rust {2}
+```rust {2}, template="sylvia-empty"
+#[cw_serde]
 pub struct InstantiateMsg {
     #[serde(default)]
     pub value: String,
@@ -184,9 +172,9 @@ it makes testing it in the [MultiTest](../../cw-multi-test) environment with dif
 messages tricky. We recommend that if your contract is meant to be chain agnostic, define it with a
 generic custom message and custom query.
 
-```rust
+```rust, template="sylvia-empty"
 pub struct Contract<CMsgT, CQueryT> {
-    ...
+    _phantom: PhantomData<(CMsgT, CQueryT)>,
 }
 
 #[contract]
@@ -195,5 +183,16 @@ impl<CMsgT, CQueryT> Contract<CMsgT, CQueryT>
 where
     CMsgT: 'static + CustomMsg,
     CQueryT: 'static + CustomQuery,
-{}
+{
+    pub fn new() -> Self {
+        Self {
+            _phantom: PhantomData,
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx<CQueryT>) -> StdResult<Response<CMsgT>> {
+        Ok(Response::new())
+    }
+}
 ```

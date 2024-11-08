@@ -148,6 +148,7 @@ instance of a contract.
 use cw_storage_plus::Deque;
 use serde::{Serialize, Deserialize};
 use cosmwasm_std::testing::*;
+use cosmwasm_std::Addr;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 struct Log {
@@ -161,7 +162,7 @@ let logs: Deque<Log> = Deque::new("logs");
 
 // Simulating contract execution context
 let env = mock_env();
-let info = mock_info("sender", &[]);
+let info = message_info(&Addr::unchecked("sender"), &[]);
 let event = "funds_transferred".to_string();
 
 // Add a new log entry

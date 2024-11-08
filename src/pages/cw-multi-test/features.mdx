@@ -43,6 +43,7 @@ The following table summarizes feature flags supported by **`MultiTest`**.
 | `cosmwasm_1_3` | Enables `cosmwasm_1_3` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_2` feature in **`MultiTest`** library.   |
 | `cosmwasm_1_4` | Enables `cosmwasm_1_4` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_3` feature in **`MultiTest`** library.   |
 | `cosmwasm_2_0` | Enables `cosmwasm_2_0` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_1_4` feature in **`MultiTest`** library.   |
+| `cosmwasm_2_1` | Enables `cosmwasm_2_1` feature in _**cosmwasm-std**_ dependency and additionally `cosmwasm_2_0` feature in **`MultiTest`** library.   |
 
 ## Starting point
 
@@ -54,5 +55,5 @@ in **Cargo.toml** file:
 cosmwasm-std = "2"
 
 [dev-dependencies]
-cw-multi-test = { version = "2", features = ["staking", "stargate", "cosmwasm_2_0"] }
+cw-multi-test = { version = "2", features = ["staking", "stargate", "cosmwasm_2_1"] }
 ```

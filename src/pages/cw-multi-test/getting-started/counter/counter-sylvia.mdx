@@ -178,10 +178,9 @@ and test.
 
 ### `msg.rs`
 
-The **msg** module in file `msg.rs` typically defines the messages and queries that the smart
-contract accepts and responds to. Messages are usually structured as Rust enums or structs and
-define the input and output interfaces of the contract. In our example this includes messages shown
-below.
+The **msg** module in file `msg.rs` typically defines responses returned by the contract queries. It
+is also a convenient place to put any types that might be used by the smart contract. In our example
+this includes messages shown below.
 
 ```rust showLineNumbers filename="msg.rs" copy
 use cosmwasm_schema::cw_serde;
@@ -240,14 +239,10 @@ pub struct CounterResponse {
 (results) from the queries.
 
 <Callout>
-  Designing smart contracts using the Sylvia framework, we usually do not have to directly define
-  messages passed to `execute` and `query` entry-points. Sylvia generates them automatically.
+  Designing smart contracts using the Sylvia framework, we do not have to define messages passed to
+  contracts entry-points ourselves. Sylvia generates them automatically based on the methods marked
+  with the `#[sv::msg(...)]` attributes.
 </Callout>
-
-Overall, the `msg.rs` file is basically setting up the contract’s _social skills_, defining how it
-interacts with the outside world by initializing, executing actions, and answering questions. Each
-message type is a different way of communicating with the counter, making it an easy-going,
-versatile smart contract, ready for action.
 
 ### `contract.rs`
 

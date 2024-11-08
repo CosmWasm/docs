@@ -20,12 +20,8 @@ List of macros supporting the `sv::attr` attribute:
 Use the `sv::attr` above any of the methods marked with [`#[sv::msg(exec|sudo|query)]`](msg)
 attribute.
 
-```rust {19}
-use sylvia::contract;
-use sylvia::cw_std::{Response, StdResult};
-use sylvia::types::{ExecCtx, InstantiateCtx};
-
-pub struct MyContract;
+```rust {15}, template="sylvia-empty"
+pub struct Contract;
 
 #[contract]
 impl Contract {
@@ -49,7 +45,8 @@ impl Contract {
 The [`contract`](../contract) and [`interface`](../interface) macros will decorate the message
 variant with the attribute provided in `sv::attr`.
 
-```rust {2}
+```rust {2}, template="sylvia-empty"
+#[cw_serde]
 pub enum ExecMsg {
     #[serde(rename = "execute")]
     Exec {},

@@ -12,13 +12,19 @@ phf = { version = "0.11.2", features = ["macros"] }
 strum = { version = "0.26.3", features = ["derive"] }
 
 [dev-dependencies]
+sylvia = "*"
 cw2 = "*"
 cw-storage-plus = { version = "*", features = ["macro"] }
 cosmwasm-schema = "*"
-cosmwasm-std = { version = "*", features = ["stargate", "staking", "cosmwasm_2_1"] }
+cosmwasm-std = { version = "*", features = [
+  "stargate",
+  "staking",
+  "cosmwasm_2_1",
+] }
 sha2 = "0.10.8"
-cosmos-sdk-proto = { version = "0.24.0", default-features = false }                  # Used in IBC code
-ibc = "0.54.0"                                                                       # Used in IBC code
+cosmos-sdk-proto = { version = "0.24.0", default-features = false } # Used in IBC code
+ibc = "0.54.0" # Used in IBC code
 serde = "*"
 cw-storey = "*"
-schemars = "0.8.21"                                                                  # Used in entrypoint example
+schemars = "0.8.21" # Used in entrypoint example
+thiserror = "1.0.65"

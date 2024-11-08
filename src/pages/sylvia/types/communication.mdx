@@ -39,15 +39,15 @@ These methods are:
 
 The `Remote` can be stored as a represantation of a specific contract:
 
-```rust
+```rust, template="sylvia-empty"
 pub struct Contract<'a> {
-    remote: Item<Remote<'a, OtherContract>>,
+    remote: Item<Remote<'a, ExternalContract>>,
 }
 ```
 
 we can also store a `Remote` to some contract implementing an interface:
 
-```rust
+```rust, template="sylvia-empty"
 pub struct Contract<'a> {
     remote: Remote<
         'a,

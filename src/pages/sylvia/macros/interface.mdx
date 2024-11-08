@@ -13,12 +13,7 @@ semantical parts of your contracts.
 
 ## Usage
 
-```rust
-use cosmwasm_schema::cw_serde;
-use sylvia::cw_std::{Response, StdError, StdResult};
-use sylvia::interface;
-use sylvia::types::{ExecCtx, QueryCtx};
-
+```rust, template="sylvia-empty"
 #[cw_serde]
 pub struct InterfaceQueryResp {}
 
@@ -59,12 +54,7 @@ If you want to allow the users to use the interface with their own specified cus
 declare `ExecC` and `QueryC` associated types, where `ExecC` specifies the `CustomMsg` and `QueryC`
 the `CustomQuery`.
 
-```rust
-use cosmwasm_schema::cw_serde;
-use sylvia::cw_std::{Response, StdError, StdResult};
-use sylvia::interface;
-use sylvia::types::{CustomMsg, CustomQuery, ExecCtx, QueryCtx, SudoCtx};
-
+```rust, template="sylvia-empty"
 #[cw_serde]
 pub struct InterfaceQueryResp {}
 
@@ -93,7 +83,7 @@ The `interface` macro does not support generics. Instead, you can provide generi
 using the associated types. It's because Sylvia interfaces can be implemented only once per
 contract, and in such a case, associated types are semantically correct in Rust.
 
-```rust
+```rust, template="sylvia-empty"
 #[interface]
 pub trait Interface {
     type Error: From<StdError>;
@@ -120,7 +110,8 @@ fn exec(
 
 The output of the above code will be:
 
-```rust {3}
+```rust {3}, template="sylvia-empty"
+#[cw_serde]
 pub enum MyInterfaceExecMsg {
     Exec {
         #[serde(default)]

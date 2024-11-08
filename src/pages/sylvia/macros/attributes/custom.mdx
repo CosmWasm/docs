@@ -18,11 +18,8 @@ List of macros supporting the `sv::custom` attribute:
 
 ## Usage
 
-```rust
-use sylvia::contract;
-use sylvia::cw_schema::cw_serde;
-use sylvia::cw_std::{CustomMsg, CustomQuery, Response, StdResult};
-use sylvia::types::InstantiateCtx;
+```rust {1, 8-9, 18}, template="sylvia-empty"
+use sylvia::cw_std::{CustomMsg, CustomQuery};
 
 #[cw_serde]
 pub struct SomeMsg {}
@@ -32,7 +29,7 @@ pub struct SomeQuery {}
 impl CustomMsg for SomeMsg {}
 impl CustomQuery for SomeQuery {}
 
-pub struct CounterContract;
+pub struct Contract;
 
 #[cw_serde]
 pub struct SomeResponse;
@@ -40,7 +37,7 @@ pub struct SomeResponse;
 #[cfg_attr(feature = "library", sylvia::entry_points)]
 #[contract]
 #[sv::custom(msg=SomeMsg, query=SomeQuery)]
-impl CounterContract {
+impl Contract {
     pub const fn new() -> Self {
         Self
     }
@@ -66,11 +63,8 @@ impl CounterContract {
 
 `sv::custom` works the same in the case of the [`interface`](../interface) macro.
 
-```rust
-use cosmwasm_schema::cw_serde;
-use sylvia::cw_std::{CustomMsg, CustomQuery, Response, StdError, StdResult};
-use sylvia::interface;
-use sylvia::types::{ExecCtx, QueryCtx};
+```rust {1, 8-9, 15}, template="sylvia-empty"
+use sylvia::cw_std::{CustomMsg, CustomQuery};
 
 #[cw_serde]
 pub struct SomeMsg {}

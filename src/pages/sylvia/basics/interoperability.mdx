@@ -28,7 +28,7 @@ or
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust {3, 8, 13}
+```rust {3, 8, 13}, template="sylvia-storey-contract"
 #[sv::msg(exec)]
 fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
     let remote = self
@@ -37,7 +37,7 @@ fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
         .get()?
         .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
     let msg = WasmMsg::Execute {
-        contract_addr: remote.to_string(),
+        contract_addr: remote.as_ref().to_string(),
         msg: to_json_binary(&ExternalExecMsg::Increment {})?,
         funds: vec![],
     };
@@ -48,12 +48,12 @@ fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust {3-4, 9}
+```rust {3-4, 9}, template="sylvia-cw-storage-contract"
 #[sv::msg(exec)]
 fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
     let remote = self.remote.load(ctx.deps.storage)?;
     let msg = WasmMsg::Execute {
-        contract_addr: remote.to_string(),
+        contract_addr: remote.as_ref().to_string(),
         msg: to_json_binary(&ExternalExecMsg::Increment {})?,
         funds: vec![],
     };
@@ -73,11 +73,14 @@ We can also use the generated
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust {1, 18-20, 26-36, 42-48}
+```rust {1, 4, 21-23, 29-39, 45-51}, template="sylvia-empty"
+use external_contract::sv::Executor;
+use cw_storey::containers::Item;
+
 const SUBMSG_ID: u64 = 1;
 
 pub struct ReplyContract {
-    remote: Item<Remote<'static, Contract>>,
+    remote: Item<Remote<'static, ExternalContract>>,
 }
 
 #[entry_points]
@@ -105,7 +108,7 @@ impl ReplyContract {
             .get()?
             .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?
             .executor()
-            .contract_exec()?
+            .external_exec()?
             .build();
 
         let sub_msg = SubMsg::reply_on_success(msg, SUBMSG_ID);
@@ -129,11 +132,14 @@ impl ReplyContract {
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust {1, 18-20, 25-34, 39-45}
+```rust {1, 4, 21-23, 28-37, 42-48}, template="sylvia-empty"
+use external_contract::sv::Executor;
+use cw_storage_plus::Item;
+
 const SUBMSG_ID: u64 = 1;
 
 pub struct ReplyContract {
-    remote: Item<Remote<'static, Contract>>,
+    remote: Item<Remote<'static, ExternalContract>>,
 }
 
 #[entry_points]
@@ -158,7 +164,7 @@ impl ReplyContract {
             .remote
             .load(ctx.deps.storage)?
             .executor()
-            .contract_exec()?
+            .external_exec()?
             .build();
 
         let sub_msg = SubMsg::reply_on_success(msg, SUBMSG_ID);
@@ -191,7 +197,7 @@ method. We can access the
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust {5-7}
+```rust {5-7}, template="sylvia-storey-contract"
 #[sv::msg(query)]
 fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
     let remote = self
@@ -202,21 +208,21 @@ fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
 
     ctx.deps
         .querier
-        .query_wasm_smart(remote, &ExternalQueryMsg::Count {})
+        .query_wasm_smart(remote.as_ref().to_string(), &ExternalQueryMsg::Count {})
 }
 ```
 
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust {5-7}
+```rust {5-7}, template="sylvia-cw-storage-contract"
 #[sv::msg(query)]
 fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
     let remote = self.remote.load(ctx.deps.storage)?;
 
     ctx.deps
         .querier
-        .query_wasm_smart(remote, &ExternalQueryMsg::Count {})
+        .query_wasm_smart(remote.as_ref().to_string(), &ExternalQueryMsg::Count {})
 }
 ```
 
@@ -243,8 +249,9 @@ type provides all the API as the MultiTest counterpart, exposing the underlying 
 support for using the Sylvia-generated helpers. It can also be used to simulate the execution of
 standard CosmWasm contracts as well
 
-```rust
+```rust, template="sylvia-empty"
 use sylvia::multitest::App;
+use sylvia::cw_multi_test::BasicMtApp;
 
 let app = App::<BasicMtApp<Empty, Empty>>::default();
 ```
@@ -260,7 +267,7 @@ We can access the underlying
 [`store_code`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.store_code)
 of the CosmWasm contract.
 
-```rust
+```rust, template="sylvia-empty"
 fn cosmwasm_contract() -> Box<dyn Contract<Empty>> { ... }
 
 let cosmwasm_code = app.app_mut().store_code(cosmwasm_contract());
@@ -269,7 +276,7 @@ let cosmwasm_code = app.app_mut().store_code(cosmwasm_contract());
 To instantiate the CosmWasm contract, we will also use the
 [`app_mut`](https://docs.rs/sylvia/latest/sylvia/multitest/struct.App.html#method.app_mut).
 
-```rust
+```rust, template="sylvia-empty"
 let cosmwasm_contract = app
     .app_mut()
     .instantiate_contract(

@@ -2,6 +2,462 @@
 tags: ["multitest", "getting started", "counter", "Sylvia"]
 ---
 
+import { Callout, Card, Cards } from "nextra/components";
+
 # Counter written in Sylvia
 
-WIP
+## Counter source code
+
+The following code snippets present the content of [**Cargo.toml**](#cargotoml),
+[**lib.rs**](#librs), [**msg.rs**](#msgrs), and [**contract.rs**](#contractrs) files, respectively.
+You can just copy and paste the provided content to previously created empty files, temporarily
+skipping the detailed explanations. However, if you're curious about what happens inside each file,
+feel free to check the detailed explanations provided for each code snippet.
+
+### `Cargo.toml`
+
+```toml showLineNumbers filename="Cargo.toml" copy
+[package]
+name = "counter"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cosmwasm-schema = "2"
+cosmwasm-std = { version = "2" }
+cw-storage-plus = "2"
+schemars = "0.8"
+serde = "1.0"
+sylvia = { version = "1" }
+
+[dev-dependencies]
+sylvia = { version = "1", features = ["mt"] }
+```
+
+`Cargo.toml` is the configuration file for a Rust project — in our case, for a smart contract
+written using Rust and the Sylvia framework. Below is a detailed explanation of each section and its
+purpose.
+
+**\[package\]**
+
+```toml copy showLineNumbers{1} filename="Cargo.toml"
+[package]
+name = "counter"
+version = "0.1.0"
+edition = "2021"
+```
+
+- **`[package]`** section provides metadata about the Rust crate (smart contract library in our
+  case).
+- **`name = "counter"`** specifies the name of the crate, it's named **counter** like our smart
+  contract.
+- **`version = "0.1.0"`** indicates the current version of the package and the counter smart
+  contract.
+- **`edition = "2021"`** specifies the Rust edition being used; editions in Rust are sets of
+  language and compiler improvements, with 2021 being one of the latest editions at the time,
+  providing the latest features and enhancements.
+
+**\[lib\]**
+
+```toml copy showLineNumbers{8} filename="Cargo.toml"
+[lib]
+crate-type = ["cdylib", "rlib"]
+```
+
+- **`[lib]`** section specifies settings for building the library.
+- **`crate-type`** enumerates types of libraries to be produced during compiling.
+- **`"cdylib"`** specifies that the package will be compiled as a C-compatible dynamic library;
+  which is required for smart contracts to run on the CosmWasm runtime.
+- **`"rlib"`** specifies a Rust library file that can be used as a dependency for other Rust
+  projects, in our case for other smart contracts.
+
+**\[features\]**
+
+```toml copy showLineNumbers{11} filename="Cargo.toml"
+[features]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+```
+
+- **`[features]`** section defines optional features for the Rust package.
+- **`library = []`** defines a feature named **library**, which when set, disables exporting smart
+  contract entry-points. Exporting entry points is necessary for interacting with the smart contract
+  on the blockchain. However, when the contract is used as a dependency by other contracts,
+  exporting these entry-points should be disabled to prevent unintended function name clashes.
+
+**\[dependencies\]**
+
+```toml copy showLineNumbers{15} filename="Cargo.toml"
+[dependencies]
+cosmwasm-schema = "2"
+cosmwasm-std = { version = "2" }
+cw-storage-plus = "2"
+schemars = "0.8"
+serde = "1.0"
+sylvia = { version = "1" }
+```
+
+- **`[dependencies]`** section lists the libraries that the package depends on.
+- **`cosmwasm-schema`** is used for generating JSON schemas from Rust data structures, which is
+  useful for documentation and ensuring compatibility of messages and queries.
+- **`cosmwasm-std`** is the standard library for CosmWasm contracts, providing common types and
+  utilities needed for interacting with the CosmWasm runtime.
+- **`cw-storage-plus`** is a library that provides advanced storage abstractions and utilities on
+  top of the basic storage capabilities in CosmWasm, making it easier to manage state within
+  contracts.
+- **`schemars`** is a library for generating JSON schemas, which complements `cosmwasm-schema` by
+  providing additional features for schema generation.
+- **`serde`** is a widely used serialization library in Rust, allowing easy conversion of Rust data
+  structures to and from formats like JSON, which is crucial for data interchange in smart
+  contracts.
+- **`sylvia`** the Sylvia framework itself, needed to implement the smart contract.
+
+**\[dev-dependencies\]**
+
+```toml copy showLineNumbers{23} filename="Cargo.toml"
+[dev-dependencies]
+sylvia = { version = "1", features = ["mt"] }
+```
+
+- **`[dev-dependencies]`** section lists dependencies that are only needed for development and
+  testing.
+- **`sylvia`** the Sylvia framework with features required for testing smart contracts using
+  **`MultiTest`**. Feature `"mt"` in Sylvia should be used only in **[dev-dependencies]** section.
+
+Overall, this `Cargo.toml` file configures a Rust project for a CosmWasm-based smart contract. It
+sets up the basic package details, specifies how the contract should be compiled, defines
+dependencies for core functionality and testing, and includes features to enable or disable certain
+parts of the contract code. This setup ensures the contract can be developed, tested, and deployed
+effectively on the blockchain within the CosmWasm ecosystem.
+
+### `lib.rs`
+
+```rust showLineNumbers filename="lib.rs" copy
+pub mod contract;
+pub mod msg;
+```
+
+The `lib.rs` file in a Rust project serves as the main entry point for defining the structure of a
+library. In the context of our example **counter** smart contract, the `lib.rs` file is defining and
+organizing the modules that make up the contract. Recall the **counter** project file structure:
+
+```ansi {4,6} filename="counter (directory)"
+[34;1m.[0m
+├── Cargo.toml
+└── [34;1msrc[0m
+    ├── contract.rs
+    ├── lib.rs
+    └── msg.rs
+```
+
+There are two modules in the project: `contract.rs` and `msg.rs`. That's why in the `lib.rs` file
+there are two declarations:
+
+- `pub mod contract;{:rust}`<br/> This line declares a public module named **contract**; tells Rust
+  to include the code from a file named `contract.rs` located in the same directory and makes the
+  module publicly accessible (`pub` keyword), which means that other modules or external code can
+  access the entry-points of our smart contract.
+- `pub mod msg;{:rust}`<br/> This line declares a public module named **msg**; includes the code
+  from a file named `msg.rs` and also makes this module public which allows other parts of the code
+  (especially our **counter** smart contract) to access the messages defined here.
+
+Overall, this `lib.rs` file is setting up the main structure of the smart contract by defining its
+key components as separate modules. This organization helps in keeping the code clean, modular, and
+maintainable by separating the core contract logic (`contract.rs`) from the message and query
+definitions (`msg.rs`). This modular approach makes the smart contract easier to understand, extend,
+and test.
+
+### `msg.rs`
+
+The **msg** module in file `msg.rs` typically defines responses returned by the contract queries. It
+is also a convenient place to put any types that might be used by the smart contract. In our example
+this includes messages shown below.
+
+```rust showLineNumbers filename="msg.rs" copy
+use cosmwasm_schema::cw_serde;
+
+#[cw_serde]
+pub enum CounterInitMsg {
+    Zero,
+    Set(u8),
+}
+
+#[cw_serde]
+pub struct CounterResponse {
+    pub value: u8,
+}
+```
+
+Let's take a detailed look at the implementation of messages.
+
+**Imports**
+
+```rust copy showLineNumbers filename="msg.rs"
+use cosmwasm_schema::cw_serde;
+```
+
+Required imports, like `cw_serde` annotation.
+
+**Instantiation message**
+
+This message is passed to `instantiate` entry-point.
+
+```rust copy showLineNumbers{3} filename="msg.rs (CounterInitMsg)"
+#[cw_serde]
+pub enum CounterInitMsg {
+    Zero,
+    Set(u8),
+}
+```
+
+**`CounterInitMsg{:rust}`** enumeration is used to initialize the contract.
+`CounterInitMsg::Zero{:rust}` variant initializes the counter with the zero value, and
+`CounterInitMsg::Set{:rust}` variant initializes the counter with an arbitrary value in range 0
+to 255. This message is passed to `instantiate{:rust}` entry-point of the counter smart contract.
+
+**Response message**
+
+This message is returned from `query` entry-point and passed to the user.
+
+```rust copy showLineNumbers{9} filename="msg.rs (CounterResponse)"
+#[cw_serde]
+pub struct CounterResponse {
+    pub value: u8,
+}
+```
+
+**`CounterResponse{:rust}`** struct with a single field `value{:rust}`, used to pass the responses
+(results) from the queries.
+
+<Callout>
+  Designing smart contracts using the Sylvia framework, we do not have to define messages passed to
+  contracts entry-points ourselves. Sylvia generates them automatically based on the methods marked
+  with the `#[sv::msg(...)]` attributes.
+</Callout>
+
+### `contract.rs`
+
+Typically, in a smart contract project, the **contract** module (placed in the `contract.rs` file)
+contains the core logic of the contract, including functions (entry-points) for instantiation,
+execution, querying and migrating. This is where the main functionality of the smart contract is
+implemented. And this is also the case for our **counter** smart contract. The full source code is
+shown below.
+
+```rust showLineNumbers filename="contract.rs" copy
+use crate::msg::{CounterInitMsg, CounterResponse};
+use cosmwasm_std::{Response, StdResult};
+use cw_storage_plus::Item;
+use sylvia::contract;
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+
+pub struct CounterContract {
+    pub count: Item<u8>,
+}
+
+#[cfg_attr(not(feature = "library"), sylvia::entry_points)]
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self {
+            count: Item::new("count"),
+        }
+    }
+
+    #[sv::msg(instantiate)]
+    fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+        match msg {
+            CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+            CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+        }
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_add(1))
+            })?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_sub(1))
+            })?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(exec)]
+    fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+        self.count.save(ctx.deps.storage, &value)?;
+        Ok(Response::new())
+    }
+
+    #[sv::msg(query)]
+    fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+        let value = self.count.load(ctx.deps.storage)?;
+        Ok(CounterResponse { value })
+    }
+}
+```
+
+Let's take a detailed look at this implementation using Sylvia framework.
+
+#### imports
+
+```rust copy showLineNumbers{1} filename="contract.rs"
+use crate::msg::{CounterInitMsg, CounterResponse};
+use cosmwasm_std::{Response, StdResult};
+use cw_storage_plus::Item;
+use sylvia::contract;
+use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+```
+
+The first `use{:rust}` statement imports message structures for handling initialization of the
+contract, and responses from queries. The second `use{:rust}` imports essential types from the
+CosmWasm standard library. The third `use{:rust}` brings in the `Item{:rust}` type, which is needed
+for storing single values in the contract’s persistent storage. The last two `use{:rust}` statements
+import Sylvia types and components essential to build a contract.
+
+#### contract struct
+
+```rust copy showLineNumbers{7} filename="contract.rs"
+pub struct CounterContract {
+    pub count: Item<u8>,
+}
+```
+
+The `CounterContract{:rust}` is a public structure that represents a counter smart contract. It
+contains one public field `count{:rust}`, which is of type `Item{:rust}` and serves as a "variable"
+for tracking a value that can be incremented, decremented, queried, or reset by the smart contract.
+More details about the [Item](../../../cw-storage-plus/containers/item) type can be found in
+[cw-storage-plus](../../../cw-storage-plus) documentation. This field stores an 8-bit unsigned
+integer representing a counter value.
+
+More detailed explanation of the smart contract structure written in Sylvia can be found in
+[Sylvia documentation](../../../sylvia/basics/contract-structure), but for testing purposes we will
+just mention the key elements of this contract.
+
+#### constructor
+
+```rust copy showLineNumbers{14} filename="contract.rs"
+    pub const fn new() -> Self {
+        Self {
+            count: Item::new("count"),
+        }
+    }
+```
+
+Creates a new instance of the contract and binds the `count{:rust}` variable with the key
+`"count"{:rust}` in the contract's persistent storage.
+
+#### `instantiate` entry-point
+
+The `init{:rust}` function, annotated as `#[sv::msg(instantiate)]{:rust}` is called during the
+instantiation of the smart contract. Depending on the message passed in `msg{:rust}` argument, the
+counter will be initialized with zero or with the value provided in `CounterInitMsg::Set{:rust}`
+variant. Using the `self.count{:rust}` variable, the initial value is saved in the contract's
+persistent storage.
+
+```rust copy showLineNumbers{20} filename="contract.rs"
+    #[sv::msg(instantiate)]
+    fn init(&self, ctx: InstantiateCtx, msg: CounterInitMsg) -> StdResult<Response> {
+        match msg {
+            CounterInitMsg::Zero => self.count.save(ctx.deps.storage, &0)?,
+            CounterInitMsg::Set(value) => self.count.save(ctx.deps.storage, &value)?,
+        }
+        Ok(Response::new())
+    }
+```
+
+#### `inc` variant of `execute` entry-point
+
+The `inc{:rust}` function, annotated as `#[sv::msg(exec)]` is called during evaluation of the
+`execute` entrypoint of the smart contract for the `"inc":{}` message variant. It increments the
+counter by one and stores the new value in the contract's persistent storage, utilizing
+`update{:rust}` function of the `self.count{:rust}` variable.
+
+```rust copy showLineNumbers{29} filename="contract.rs"
+    #[sv::msg(exec)]
+    fn inc(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_add(1))
+            })?;
+        Ok(Response::new())
+    }
+```
+
+#### `dec` variant of `execute` entry-point
+
+The `dec{:rust}` function, annotated as `#[sv::msg(exec)]` is called during evaluation of the
+`execute` entrypoint of the smart contract for the `"dec":{}` message variant. It decrements the
+counter by one and stores the new value in the contract's persistent storage, utilizing
+`update{:rust}` function of the `self.count{:rust}` variable, similarly like `inc{:rust}` function.
+
+```rust copy showLineNumbers{38} filename="contract.rs"
+    #[sv::msg(exec)]
+    fn dec(&self, ctx: ExecCtx) -> StdResult<Response> {
+        self.count
+            .update(ctx.deps.storage, |count| -> StdResult<u8> {
+                Ok(count.saturating_sub(1))
+            })?;
+        Ok(Response::new())
+    }
+```
+
+#### `set` variant of `execute` entry-point
+
+The `set{:rust}` function, also annotated as `#[sv::msg(exec)]` is called during evaluation of the
+`execute` entrypoint of the smart contract for the `"set":{"value":N}` message variant. It resets
+the counter value and stores the new value in the contract's persistent storage, utilizing
+`save{:rust}` function of the `self.count{:rust}` variable.
+
+```rust copy showLineNumbers{47} filename="contract.rs"
+    #[sv::msg(exec)]
+    fn set(&self, ctx: ExecCtx, value: u8) -> StdResult<Response> {
+        self.count.save(ctx.deps.storage, &value)?;
+        Ok(Response::new())
+    }
+```
+
+#### `query` entry-point
+
+The `value{:rust}` function, annotated as `#[sv::msg(query)]` is called during querying the value of
+the counter contract. The current value is retrieved from the contract's persistent storage, wrapped
+in `CounterResponse{:rust}` message and returned to the calling user.
+
+```rust copy showLineNumbers{53} filename="contract.rs"
+    #[sv::msg(query)]
+    fn value(&self, ctx: QueryCtx) -> StdResult<CounterResponse> {
+        let value = self.count.load(ctx.deps.storage)?;
+        Ok(CounterResponse { value })
+    }
+```
+
+## What next?
+
+Having the **counter** smart contract prepared, you can begin writing tests using **`MultiTest`**,
+or you might want to check the pure CosmWasm version of the **counter** smart contract first.
+
+<Cards>
+  <Card title="Writing tests" href="../writing-tests" icon="" children="" />
+  <Card
+    title="Counter written using pure CosmWasm library"
+    href="counter-cosmwasm"
+    icon=""
+    children=""
+  />
+</Cards>

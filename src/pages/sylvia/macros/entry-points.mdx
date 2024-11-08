@@ -25,24 +25,18 @@ List of attributes supported by `entry_points` macro:
 
 ## Usage
 
-```rust
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Response, StdResult};
-
-use sylvia::contract;
-use sylvia::types::{ExecCtx, InstantiateCtx};
-
+```rust, template="sylvia-empty"
 #[cfg(not(feature = "library"))]
 use sylvia::entry_points;
 
-pub struct CounterContract;
+pub struct Contract;
 
 #[cw_serde]
 pub struct SomeResponse;
 
 #[cfg_attr(not(feature = "library"), entry_points)]
 #[contract]
-impl CounterContract {
+impl Contract {
     pub const fn new() -> Self {
         Self
     }
@@ -72,22 +66,15 @@ You can construct your entry points to work with some specific custom types with
 CosmWasm entry points cannot be generic. We are thus forced to provide concrete types to be used in
 place of generic types used in the contract.
 
-```rust
-use std::marker::PhantomData;
-
-use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Response, StdResult};
-
+```rust, template="sylvia-empty"
 use cw_storage_plus::Item;
-use sylvia::contract;
-use sylvia::types::{CustomMsg, ExecCtx, InstantiateCtx};
 
 #[cfg(not(feature = "library"))]
 use sylvia::cw_std::Empty;
 #[cfg(not(feature = "library"))]
 use sylvia::entry_points;
 
-pub struct CounterContract<ExecParamT, FieldT> {
+pub struct Contract<ExecParamT, FieldT> {
     field: Item<FieldT>,
     _phantom: PhantomData<ExecParamT>,
 }
@@ -97,7 +84,7 @@ pub struct SomeResponse;
 
 #[cfg_attr(not(feature = "library"), entry_points(generics<Empty, Empty>))]
 #[contract]
-impl<ExecParamT, FieldT> CounterContract<ExecParamT, FieldT>
+impl<ExecParamT, FieldT> Contract<ExecParamT, FieldT>
 where
     ExecParamT: CustomMsg + 'static,
     FieldT: 'static,

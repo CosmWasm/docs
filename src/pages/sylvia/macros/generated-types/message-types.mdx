@@ -21,19 +21,14 @@ be called depending on the enum variant. This is described in the example below
 
 The following code:
 
-```rust
-use cosmwasm_schema::cw_serde;
-use sylvia::contract;
-use sylvia::cw_std::{Response, StdResult};
-use sylvia::types::{ExecCtx, InstantiateCtx, MigrateCtx, QueryCtx, SudoCtx};
-
+```rust, template="sylvia-empty"
 #[cw_serde]
 pub struct SomeResponse;
 
-pub struct CounterContract;
+pub struct Contract;
 
 #[contract]
-impl CounterContract {
+impl Contract {
     pub const fn new() -> Self {
         Self
     }
@@ -69,7 +64,7 @@ generates the following messages for every respective [entrypoint](../../../core
 
 <Tabs items={['InstantiateMsg', 'ExecMsg', 'QueryMsg', 'SudoMsg', 'MigrateMsg']} defaultIndex={0}>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -105,7 +100,7 @@ generates the following messages for every respective [entrypoint](../../../core
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -146,7 +141,7 @@ generates the following messages for every respective [entrypoint](../../../core
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -186,7 +181,7 @@ generates the following messages for every respective [entrypoint](../../../core
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -226,7 +221,7 @@ generates the following messages for every respective [entrypoint](../../../core
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -277,7 +272,7 @@ implemented on it, which are used as the main messages of the contract.
 
 <Tabs items={['ContractExecMsg', 'ContractQueryMsg', 'ContractSudoMsg']} defaultIndex={0}>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(sylvia::serde::Serialize, Clone, Debug, PartialEq, sylvia::schemars::JsonSchema)]
     #[serde(rename_all = "snake_case", untagged)]
@@ -312,7 +307,7 @@ implemented on it, which are used as the main messages of the contract.
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(sylvia::serde::Serialize, Clone, Debug, PartialEq, sylvia::schemars::JsonSchema)]
     #[serde(rename_all = "snake_case", untagged)]
@@ -353,7 +348,7 @@ implemented on it, which are used as the main messages of the contract.
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(sylvia::serde::Serialize, Clone, Debug, PartialEq, sylvia::schemars::JsonSchema)]
     #[serde(rename_all = "snake_case", untagged)]
@@ -404,14 +399,7 @@ three types of messages.
 
 We will use the below example interface to generate the messages:
 
-```rust
-use cosmwasm_std::{Response, StdError};
-use sylvia::types::{ExecCtx, QueryCtx, SudoCtx};
-
-use sylvia::interface;
-
-use super::SomeResponse;
-
+```rust, template="sylvia-empty"
 #[interface]
 pub trait Interface {
     type Error: From<StdError>;
@@ -432,7 +420,7 @@ And the three generated messages:
 
 <Tabs items={['ExecMsg', 'QueryMsg', 'SudoMsg']} defaultIndex={0}>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -474,7 +462,7 @@ And the three generated messages:
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,
@@ -518,7 +506,7 @@ And the three generated messages:
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```rust
+    ```rust, template="sylvia-empty"
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(
         sylvia::serde::Serialize,

@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports)]
+
 #[allow(unused_imports)]
 mod imports {
     pub use cosmwasm_schema::cw_serde;
@@ -69,6 +71,7 @@ fn advance_height(env: &mut Env, blocks: u64) {
 fn doctest() {
     #[allow(unused_variables, unused_mut)]
     let mut storage = cosmwasm_std::testing::MockStorage::new();
+    #[allow(unused_mut)]
     let mut env = cosmwasm_std::testing::mock_env();
 
     let users = cw_storage_plus::IndexedMap::<Addr, _, _>::new(

@@ -702,7 +702,12 @@ tested: handling overflow during counter incrementation.
 
 ### Testing decrement by 1
 
-```rust copy showLineNumbers{76} filename="test_counter.rs"
+One of the entry-points annotated by `#[sv::msg(exec)]` named `dec(){:rust}` has not been tested
+yet. The following test is similar to the one you wrote for testing counter incrementation. This
+time the counter decrementation will be tested. The changed lines are highlighted in the following
+code snippet:
+
+```rust copy {14} showLineNumbers{76} filename="test_counter.rs" /CounterInitMsg::Set(126)/ /assert_eq!(125/
 #[test]
 fn decrementing_should_work() {
     let app = App::default();
@@ -722,9 +727,12 @@ fn decrementing_should_work() {
 }
 ```
 
-`☕` Topics to cover
+In line 85 the counter is initialized with the value `126`, then in line 89 it is decremented by `1`
+and in line 91 it is asserted that the final value of the counter is `125`.
 
 #### Running tests
+
+The only way to confirm that the counter is properly decremented is by running all the tests:
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -745,6 +753,8 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 
 #### Code coverage
 
+Run code coverage script, as usual:
+
 ```shell copy filename="TERMINAL"
 ./coverage.sh
 ```
@@ -755,6 +765,8 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 ||
 86.36% coverage, 19/22 lines covered
 ```
+
+Check the code coverage report:
 
 ```ansi {48-50} showLineNumbers filename="CODE COVERAGE REPORT (Sylvia version)"
 [0;30m use crate::msg::{CounterInitMsg, CounterResponse};
@@ -817,7 +829,7 @@ test result: [32;1mok[0m. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 [0;30m }
 ```
 
-`☕` Comment the coverage report
+As expected, the `dec(){:rust}` entry-point is already tested.
 
 ### Testing decrement underflow
 

@@ -84,7 +84,7 @@ using the `CounterInitMsg::Zero{:rust}` message. It ensures that the contract co
 initial value and that the query mechanism returns the expected counter value. It exemplifies a
 well-structured test with clear setup, execution, and validation steps.
 
-```rust copy showLineNumbers{13} filename="test_counter.rs"
+```rust copy showLineNumbers{13} filename="test_counter.rs" /CounterInitMsg::Zero/ /assert_eq!(0/
 #[test]
 fn instantiating_with_zero_should_work() {
     let mut app = App::default();
@@ -326,11 +326,7 @@ was not called in test and still `[1;31mshines red{:ansi}` in this report.
 The second test verifies the initialization of the **counter** contract using a specific value that
 must be in range 0..255, let say **12**. It's done using `CounterInitMsg::Set{:rust}` message.
 
-The second test verifies the initialization of the **counter** contract with a specific value that
-must be in range 0..255, such as **12**. This is done using the `CounterInitMsg::Set(12){:rust}`
-message.
-
-```rust copy showLineNumbers{40} filename="test_counter.rs"
+```rust copy showLineNumbers{40} filename="test_counter.rs" /CounterInitMsg::Set(12)/ /assert_eq!(12/
 #[test]
 fn instantiating_with_value_should_work() {
     let mut app = App::default();
@@ -390,7 +386,7 @@ let owner = "owner".into_addr();
 
 #### Contract instantiation
 
-This time the contract is instantiated using `CounterInitMsg::Zero{:rust}` message passed to
+This time the contract is instantiated using `CounterInitMsg::Set{:rust}` message passed to
 `instantiate_contract{:rust}` function provided by `App{:rust}`:
 
 - **`code_id{:rust}`** the identifier for the stored contract code,
@@ -535,12 +531,12 @@ the next test.
 ### Testing increment by 1
 
 In this test, the contract is instantiated with an initial value of zero, similar to the first test.
-However, this time, an increment action is performed by invoking the contract's `execute` entrypoint
-with the `CounterExecMsg::Inc{:rust}` message. This action is expected to increment the counter
-by 1. Finally, the counter's value is queried to confirm that it has been correctly incremented and
-now holds the value 1.
+However, this time, an increment action is performed by invoking the contract's `execute{:rust}`
+entry-point with the `CounterExecMsg::Inc{:rust}` message. This action is expected to increment the
+counter by `1`. Finally, the counter's value is queried to confirm that it has been correctly
+incremented and now holds the value `1`.
 
-```rust copy showLineNumbers{67} filename="test_counter.rs"
+```rust copy {20-21} showLineNumbers{67} filename="test_counter.rs" /CounterInitMsg::Zero/ /assert_eq!(1/
 #[test]
 fn incrementing_should_work() {
     let mut app = App::default();
@@ -573,7 +569,7 @@ fn incrementing_should_work() {
 ```
 
 You should already be familiar with the flow of this test; the only difference from the previous
-examples is the additional step of invoking the `execute` entrypoint.
+examples is the additional step of invoking the `execute` entry-point.
 
 <Steps>
 #### Executing the increment action
@@ -583,7 +579,7 @@ app.execute_contract(owner, contract_addr.clone(), &CounterActionMsg::Inc, &[])
     .unwrap();
 ```
 
-The `execute` entrypoint of the contract is evaluated by calling the `execute_contract{:rust}`
+The `execute` entry-point of the contract is evaluated by calling the `execute_contract{:rust}`
 function provided by `App{:rust}` with the following arguments:
 
 - **`owner{:rust}`** the owner address of the contract instance,
@@ -698,7 +694,7 @@ is of type `u8`, which means that the maximum value this counter can hold is 255
 you increment the counter beyond 255? The following test initializes the counter with value 250 and
 then increments it 10 times by calling the `execute` entry-point.
 
-```rust copy {20-28} showLineNumbers{97} filename="test_counter.rs"
+```rust copy {20-28} showLineNumbers{97} filename="test_counter.rs" /CounterInitMsg::Set(250)/ /assert_eq!(255/
 #[test]
 fn incrementing_should_stop_at_maximum() {
     let mut app = App::default();
@@ -790,7 +786,7 @@ One of the message variants for the `execute` entry-point that hasn't been teste
 `CounterExecMsg::Dec{:rust}`. The following test is similar to the one you wrote for testing counter
 incrementation, with changes in the highlighted lines:
 
-```rust copy {13,20,28} showLineNumbers{134} filename="test_counter.rs"
+```rust copy {20-21} showLineNumbers{134} filename="test_counter.rs" /CounterInitMsg::Set(126)/ /assert_eq!(125/
 #[test]
 fn decrementing_should_work() {
     let mut app = App::default();
@@ -926,7 +922,7 @@ decrementation. The counter is initialized to 5, decremented 10 times, and the f
 asserted to be 0. This test passes without errors because the `u8` type in the smart contract is
 decremented using the `saturating_sub` function.
 
-```rust copy {13,20-28,35} showLineNumbers{164} filename="test_counter.rs"
+```rust copy {20-28} showLineNumbers{164} filename="test_counter.rs" /CounterInitMsg::Set(5)/ /assert_eq!(0/
 #[test]
 fn decrementing_should_stop_at_minimum() {
     let mut app = App::default();
@@ -1010,11 +1006,11 @@ tested: handling underflow during counter decrementation.
 ## Testing counter value changes
 
 The last red line in the test coverage report highlights the `CounterExecMsg::Set{:rust}` message in
-the `execute` entry-point. The test below sets the counter directly to 126 using the
-`CounterExecMsg::Set(126){:rust}` message. The final value of the counter is then asserted to
-be 126.
+the `execute` entry-point. The test below sets the counter directly to `126` using the
+`CounterExecMsg::Set(126){:rust}` message. The final value of the counter is then asserted to be
+`126`.
 
-```rust copy {13,20-21,28} showLineNumbers{201} filename="test_counter.rs"
+```rust copy {20-21} showLineNumbers{201} filename="test_counter.rs" /CounterInitMsg::Set(5)/ /assert_eq!(126/
 #[test]
 fn setting_value_should_work() {
     let mut app = App::default();

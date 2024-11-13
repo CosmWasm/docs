@@ -624,7 +624,12 @@ of counter overflow during incrementation.
 
 ### Testing increment overflow
 
-```rust copy showLineNumbers{56} filename="test_counter.rs"
+When you recall the **counter** smart contract specification, you will notice that the counter value
+is of type `u8`, which means that the maximum value this counter can hold is equal to 255. What
+happens when you increment the counter beyond 255? The following test initializes the counter with
+value 250 and then increments it 10 times by calling the `inc(){:rust}` entry-point.
+
+```rust copy {14-16} showLineNumbers{56} filename="test_counter.rs" /CounterInitMsg::Set(250)/ /assert_eq!(255/
 #[test]
 fn incrementing_should_stop_at_maximum() {
     let app = App::default();
@@ -646,9 +651,18 @@ fn incrementing_should_stop_at_maximum() {
 }
 ```
 
-`☕` Topics to cover
+In the highlighted lines 69 to 71, the loop is executed 10 times, after which the counter value is
+queried and asserted to be 255. As you will see, this test will pass, indicating that the counter
+stops incrementing once it reaches value 255. This happens because the counter is incremented using
+the `saturating_add{:rust}` function on the `u8` type.
+
+As an exercise, you can modify this test by initializing the counter with zero and incrementing it,
+let say, 1000 times. This will demonstrate how quick and simple it is to test boundary values on
+constrained types using **`MultiTest`**.
 
 #### Running tests
+
+Make sure all tests pass:
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -667,6 +681,8 @@ test result: [32;1mok[0m. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 ```
 
 #### Code coverage
+
+We check now the code coverage, as usual:
 
 ```shell copy filename="TERMINAL"
 ./coverage.sh

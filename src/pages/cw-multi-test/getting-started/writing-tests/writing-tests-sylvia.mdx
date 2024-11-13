@@ -833,7 +833,12 @@ As expected, the `dec(){:rust}` entry-point is already tested.
 
 ### Testing decrement underflow
 
-```rust copy showLineNumbers{94} filename="test_counter.rs"
+Similar to the incrementation overflow test, the following test checks for underflow during counter
+decrementation. The counter is initialized to 5, decremented 10 times, and the final value is
+asserted to be 0. This test passes without errors because the `u8` type in the smart contract is
+decremented using the `saturating_sub` function.
+
+```rust copy {14-16} showLineNumbers{94} filename="test_counter.rs" /CounterInitMsg::Set(5)/ /assert_eq!(0/
 #[test]
 fn decrementing_should_stop_at_minimum() {
     let app = App::default();
@@ -855,9 +860,9 @@ fn decrementing_should_stop_at_minimum() {
 }
 ```
 
-`☕` Topics to cover
-
 #### Running tests
+
+Like in previous examples, let's run all tests:
 
 ```shell copy filename="TERMINAL"
 cargo test
@@ -878,6 +883,8 @@ test result: [32;1mok[0m. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 ```
 
 #### Code coverage
+
+Run the code coverage script, again:
 
 ```shell copy filename="TERMINAL"
 ./coverage.sh

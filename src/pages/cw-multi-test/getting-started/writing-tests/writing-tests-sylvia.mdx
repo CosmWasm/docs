@@ -902,7 +902,11 @@ tested: handling underflow during counter decrementation.
 
 ## Testing counter value changes
 
-```rust copy showLineNumbers{114} filename="test_counter.rs"
+The remaining red lines in the test coverage report highlight the `set(){:rust}` entry-point. The
+test below sets the counter directly to `125` using this entry-point, and the final value of the
+counter is expected to be `125`.
+
+```rust copy {14} showLineNumbers{114} filename="test_counter.rs" /CounterInitMsg::Set(5)/ /assert_eq!(125/
 #[test]
 fn setting_value_should_work() {
     let app = App::default();
@@ -922,13 +926,15 @@ fn setting_value_should_work() {
 }
 ```
 
-`☕` Topics to cover
-
 #### Running tests
+
+Let’s run tests:
 
 ```shell copy filename="TERMINAL"
 cargo test
 ```
+
+All tests should pass:
 
 ```ansi filename="OUTPUT"
      [32;1mRunning[0m tests/mod.rs (target/debug/deps/mod-a819a838d5b2d67d)
@@ -946,6 +952,8 @@ test result: [32;1mok[0m. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtere
 ```
 
 #### Code coverage
+
+Let's generate the final code coverage report:
 
 ```shell copy filename="TERMINAL"
 ./coverage.sh
@@ -1021,7 +1029,8 @@ Nice, you have reached 💯% code coverage.
 [0;30m }
 ```
 
-All functionalities of the **counter** smart contract has been tested.
+All functionalities of the **counter** smart contract has been tested, and the code coverage report
+`[1;32mshines green{:ansi}`.
 
 ## Test cases put all together
 
@@ -1163,7 +1172,11 @@ fn setting_value_should_work() {
 
 ## Summary
 
-`☕` Write summary
+In this chapter, you learned how to test a smart contract written in Sylvia, how to properly
+structure effective test cases, and how to measure testing progress with code coverage reports. You
+also became familiar with the `cargo test` and `cargo nextest run` tools. We recommend trying to
+write tests for a smart contract built using pure CosmWasm libraries to experience the differences
+between these two approaches.
 
 <Cards>
   <Card

@@ -97,7 +97,7 @@ assert_eq!(NB_BECH32M, addr.as_str());
 
 `cw_multi_test::MockApiBech32m`
 
-## (in init)
+## (init)
 
 ```rust showLineNumbers copy
 
@@ -105,9 +105,49 @@ assert_eq!(NB_BECH32M, addr.as_str());
 
 ## Summary
 
-| Prefix             | Format  | Ways to get the address                                                                                                                                                     |
-| ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| default `cosmwasm` | Bech32  | `App::default().api().addr_make("string"){:rust}`<br/>`"string".into_addr(){:rust}`<br/>`"string".into_bech32(){:rust}`<br/>`MockApi::default().addr_make("string"){:rust}` |
-| default `cosmwasm` | Bech32m |                                                                                                                                                                             |
-| custom             | Bech32  |                                                                                                                                                                             |
-| custom             | Bech32m |                                                                                                                                                                             |
+- Prefix: **`default`** = `cosmwasm` │ Format: **`Bech32`**
+
+  ```rust copy
+  let addr = App::default().api().addr_make("string");
+  ```
+
+  ```rust copy
+  let addr = "string".into_addr();
+  ```
+
+  ```rust copy
+  let addr = "string".into_bech32();
+  ```
+
+  ```rust copy
+  let addr = MockApi::default().addr_make("string");
+  ```
+
+- Prefix: **`default`** = `cosmwasm` │ Format: **`Bech32m`**
+
+  ```rust copy
+  let addr = AppBuilder::default()
+                .with_api(MockApiBech32m::new("cosmwasm"))
+                .build(no_init)
+                .api().addr_make("string");
+  ```
+
+  ```rust copy
+  let addr = "string".into_bech32m();
+  ```
+
+  ```rust copy
+  let addr = MockApiBech32m::new("cosmwasm").addr_make("string");
+  ```
+
+- Prefix: **`custom`** (`nebula`) │ Format: **`Bech32`**
+
+  ```rust copy
+
+  ```
+
+- Prefix: **`custom`** (`nebula`) │ Format: **`Bech32m`**
+
+  ```rust copy
+
+  ```

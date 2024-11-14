@@ -15,6 +15,7 @@ static TEMPLATES: phf::Map<&'static str, &'static str> = phf_map! {
     "sylvia-storey-contract" => include_str!("../templates/sylvia/storey_contract.tpl"),
     "sylvia-cw-storage-contract" => include_str!("../templates/sylvia/cw_storage_contract.tpl"),
     "sylvia-empty" => include_str!("../templates/sylvia/empty.tpl"),
+    "empty" => include_str!("../templates/empty.tpl"),
 };
 
 #[inline]

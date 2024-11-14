@@ -4,17 +4,110 @@ tags: ["multitest", "addresses"]
 
 # Addresses
 
-A couple of addresses with the default (`cosmwasm`) and custom (`nebula`) prefixes in Bech32 and
-Bech32m formats will be used in the examples that follow in this chapter:
+A couple of addresses with the default `cosmwasm` and custom `nebula` prefixes in Bech32 and Bech32m
+formats will be used in the examples that follow in this chapter:
 
 ```rust showLineNumbers copy
 const CW_BECH32: &str = "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y";
-
 const CW_BECH32M: &str = "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsl5lc5x";
-
 const NB_PREFIX: &str = "nebula";
-
 const NB_BECH32: &str = "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp";
-
 const NB_BECH32M: &str = "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsevs0fr";
 ```
+
+## App
+
+`cw_multi_test::App`
+
+```rust {1} showLineNumbers copy /api().addr_make/ /assert_eq!(CW_BECH32/
+use cw_multi_test::App;
+
+let app = App::default();
+
+let addr = app.api().addr_make("owner");
+
+assert_eq!(CW_BECH32, addr.as_str());
+```
+
+```rust {1} showLineNumbers copy /api().addr_make/ /MockApiBech32::new(NB_PREFIX)/ /assert_eq!(NB_BECH32/
+use cw_multi_test::{no_init, AppBuilder, MockApiBech32};
+
+let app = AppBuilder::default()
+    .with_api(MockApiBech32::new(NB_PREFIX))
+    .build(no_init);
+
+let addr = app.api().addr_make("owner");
+
+assert_eq!(NB_BECH32, addr.as_str());
+```
+
+```rust {1} showLineNumbers copy /api().addr_make/ /MockApiBech32m::new(NB_PREFIX)/ /assert_eq!(NB_BECH32M/
+use cw_multi_test::{no_init, AppBuilder, MockApiBech32m};
+
+let app = AppBuilder::default()
+    .with_api(MockApiBech32m::new(NB_PREFIX))
+    .build(no_init);
+
+let addr = app.api().addr_make("owner");
+
+assert_eq!(NB_BECH32M, addr.as_str());
+```
+
+## IntoAddr
+
+`cw_multi_test::IntoAddr`
+
+```rust showLineNumbers copy
+
+```
+
+## IntoBech32
+
+`cw_multi_test::IntoBech32`
+
+```rust showLineNumbers copy
+
+```
+
+## IntoBech32m
+
+`cw_multi_test::IntoBech32m`
+
+```rust showLineNumbers copy
+
+```
+
+## MockApi
+
+`cosmwasm_std::testing::MockApi`
+
+```rust showLineNumbers copy
+
+```
+
+## MockApiBech32
+
+`cw_multi_test::MockApiBech32`
+
+```rust showLineNumbers copy
+
+```
+
+## MockApiBech32m
+
+`cw_multi_test::MockApiBech32m`
+
+## (in init)
+
+```rust showLineNumbers copy
+
+```
+
+## Summary
+
+| Prefix             | Format  | Ways to get the address                                                                                                                                                     |
+| ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| default `cosmwasm` | Bech32  | `App::default().api().addr_make("string"){:rust}`<br/>`"string".into_addr(){:rust}`<br/>`"string".into_bech32(){:rust}`<br/>`MockApi::default().addr_make("string"){:rust}` |
+| default `cosmwasm` | Bech32m |                                                                                                                                                                             |
+| custom             | Bech32  |                                                                                                                                                                             |
+| custom             | Bech32m |                                                                                                                                                                             |

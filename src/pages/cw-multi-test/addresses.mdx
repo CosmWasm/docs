@@ -4,4 +4,17 @@ tags: ["multitest", "addresses"]
 
 # Addresses
 
-- `IntoAddr{:rust}`
+A couple of addresses with the default (`cosmwasm`) and custom (`nebula`) prefixes in Bech32 and
+Bech32m formats will be used in the examples that follow in this chapter:
+
+```rust showLineNumbers copy
+const CW_BECH32: &str = "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y";
+
+const CW_BECH32M: &str = "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsl5lc5x";
+
+const NB_PREFIX: &str = "nebula";
+
+const NB_BECH32: &str = "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp";
+
+const NB_BECH32M: &str = "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsevs0fr";
+```

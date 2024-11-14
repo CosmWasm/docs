@@ -1,0 +1,84 @@
+---
+tags: ["sylvia", "attributes"]
+---
+
+import { Callout } from "nextra/components";
+
+# sv::payload attribute
+
+Use `sv::payload` to specify if the
+[`SubMsg::payload`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html) should be
+forwarded as `Binary`. Exactly _ONE_ reply method parameter can be marked with the `sv::payload`
+attribute. If missing, Sylvia will deserialize the `payload` to types defined after the `sv::data`
+parameter.
+
+<Callout>
+  To use `sv::payload` attribute pre Sylvia `2.0.0`, you need to enable the `replies` feature using
+  the [`sv::features`](features).
+</Callout>
+
+## Macros
+
+List of macros supporting the `sv::data` attribute:
+
+- [`contract`](../contract)
+- [`entry_points`](../entry-points)
+
+## Usage
+
+```rust {26, 36, 46-47}, template="sylvia-empty"
+#[cw_serde]
+pub struct ReplyPayload {
+    pub receiver: Addr,
+    pub coins: Coin,
+}
+
+pub struct Contract;
+
+#[cfg_attr(feature = "library", sylvia::entry_points)]
+#[contract]
+#[sv::features(replies)]
+impl Contract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(reply, reply_on=success)]
+    fn success_handler(
+        &self,
+        ctx: ReplyCtx,
+        #[sv::payload(raw)] payload: Binary,
+    ) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(reply, reply_on=error)]
+    fn error_handler(
+        &self,
+        ctx: ReplyCtx,
+        error: String,
+        payload: ReplyPayload,
+    ) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(reply, reply_on=always)]
+    fn error_handler(
+        &self,
+        ctx: ReplyCtx,
+        result: SubMsgResult,
+        receiver: Addr,
+        coins: Coin,
+    ) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+}
+```
+
+Sylvia uses the [`from_json`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/fn.from_json.html) to
+deserialize the `payload` field, so it has to be serialized do JSON.

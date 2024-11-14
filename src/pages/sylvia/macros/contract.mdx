@@ -19,11 +19,16 @@ contract messages
 List of attributes supported by
 [`contract`](https://docs.rs/sylvia/latest/sylvia/attr.contract.html) macro:
 
+- [`attr`](attributes/attr)
 - [`custom`](attributes/custom)
+- [`data`](attributes/data)
 - [`error`](attributes/error)
+- [`features`](attributes/features)
 - [`message`](attributes/message)
 - [`msg`](attributes/msg)
+- [`msg_attr`](attributes/msg_attr)
 - [`override_entry_point`](attributes/override-entry-point)
+- [`payload`](attributes/payload)
 
 ## Usage
 
@@ -128,8 +133,9 @@ where
 This is a standard way to create generic structs in Rust. Two important things to mention are:
 
 - Rust will complain that generics used in method signatures are unused. You have to create a
-  `std::marker::PhantomData` field to silence this error. In case a contract uses multiple generic
-  types, simply wrap them in a tuple `PhantomData<(T1, T2)>`.
+  [`PhantomData`](https://doc.rust-lang.org/std/marker/struct.PhantomData.html) field to silence
+  this error. In case a contract uses multiple generic types, simply wrap them in a tuple
+  `PhantomData<(T1, T2)>`.
 - If generic types are used as part of the method signature, generated messages will require them to
   fulfill their trait bounds. In most cases it's enough to add the
   `sylvia::types::CustomMsg + \'static` bounds.

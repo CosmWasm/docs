@@ -8,11 +8,11 @@ import { Callout } from "nextra/components";
 
 ## Rust installation
 
-To work with CosmWasm smart contract, you will need rust installed on your machine. If you don't
-have one, you can find installation instructions on
+To work with CosmWasm smart contract, you will need Rust installed on your machine. If you don't
+have it, you can find installation instructions on
 [the Rust website](https://www.rust-lang.org/tools/install).
 
-I assume you are working with a stable Rust channel in this book.
+I assume you are working with the stable Rust channel in this book.
 
 Additionally, you will need the Wasm rust compiler backend installed to build Wasm binaries. To
 install it, run:
@@ -47,7 +47,7 @@ Contract checking 1.2.3
 ## Verifying the installation
 
 To guarantee you are ready to build your smart contracts, you need to make sure you can build
-examples. Checkout the [`cw-plus`](https://github.com/CosmWasm/cw-plus) repository and run the
+examples. Check out the [`cw-plus`](https://github.com/CosmWasm/cw-plus) repository and run the
 testing command in its folder:
 
 ```shell copy filename="TERMINAL"
@@ -56,8 +56,8 @@ git clone git@github.com:CosmWasm/cw-plus.git && cd ./cw-plus && cargo test
 
 You should see that everything in the repository gets compiled and all tests pass.
 
-THe [`cw-plus`](https://github.com/CosmWasm/cw-plus) is a great place to find example contracts -
-look for them in contracts directory. The repository is maintained by CosmWasm creators, so
+The [`cw-plus`](https://github.com/CosmWasm/cw-plus) is a great place to find example contracts -
+look for them in the `contracts` directory. The repository is maintained by CosmWasm creators, so
 contracts in there should follow good practices.
 
 To verify the [`cosmwasm-check`](https://github.com/CosmWasm/cosmwasm/tree/main/packages/check)

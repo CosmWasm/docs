@@ -39,25 +39,25 @@ entry point. The `instantiate` takes four arguments:
 - [`env: Env`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Env.html) is an object
   representing the blockchains state when executing the message - the chain height and id, current
   timestamp, and the called contract address.
-- [`info: MessageInfo`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.MessageInfo.html) contains
-  metainformation about the message that triggered the execution - an address that sends the
-  message, and chain native tokens sent with the message.
+- [`info: MessageInfo`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.MessageInfo.html)
+  contains metainformation about the message that triggered the execution - an address that sends
+  the message, and chain native tokens sent with the message.
 - [`msg: Empty`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Empty.html) is the message
-  triggering execution itself - for now, it is the `Empty` type that represents `{}` JSON, but the type
-  of this argument can be anything that is deserializable, and we will pass more complex types here
-  in the future.
+  triggering execution itself - for now, it is the `Empty` type that represents `{}` JSON, but the
+  type of this argument can be anything that is deserializable, and we will pass more complex types
+  here in the future.
 
 If you are new to the blockchain, those arguments may not make much sense to you, but as you work
 through this guide, I will explain their usage one by one.
 
 Notice an essential attribute decorating our entry point
-[`#[entry_point]`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/attr.entry_point.html). Its purpose
-is to wrap the whole entry point to the form Wasm runtime understands. proper Wasm entry points
-can use only basic types supported natively by Wasm specification, and Rust structures and enums are
-not in this set. Working with such entry points would be rather overcomplicated, so CosmWasm
-creators delivered the entry_point macro. It creates the raw Wasm entry point, calling the decorated
-function internally and doing all the magic required to build our high-level Rust arguments from
-arguments passed by Wasm runtime.
+[`#[entry_point]`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/attr.entry_point.html). Its
+purpose is to wrap the whole entry point to the form Wasm runtime understands. proper Wasm entry
+points can use only basic types supported natively by Wasm specification, and Rust structures and
+enums are not in this set. Working with such entry points would be rather overcomplicated, so
+CosmWasm creators delivered the entry_point macro. It creates the raw Wasm entry point, calling the
+decorated function internally and doing all the magic required to build our high-level Rust
+arguments from arguments passed by Wasm runtime.
 
 The next thing to look at is the return type. I used
 [`StdResult<Response>`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/type.StdResult.html) for

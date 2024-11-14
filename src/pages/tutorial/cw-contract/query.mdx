@@ -1,9 +1,9 @@
 # Creating a query
 
 We have already created a simple contract reacting to an empty instantiate message. Unfortunately,
-it is not very useful. Let's make it a bit reactive.
+it is not very useful. Let's make it a bit interactive.
 
-First, we need to add [`serde`](https://crates.io/crates/serde) crate to our dependencies. It would
+First, we need to add the [`serde`](https://crates.io/crates/serde) crate to our dependencies. It would
 help us with the serialization and deserialization of query messages.
 
 ```toml {11} copy filename="Cargo.toml"
@@ -60,7 +60,7 @@ serializable. We are just deriving the
 [`Deserialize`](https://docs.serde.rs/serde/trait.Deserialize.html) traits from `serde` crate.
 
 Then we need to implement our entry point. It is very similar to the `instantiate` one. The first
-significant difference is a type of `deps` argument. For `instantiate`, it was a `DepMut`, but here
+significant difference is the type of `deps` argument. For `instantiate`, it was a `DepMut`, but here
 we went with a [`Deps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Deps.html) object.
 That is because the query can never alter the smart contract's internal state. It can only read the
 state. It comes with some consequences - for example, it is impossible to implement caching for
@@ -69,15 +69,15 @@ future queries (as it would require some data cache to write to).
 The other difference is the lack of the `info` argument. The reason here is that the entry point
 which performs actions (like instantiation or execution) can differ how an action is performed based
 on the message metadata - for example, they can limit who can perform an action (and do so by
-checking the message `sender`). It is not a case for queries. Queries are supposed just purely to
+checking the message `sender`). It is not the case for queries. Queries are supposed just purely to
 return some transformed contract state. It can be calculated based on some chain metadata (so the
 state can "automatically" change after some time), but not on message info.
 
 Note that our entry point still has the same `Empty` type for its `msg` argument - it means that the
 query message we would send to the contract is still an empty JSON: `{}`
 
-The last thing that changed is the return type. Instead of returning the `Response` type on the
-success case, we return an arbitrary serializable object. This is because queries are not using a
+The last thing that changed is the return type. Instead of returning the `Response` type for the
+success case, we return an arbitrary serializable object. This is because queries do not use a
 typical actor model message flow - they cannot trigger any actions nor communicate with other
 contracts in ways different than querying them (which is handled by the `deps` argument). The query
 always returns plain data, which should be presented directly to the querier.
@@ -94,7 +94,7 @@ We have a query entry point, but there is a problem with the query message. It i
 JSON. It is terrible - if we would like to add another query in the future, it would be difficult to
 have any reasonable distinction between query variants.
 
-In practice, we address this by using a non-empty query message type. Improve our contract:
+In practice, we address this by using a non-empty query message type. Let`s improve our contract:
 
 ```rust {11-14, 27, 30-38} copy filename="src/lib.rs" template="empty"
 use cosmwasm_std::{
@@ -320,4 +320,4 @@ pub fn query(deps: Deps, env: Env, msg: msg::QueryMsg)
 
 Straightforward top-level module. Definition of submodules and entry points, nothing more.
 
-Now, when we have the contract ready to do something, let's go and test it.
+Now, since our contract is ready to do something, let's go and test it.

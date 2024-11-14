@@ -13,7 +13,7 @@ cargo build --target wasm32-unknown-unknown --release
 
 The `--target` argument tells cargo to perform cross-compilation for a given target instead of
 building a native binary for an OS it is running on - in this case, `wasm32-unknown-unknown`, which
-is a fancy name for Wasm target.
+is a fancy name for the Wasm target.
 
 Additionally, I passed the `--release` argument to the command - it is not required, but in most
 cases, debug information is not very useful while running on-chain. It is crucial to reduce the
@@ -22,9 +22,9 @@ uploaded binary size for gas cost minimization. It is worth knowing that there i
 building even smaller binaries. For production, all the contracts should be compiled using this
 tool, but for learning purposes, it is not an essential thing to do.
 
-## Aliasing build command
+## Aliasing the build command
 
-Now I can see you are disappointed in building your contracts with some overcomplicated command
+Now I can imagine you are disappointed in building your contracts with some overcomplicated command
 instead of simple `cargo build`. Fortunately, it is not the case. The common practice is to alias
 the building command to make it as simple as building a native app.
 
@@ -43,7 +43,7 @@ information.
 
 ## Checking contract validity
 
-When the contract is built, the last step is to ensure it is a valid CosmWasm contract is to call
+Once the contract is built, the last step is to ensure it is a valid CosmWasm contract by calling
 `cosmwasm-check` on it:
 
 ```shell copy filename="TERMINAL"

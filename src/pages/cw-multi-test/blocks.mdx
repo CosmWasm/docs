@@ -22,11 +22,12 @@ blockchain, like:
 as height and timestamp, in order to test delays on the blockchain.
 
 <Callout emoji="🚨">
-  Although it is possible to modify only the height or only the timestamp of the block in MultiTest,
-  this is not possible in a real-life blockchain and may lead to unpredictable test results.
+  Although it is possible to modify **only** the height or **only** the timestamp of the block in
+  **`MultiTest`**, this is not feasible in a real-life blockchain and may lead to unpredictable test
+  results that do not reflect the blockchain's real-life behavior.
 </Callout>
 
-<Callout type="info">
+<Callout type="info" emoji="☉">
   Always increment the height **and** the timestamp of the block in tests.
 </Callout>
 
@@ -37,7 +38,7 @@ as height and timestamp, in order to test delays on the blockchain.
 - `App::default{:rust}`
 - `app.block_info{:rust}`
 
-```rust showLineNumbers {4, 7} /block_info/
+```rust showLineNumbers {4, 7} /block_info/ /assert_eq!(12345/ /assert_eq!(1571797419879305533/ /assert_eq!("cosmos-testnet-14002"/
 use cw_multi_test::App;
 
 // create the default chain simulator
@@ -63,7 +64,7 @@ assert_eq!("cosmos-testnet-14002", block.chain_id);
 - `app.set_block{:rust}`
 - `cosmwasm_std::BlockInfo{:rust}`
 
-```rust showLineNumbers {8-12} /set_block/
+```rust showLineNumbers {8-12} /set_block/ /BlockInfo/
 use cosmwasm_std::{BlockInfo, Timestamp};
 use cw_multi_test::App;
 
@@ -94,10 +95,11 @@ assert_eq!("starship-testnet", block.chain_id);
 
 (todo)
 
+- what is the deafult step
 - `app.update_block{:rust}`
 - `next_block{:rust}`
 
-```rust showLineNumbers {7} /update_block/
+```rust showLineNumbers {7} /update_block/ /next_block/
 use cw_multi_test::{App, next_block};
 
 // create the default chain simulator

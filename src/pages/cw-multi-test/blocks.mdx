@@ -50,9 +50,10 @@ In **`MultiTest`**, the chain is initialized with a default block that has the f
 - `time{:rust}`: **1571797419879305533** (Wed Oct 23 2019 02:23:39 GMT+0000),
 - `chain_id{:rust}`: **cosmos-testnet-14002**.
 
-These properties constitute the [BlockInfo] structure, which is defined in the CosmWasm library for
-representing block metadata. [BlockInfo] can be retrieved at any point in a test by calling the
-[`block_info(){:rust}`][block_info] function provided by `App{:rust}`.
+These properties constitute the [`BlockInfo{:rust}`][BlockInfo] structure, which is defined in the
+CosmWasm library for representing block metadata. [`BlockInfo{:rust}`][BlockInfo] can be retrieved
+at any point in a test by calling the [`block_info(){:rust}`][block_info] function provided by
+`App{:rust}`.
 
 The following example illustrates this case in detail.
 
@@ -88,7 +89,7 @@ default values are checked:
 ## Initialization with the custom block
 
 Although the chain initialization with the default block may be suitable for most test cases, it is
-possible to initialize the chain with a custom [BlockInfo] using the
+possible to initialize the chain with a custom [`BlockInfo{:rust}`][BlockInfo] using the
 [`set_block(){:rust}`][set_block] function provided by `App{:rust}`. The following example explains
 this case in detail.
 
@@ -121,8 +122,8 @@ assert_eq!("starship-testnet", block.chain_id);
 
 The chain is started with the default settings in line 5. Then in line 8, the
 [`set_block(){:rust}`][set_block] function is called with custom block properties provided as
-[BlockInfo] structure. The current block metadata is retrieved in line 12 and in the next few lines
-the detailed values are checked:
+[`BlockInfo{:rust}`][BlockInfo] structure. The current block metadata is retrieved in line 12 and in
+the next few lines the detailed values are checked:
 
 - line 18: block `height{:rust}` is now `1{:rust}`,
 - line 21: new block `time{:rust}` is a Unix timestamp of value `1723627489{:rust}`, which is the
@@ -174,10 +175,12 @@ is checked against the Unix timestamp, which is 5 seconds later than the default
 
 ## Generating next block with the custom step
 
-(todo)
-
-- `app.update_block{:rust}`
-- `|block|{}{:rust}`
+Several events on the blockchain occur after a period longer than a few seconds. In such cases,
+incrementing the block time multiple times until the desired time is reached would be impractical.
+In **`MultiTest`**, it is possible to advance the block using a specific block height and time. To
+achieve this, pass a custom closure to the [`update_block{:rust}`][update_block] function. This
+closure takes a mutable [`BlockInfo{:rust}`][BlockInfo] structure as an argument and modifies its
+properties, as shown in the example below.
 
 ```rust showLineNumbers {7-10} /update_block/
 use cw_multi_test::App;
@@ -205,3 +208,11 @@ assert_eq!(1572315819879305533, block.time.nanos());
 // chain identifier remains unchanged
 assert_eq!("cosmos-testnet-14002", block.chain_id);
 ```
+
+In line 4, the default block is initialized during the chain start. Then in line 7, the
+[`update_block{:rust}`][update_block] function takes a custom closure as an argument. This closure
+increments the block height by **10000** and advances the block time by **6 days**. Similarly like
+in prevous examples, the new block metadata is retrieved and the current properties are checked. The
+new block height should be `12345{:rust}` + `10000{:rust}` = `22345{:rust}`. The new block time
+should be `1572315819879305533{:rust}` -`1571797419879305533{:rust}` = `518400000000000{:rust}` =
+518400 seconds = 8640 minutes = 144 hours = **6 days**. The chain identifier remains unchanged.

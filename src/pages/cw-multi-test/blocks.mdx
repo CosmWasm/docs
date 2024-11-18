@@ -4,6 +4,9 @@ tags: ["multitest", "blocks"]
 
 import { Callout } from "nextra/components";
 
+[BlockInfo]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html
+[block_info]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.block_info
+
 # Blocks
 
 There are several cases when testing CosmWasm smart contracts requires simulating delays on the
@@ -31,14 +34,21 @@ as height and timestamp, in order to test delays on the blockchain.
   Always increment the height **and** the timestamp of the block in tests.
 </Callout>
 
+In the following chapters you will find practical examples of several operations on blocks.
+
 ## Initialization with the default block
 
-(todo)
+In **`MultiTest`**, the chain is initialized with a default block that has the following properties:
 
-- `App::default{:rust}`
-- `app.block_info{:rust}`
+- `height{:rust}`: **12345**,
+- `time{:rust}`: **1571797419879305533** (Wed Oct 23 2019 02:23:39 GMT+0000),
+- `chain_id{:rust}`: **cosmos-testnet-14002**.
 
-```rust showLineNumbers {4, 7} /block_info/ /assert_eq!(12345/ /assert_eq!(1571797419879305533/ /assert_eq!("cosmos-testnet-14002"/
+These properties constitute the [BlockInfo] structure, which is defined in the CosmWasm library for
+representing block metadata. [BlockInfo] can be retrieved at any point in a test by calling the
+[`block_info(){:rust}`][block_info] function provided by `App{:rust}`.
+
+```rust {4, 7} showLineNumbers copy /block_info/ /assert_eq!(12345/ /assert_eq!(1571797419879305533/ /assert_eq!("cosmos-testnet-14002"/
 use cw_multi_test::App;
 
 // create the default chain simulator
@@ -95,17 +105,17 @@ assert_eq!("starship-testnet", block.chain_id);
 
 (todo)
 
-- what is the deafult step
+- what is the default step
 - `app.update_block{:rust}`
 - `next_block{:rust}`
 
 ```rust showLineNumbers {7} /update_block/ /next_block/
-use cw_multi_test::{App, next_block};
+use cw_multi_test::{next_block, App};
 
 // create the default chain simulator
 let mut app = App::default();
 
-// update the block by `moving` to the next one
+// update the block by `generating` next block
 app.update_block(next_block);
 
 // get the current block properties
@@ -136,8 +146,8 @@ use cw_multi_test::App;
 // create the default chain simulator
 let mut app = App::default();
 
-// 'move' to custom block
-app.update_block(|block|{
+// 'generate' custom block
+app.update_block(|block| {
     block.time = block.time.plus_days(6);
     block.height += 10000;
 });

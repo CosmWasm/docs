@@ -4,150 +4,280 @@ tags: ["multitest", "addresses"]
 
 # Addresses
 
-A couple of addresses with the default `cosmwasm` and custom `nebula` prefixes in Bech32 and Bech32m
-formats will be used in the examples that follow in this chapter:
+## User addresses
 
-```rust showLineNumbers copy
+```text
+const CW_PREFIX: &str = "cosmwasm";
+
 const CW_BECH32: &str = "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y";
+
 const CW_BECH32M: &str = "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsl5lc5x";
+
 const NB_PREFIX: &str = "nebula";
+
 const NB_BECH32: &str = "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp";
+
 const NB_BECH32M: &str = "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsevs0fr";
 ```
 
-## App
+### App
 
-`cw_multi_test::App`
+`App.api().addr_make`
 
-```rust {1} showLineNumbers copy /api().addr_make/ /assert_eq!(CW_BECH32/
+> Default prefix is `cosmwasm`, default format is `Bech32`
+
+```rust showLineNumbers copy /addr_make/
 use cw_multi_test::App;
 
 let app = App::default();
 
 let addr = app.api().addr_make("owner");
 
-assert_eq!(CW_BECH32, addr.as_str());
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y",
+    addr.as_str()
+);
 ```
 
-```rust {1} showLineNumbers copy /api().addr_make/ /MockApiBech32::new(NB_PREFIX)/ /assert_eq!(NB_BECH32/
+> `Bech32` with custom prefix
+
+```rust showLineNumbers copy /addr_make/ /MockApiBech32::new/
 use cw_multi_test::{no_init, AppBuilder, MockApiBech32};
 
 let app = AppBuilder::default()
-    .with_api(MockApiBech32::new(NB_PREFIX))
+    .with_api(MockApiBech32::new("nebula"))
     .build(no_init);
 
 let addr = app.api().addr_make("owner");
 
-assert_eq!(NB_BECH32, addr.as_str());
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp",
+    addr.as_str()
+);
 ```
 
-```rust {1} showLineNumbers copy /api().addr_make/ /MockApiBech32m::new(NB_PREFIX)/ /assert_eq!(NB_BECH32M/
+> `Bech32m` with custom prefix
+
+```rust showLineNumbers copy /addr_make/ /MockApiBech32m::new/
 use cw_multi_test::{no_init, AppBuilder, MockApiBech32m};
 
 let app = AppBuilder::default()
-    .with_api(MockApiBech32m::new(NB_PREFIX))
+    .with_api(MockApiBech32m::new("nebula"))
     .build(no_init);
 
 let addr = app.api().addr_make("owner");
 
-assert_eq!(NB_BECH32M, addr.as_str());
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsevs0fr",
+    addr.as_str()
+);
 ```
 
-## IntoAddr
+> `Bech32m` with custom prefix equal to default prefix `cosmwasm`
+
+```rust showLineNumbers copy /addr_make/ /MockApiBech32m::new/
+use cw_multi_test::{no_init, AppBuilder, MockApiBech32m};
+
+let app = AppBuilder::default()
+    .with_api(MockApiBech32m::new("cosmwasm"))
+    .build(no_init);
+
+let addr = app.api().addr_make("owner");
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsl5lc5x",
+    addr.as_str()
+);
+```
+
+### IntoAddr
 
 `cw_multi_test::IntoAddr`
 
-```rust showLineNumbers copy
+> Default prefix is `cosmwasm`, default format is `Bech32`
 
+```rust showLineNumbers copy
+use cw_multi_test::IntoAddr;
+
+let addr = "owner".into_addr();
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y",
+    addr.as_str()
+)
 ```
 
-## IntoBech32
+> `Bech32m` with custom prefix
+
+```rust showLineNumbers copy
+use cw_multi_test::IntoAddr;
+
+let addr = "owner".into_addr_with_prefix("nebula");
+
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp",
+    addr.as_str()
+);
+```
+
+### IntoBech32
 
 `cw_multi_test::IntoBech32`
 
-```rust showLineNumbers copy
+> Default prefix is `cosmwasm`, format is always `Bech32`
 
+```rust showLineNumbers copy
+use cw_multi_test::IntoBech32;
+
+let addr = "owner".into_bech32();
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y",
+    addr.as_str()
+);
 ```
 
-## IntoBech32m
+> Custom prefix, format is always `Bech32`
+
+```rust showLineNumbers copy
+use cw_multi_test::IntoBech32;
+
+let addr = "owner".into_bech32_with_prefix("nebula");
+
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp",
+    addr.as_str()
+)
+```
+
+### IntoBech32m
 
 `cw_multi_test::IntoBech32m`
 
-```rust showLineNumbers copy
+> Default prefix is `cosmwasm`, format is always `Bech32m`
 
+```rust showLineNumbers copy
+use cw_multi_test::IntoBech32m;
+
+let addr = "owner".into_bech32m();
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsl5lc5x",
+    addr.as_str()
+);
 ```
 
-## MockApi
+> Custom prefix, format is always `Bech32m`
+
+```rust showLineNumbers copy
+use cw_multi_test::IntoBech32m;
+
+let addr = "owner".into_bech32m_with_prefix("nebula");
+
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsevs0fr",
+    addr.as_str()
+);
+```
+
+### MockApi
 
 `cosmwasm_std::testing::MockApi`
 
-```rust showLineNumbers copy
+> Default prefix is `cosmwasm`, format is always `Bech32`
 
+```rust showLineNumbers copy
+use cosmwasm_std::testing::MockApi;
+
+let addr = MockApi::default().addr_make("owner");
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y",
+    addr.as_str()
+);
 ```
 
-## MockApiBech32
+> Custom prefix, format is always `Bech32`
+
+```rust showLineNumbers copy
+use cosmwasm_std::testing::MockApi;
+
+let addr = MockApi::default().with_prefix("nebula").addr_make("owner");
+
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp",
+    addr.as_str()
+);
+```
+
+### MockApiBech32
 
 `cw_multi_test::MockApiBech32`
 
-```rust showLineNumbers copy
+> Default prefix is `cosmwasm`, format is always `Bech32`
 
+```rust showLineNumbers copy
+use cw_multi_test::MockApiBech32;
+
+let addr = MockApiBech32::new("cosmwasm").addr_make("owner");
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y",
+    addr.as_str()
+);
 ```
 
-## MockApiBech32m
+> Custom prefix, format is always `Bech32`
+
+```rust showLineNumbers copy
+use cw_multi_test::MockApiBech32;
+
+let addr = MockApiBech32::new("nebula").addr_make("owner");
+
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsvsqrvp",
+    addr.as_str()
+);
+```
+
+### MockApiBech32m
 
 `cw_multi_test::MockApiBech32m`
 
-## (init)
+> Default prefix is `cosmwasm`, format is always `Bech32m`
+
+```rust showLineNumbers copy
+use cw_multi_test::MockApiBech32m;
+
+let addr = MockApiBech32m::new("cosmwasm").addr_make("owner");
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsl5lc5x",
+    addr.as_str()
+);
+```
+
+> Custom prefix, format is always `Bech32m`
+
+```rust showLineNumbers copy
+use cw_multi_test::MockApiBech32m;
+
+let addr = MockApiBech32m::new("nebula").addr_make("owner");
+
+assert_eq!(
+    "nebula1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqsevs0fr",
+    addr.as_str()
+);
+```
+
+### (init)
 
 ```rust showLineNumbers copy
 
 ```
 
-## Summary
+## Contract addresses
 
-- Prefix: **`default`** = `cosmwasm` │ Format: **`Bech32`**
+## Validators' addresses
 
-  ```rust copy
-  let addr = App::default().api().addr_make("string");
-  ```
-
-  ```rust copy
-  let addr = "string".into_addr();
-  ```
-
-  ```rust copy
-  let addr = "string".into_bech32();
-  ```
-
-  ```rust copy
-  let addr = MockApi::default().addr_make("string");
-  ```
-
-- Prefix: **`default`** = `cosmwasm` │ Format: **`Bech32m`**
-
-  ```rust copy
-  let addr = AppBuilder::default()
-                .with_api(MockApiBech32m::new("cosmwasm"))
-                .build(no_init)
-                .api().addr_make("string");
-  ```
-
-  ```rust copy
-  let addr = "string".into_bech32m();
-  ```
-
-  ```rust copy
-  let addr = MockApiBech32m::new("cosmwasm").addr_make("string");
-  ```
-
-- Prefix: **`custom`** (`nebula`) │ Format: **`Bech32`**
-
-  ```rust copy
-
-  ```
-
-- Prefix: **`custom`** (`nebula`) │ Format: **`Bech32m`**
-
-  ```rust copy
-
-  ```
+WIP (left for the next version)

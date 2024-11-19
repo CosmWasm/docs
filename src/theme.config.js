@@ -41,18 +41,16 @@ export default {
   editLink: { text: "Edit this page on GitHub" },
   footer: {
     text: (
-      <p>
-        CosmWasm is a registered trademark of Confio GmbH (
-        <a
-          href="https://confio.gmbh/impressum"
-          target="_blank"
-          rel="noreferrer"
-          style={{ textDecoration: "underline" }}
-        >
-          Legal Information
-        </a>
-        )
-      </p>
+      <div>
+        <p>CosmWasm is proudly created and maintained by Confio.</p>
+        <p style={{ marginTop: "8px" }}>
+          This deployment is hosted by Confio GmbH (
+          <a href="https://confio.gmbh/impressum" target="_blank" style={{ textDecoration: "underline" }}>
+            Legal Information
+          </a>
+          ).
+        </p>
+      </div>
     ),
   },
   main: ({ children }) => (

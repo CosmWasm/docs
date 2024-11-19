@@ -44,7 +44,7 @@ export default {
       <div>
         <p>CosmWasm is proudly created and maintained by Confio.</p>
         <p style={{ marginTop: "8px" }}>
-          This deployment is hosted by Confio GmbH (
+          CosmWasm is a registered trademark of Confio GmbH. Published by Confio GmbH (
           <a href="https://confio.gmbh/impressum" target="_blank" style={{ textDecoration: "underline" }}>
             Legal Information
           </a>

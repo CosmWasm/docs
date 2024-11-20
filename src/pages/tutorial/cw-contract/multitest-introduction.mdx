@@ -1,14 +1,14 @@
 # Introducing multitest
 
-Let me introduce the [`multitest`](../../cw-multi-test) - library for creating tests for smart
+Let me introduce [`MultiTest`](../../cw-multi-test) - a library for creating tests for smart
 contracts in Rust.
 
-The core idea of `multitest` is abstracting an entity of contract and simulating the blockchain
-environment for testing purposes. The purpose of this is to be able to test communication between
-smart contracts. It does its job well, but it is also an excellent tool for testing single-contract
-scenarios.
+The core idea of [`MultiTest`](../../cw-multi-test) is to abstract smart contracts and simulate the
+blockchain environment for testing purposes. The purpose of this is to be able to test communication
+between smart contracts. It does its job well, but it is also an excellent tool for testing
+single-contract scenarios.
 
-First, we need to add a multitest to our `Cargo.toml`.
+First, we need to add [`MultiTest`](../../cw-multi-test) to our `Cargo.toml`.
 
 ```toml copy filename="Cargo.toml"
 [package]
@@ -32,7 +32,7 @@ I added a new
 section with dependencies not used by the final binary but which may be used by tools around the
 development process - for example, tests.
 
-When we have the dependency ready, update our test to use the framework:
+Once the dependency is there, let's update our test to use the framework:
 
 ```rust copy {23-25, 39-76} filename="src/contract.rs"
 use crate::msg::{GreetResp, QueryMsg};
@@ -114,16 +114,17 @@ mod tests {
 ```
 
 You probably notice that I added the function for an `execute` entry point. I didn't add the entry
-point itself or the function's implementation, but for the multitest purposes contract has to
+point itself or the function's implementation, but for multitest purposes, the contract has to
 contain at least instantiate, query, and execute handlers. I attributed the function as
 [`#[allow(dead_code)]`](https://doc.rust-lang.org/reference/attributes/diagnostics.html#lint-check-attributes),
 so, `cargo` will not complain about it not being used anywhere. Enabling it for tests only with
 `#[cfg(test)]` would also be a way.
 
-Then at the beginning of the test, I created the
+Then, at the beginning of the test, I created the
 [`App`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#) object. It is a core
 multitest entity representing the virtual blockchain on which we will run our contracts. As you can
-see, we can call functions on it just like we would interact with blockchain using `wasmd`!
+see, we can call functions on it just like we could when interacting with a blockchain using
+`wasmd`!
 
 Right after creating `app`, I prepared the representation of the `code`, which would be "uploaded"
 to the blockchain. As multitests are just native Rust tests, they do not involve any Wasm binaries,

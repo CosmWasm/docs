@@ -1,8 +1,9 @@
 # Testing a query
 
-Last time we created a new query, now it is time to test it out. We will start with the basics - the
-unit test. This approach is simple and doesn't require knowledge besides Rust. Go to the
-`src/contract.rs` and add a test in its module:
+Last time we created a new query. Now it is time to test it out.
+
+We will start with the basics - the unit test. This approach is simple and doesn't require knowledge
+besides Rust. Go to the `src/contract.rs` and add a test in its module:
 
 ```rust copy filename="src/contract.rs"
 // ...
@@ -25,8 +26,8 @@ mod tests {
 ```
 
 If you ever wrote a unit test in Rust, nothing should surprise you here. Just a simple test-only
-module contains local function unit tests. The problem is - this test doesn't build yet. We need to
-tweak our message types a bit.
+module which contains local function unit tests. The problem is - this test doesn't build yet. We
+need to tweak our message types a bit.
 
 ```rust {3, 8} copy filename="src/msg.rs" template="empty"
 use serde::{Deserialize, Serialize};
@@ -44,15 +45,14 @@ pub enum QueryMsg {
 
 I added three new derives to both message types.
 [`PartialEq`](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html) is required to allow comparing
-types for equality - so we can check if they are equal. The
+types for equality - so we can check if they are equal.
 [`Debug`](https://doc.rust-lang.org/std/fmt/trait.Debug.html) is a trait generating debug-printing
 utilities. It is used by [`assert_eq!`](https://doc.rust-lang.org/std/macro.assert_eq.html) to
 display information about mismatch if an assertion fails. Note that because we are not testing the
 `QueryMsg` in any way, the additional trait derives are optional. Still, it is a good practice to
 make all messages both `PartialEq` and `Debug` for testability and consistency. The last one,
-[`Clone`](https://doc.rust-lang.org/std/clone/trait.Clone.html) is not needed for now yet, but it is
-also good practice to allow messages to be cloned around. We will also require that later, so I
-added it already not to go back and forth.
+[`Clone`](https://doc.rust-lang.org/std/clone/trait.Clone.html) is not needed yet, but it is also
+good practice to allow messages to be cloned around. We will also require that later.
 
 Now we are ready to run our test:
 
@@ -73,10 +73,10 @@ Yay! Test passed!
 ## Contract as a black box
 
 Now let's go a step further. The Rust testing utility is a friendly tool for building even
-higher-level tests. We are currently testing smart contract internals, but if you think about how
-your smart contract is visible from the outside world. It is a single entity that is triggered by
-some input messages. We can create tests that treat the whole contract as a black box by testing it
-via our `query` function. Let's update our test:
+higher-level tests. We are currently testing smart contract internals, but think about what your
+smart contract looks like from the outside world. It is a single entity that is triggered by some
+input messages. We can create tests that treat the whole contract as a black box by testing it via
+our `query` function. Let's update our test:
 
 ```rust copy filename="src/contract.rs"
 // ...
@@ -113,11 +113,11 @@ Fortunately, `cosmwasm-std` provides utilities for testing those -
 and [`mock_env`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/fn.mock_env.html)
 functions.
 
-You may notice the dependencies mock of a type
+You may notice the dependencies mock is of type
 [`OwnedDeps`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.OwnedDeps.html) instead of
 `Deps`, which we need here - this is why the
 [`as_ref`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.OwnedDeps.html#method.as_ref)
-function is called on it. If we looked for a `DepsMut` object, we would use
+function is called on it. If we needed a `DepsMut` object, we would use
 [`as_mut`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.OwnedDeps.html#method.as_mut)
 instead.
 
@@ -140,6 +140,7 @@ mod tests {
     fn greet_query() {
         let mut deps = mock_dependencies();
         let env = mock_env();
+        let sender = "sender".into_addr();
 
         instantiate(
             deps.as_mut(),
@@ -171,9 +172,9 @@ The `info` argument is another story. The message info is unique for each messag
 the `info` mock, we must pass two arguments to the
 [`mock_info`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/fn.mock_info.html) function.
 
-First is the address performing a call. It may look strange to pass `sender` as an address instead
-of some mysterious `wasm` followed by hash, but it is a valid address. For testing purposes, such
-addresses are typically better, as they are way more verbose in case of failing tests.
+First is the address performing the call. It may look strange to pass `sender` as an address instead
+of some mysterious `wasm` followed by hash. For testing purposes, such addresses are typically
+better, as they are way more readable in case of failing tests.
 
 The second argument is funds sent with the message. For now, we leave it as an empty slice, as I
 don't want to talk about token transfers yet - we will cover it later.

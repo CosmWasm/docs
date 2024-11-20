@@ -2,5 +2,7 @@
   "contract-creation": "Contract creation",
   "entry-points": "Entry points",
   "building-contract": "Building the contract",
-  "query": "Creating a query"
+  "query": "Creating a query",
+  "testing-query": "Testing the query",
+  "multitest-introduction": "Multitest introduction"
 }

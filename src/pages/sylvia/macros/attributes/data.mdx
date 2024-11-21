@@ -43,7 +43,7 @@ impl Contract {
     #[sv::msg(reply, handlers=[remote_instantiated], reply_on=success)]
     fn store_remote_address(
         &self,
-        ctx: ReplyCtx
+        ctx: ReplyCtx,
         #[sv::data(instantiate)] data: MsgInstantiateContractResponse,
         #[sv::payload(raw)] payload: Binary,
     ) -> StdResult<Response> {

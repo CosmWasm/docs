@@ -73,11 +73,11 @@ We can also use the generated
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust {1, 4, 21-23, 29-39, 45-51}, template="sylvia-empty"
+```rust {1, 4, 22-24, 30-38, 44-48}, template="sylvia-empty"
 use external_contract::sv::Executor;
 use cw_storey::containers::Item;
 
-const SUBMSG_ID: u64 = 1;
+use sv::SubMsgMethods;
 
 pub struct ReplyContract {
     remote: Item<Remote<'static, ExternalContract>>,
@@ -85,6 +85,7 @@ pub struct ReplyContract {
 
 #[entry_points]
 #[contract]
+#[sv::features(replies)]
 impl ReplyContract {
     pub fn new() -> Self {
         Self {
@@ -102,29 +103,24 @@ impl ReplyContract {
 
     #[sv::msg(exec)]
     fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
-        let msg = self
+        let sub_msg = self
             .remote
             .access(&mut CwStorage(ctx.deps.storage))
             .get()?
             .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?
             .executor()
             .external_exec()?
-            .build();
+            .build()
+            .your_reply_handler(42)?;
 
-        let sub_msg = SubMsg::reply_on_success(msg, SUBMSG_ID);
         let resp = Response::new().add_submessage(sub_msg);
         Ok(resp)
     }
 
     #[sv::msg(reply)]
-    fn reply(&self, ctx: ReplyCtx, reply: Reply) -> StdResult<Response> {
-        match reply.id {
-            SUBMSG_ID => {
-                // Your logic here
-                Ok(Response::new())
-            }
-            _ => Err(StdError::generic_err("Invalid reply id")),
-        }
+    fn your_reply_handler(&self, ctx: ReplyCtx, result: SubMsgResult, your_payload: u64) -> StdResult<Response> {
+        // Your logic here
+        Ok(Response::new())
     }
 }
 ```
@@ -132,11 +128,11 @@ impl ReplyContract {
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust {1, 4, 21-23, 28-37, 42-48}, template="sylvia-empty"
+```rust {1, 4, 22-24, 29-35, 41-45}, template="sylvia-empty"
 use external_contract::sv::Executor;
 use cw_storage_plus::Item;
 
-const SUBMSG_ID: u64 = 1;
+use sv::SubMsgMethods;
 
 pub struct ReplyContract {
     remote: Item<Remote<'static, ExternalContract>>,
@@ -144,6 +140,7 @@ pub struct ReplyContract {
 
 #[entry_points]
 #[contract]
+#[sv::features(replies)]
 impl ReplyContract {
     pub fn new() -> Self {
         Self {
@@ -160,27 +157,22 @@ impl ReplyContract {
 
     #[sv::msg(exec)]
     fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
-        let msg = self
+        let sub_msg = self
             .remote
             .load(ctx.deps.storage)?
             .executor()
             .external_exec()?
-            .build();
+            .build()
+            .your_reply_handler(42)?;
 
-        let sub_msg = SubMsg::reply_on_success(msg, SUBMSG_ID);
         let resp = Response::new().add_submessage(sub_msg);
         Ok(resp)
     }
 
     #[sv::msg(reply)]
-    fn reply(&self, ctx: ReplyCtx, reply: Reply) -> StdResult<Response> {
-        match reply.id {
-            SUBMSG_ID => {
-                // Your logic here
-                Ok(Response::new())
-            }
-            _ => Err(StdError::generic_err("Invalid reply id")),
-        }
+    fn your_reply_handler(&self, ctx: ReplyCtx, result: SubMsgResult, your_payload: u64) -> StdResult<Response> {
+        // Your logic here
+        Ok(Response::new())
     }
 }
 ```
@@ -197,7 +189,7 @@ method. We can access the
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust {5-7}, template="sylvia-storey-contract"
+```rust {9-11}, template="sylvia-storey-contract"
 #[sv::msg(query)]
 fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
     let remote = self

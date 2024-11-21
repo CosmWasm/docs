@@ -68,7 +68,7 @@ impl Contract {
     }
 
     #[sv::msg(reply, reply_on=always)]
-    fn error_handler(
+    fn always_handler(
         &self,
         ctx: ReplyCtx,
         result: SubMsgResult,

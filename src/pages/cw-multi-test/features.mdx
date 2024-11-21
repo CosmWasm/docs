@@ -15,19 +15,19 @@ you can provide your own, using `AppBuilder`'s function listed in **AppBuilder&n
 column. Names of **`MultiTest`** feature flags required to enable specific functionality are shown
 in the column **Feature&nbsp;flag**.
 
-| Feature      | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor | Functionality                                      |
-| ------------ | :------------------------: | :--------------: | -------------------------- | -------------------------------------------------- |
-| Blocks       |          **YES**           |                  | `with_block`               | Operations on blocks.                              |
-| API          |          **YES**           |                  | `with_api`                 | Access to CosmWasm API.                            |
-| Storage      |          **YES**           |                  | `with_storage`             | Access to storage.                                 |
-| Bank         |          **YES**           |                  | `with_bank`                | Interactions with **Bank** module.                 |
-| Staking      |          **YES**           |    `staking`     | `with_staking`             | Interactions with **Staking** module.              |
-| Distribution |          **YES**           |    `staking`     | `with_distribution`        | Interactions with **Distribution** module.         |
-| Governance   |           **NO**           |                  | `with_gov`                 | Interactions with **Governance** module.           |
-| Stargate     |           **NO**           |    `stargate`    | `with_stargate`            | Operations using `Stargate` and/or `Any` messages. |
-| Wasm         |          **YES**           |                  | `with_wasm`                | Interactions with **Wasm** module.                 |
-| Custom       |           **NO**           |                  | `new_custom`               | Operations using custom module.                    |
-| IBC          |           **NO**           |    `stargate`    | `with_ibc`                 | Inter-blockchain communication operations.         |
+| Feature          | Default<br/>implementation | Feature<br/>flag | AppBuilder<br/>constructor | Functionality                                      |
+| ---------------- | :------------------------: | :--------------: | -------------------------- | -------------------------------------------------- |
+| [Blocks](blocks) |          **YES**           |                  | `with_block`               | Operations on blocks.                              |
+| API              |          **YES**           |                  | `with_api`                 | Access to CosmWasm API.                            |
+| Storage          |          **YES**           |                  | `with_storage`             | Access to storage.                                 |
+| Bank             |          **YES**           |                  | `with_bank`                | Interactions with **Bank** module.                 |
+| Staking          |          **YES**           |    `staking`     | `with_staking`             | Interactions with **Staking** module.              |
+| Distribution     |          **YES**           |    `staking`     | `with_distribution`        | Interactions with **Distribution** module.         |
+| Governance       |           **NO**           |                  | `with_gov`                 | Interactions with **Governance** module.           |
+| Stargate         |           **NO**           |    `stargate`    | `with_stargate`            | Operations using `Stargate` and/or `Any` messages. |
+| Wasm             |          **YES**           |                  | `with_wasm`                | Interactions with **Wasm** module.                 |
+| Custom           |           **NO**           |                  | `new_custom`               | Operations using custom module.                    |
+| IBC              |           **NO**           |    `stargate`    | `with_ibc`                 | Inter-blockchain communication operations.         |
 
 ## Feature flags summary
 

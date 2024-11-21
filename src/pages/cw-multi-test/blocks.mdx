@@ -78,8 +78,8 @@ assert_eq!("cosmos-testnet-14002", block.chain_id);
 
 In line 4, the chain is initialized and _started_ with the default settings by calling the function
 [`default(){:rust}`][app_default] on `App{:rust}`. In line 7, the current block metadata (of type
-[BlockInfo]) is retrieved and assigned to variable `block{:rust}`. In the next few lines, the
-default values are checked:
+[`BlockInfo{:rust}`][BlockInfo]) is retrieved and assigned to variable `block{:rust}`. In the next
+few lines, the default values are checked:
 
 - line 10: block `height{:rust}` is `12345{:rust}`,
 - line 13: block `time{:rust}` is a Unix timestamp of value `1571797419879305533{:rust}`, which is
@@ -134,12 +134,12 @@ This way, you can initialize the current block in tests to best suit your requir
 
 ## Generating next block with the default step
 
-To generate a new block in tests, you can use the [`update_block{:rust}`][update_block] function
-provided by `App{:rust}`. In the following example, [`update_block{:rust}`][update_block] function
-takes a function [`next_block{:rust}`][next_block] as an argument. [`next_block{:rust}`][next_block]
-function - provided by **`MultiTest`** - increases the block height by `1` and advances the block
-time by `5` seconds, simulating the generation of a new block every `5` seconds in a real-life
-blockchain. The `chain_id{:rust}` remains unchanged.
+To generate a new block in tests, you can use the [`update_block(){:rust}`][update_block] function
+provided by `App{:rust}`. In the following example, [`update_block(){:rust}`][update_block] function
+takes a function [`next_block(){:rust}`][next_block] as an argument.
+[`next_block(){:rust}`][next_block] function - provided by **`MultiTest`** - increases the block
+height by `1` and advances the block time by `5` seconds, simulating the generation of a new block
+every `5` seconds in a real-life blockchain. The `chain_id{:rust}` remains unchanged.
 
 ```rust showLineNumbers {7} /update_block/ /next_block/
 use cw_multi_test::{next_block, App};
@@ -165,8 +165,8 @@ assert_eq!(1571797424879305533, block.time.nanos());
 assert_eq!("cosmos-testnet-14002", block.chain_id);
 ```
 
-In line 7 the [`update_block{:rust}`][update_block] function is called and in the next few lines the
-current block properties are checked. In line 10 the block metadata is retrieved and assigned to
+In line 7 the [`update_block(){:rust}`][update_block] function is called and in the next few lines
+the current block properties are checked. In line 10 the block metadata is retrieved and assigned to
 variable `block{:rust}`. In line 13, we check if the block height has changed. The default block
 height is `12345{:rust}`, and we check it against the value `12346{:rust}`. As this assertion
 passes, you can see that the block height was indeed incremented by `1`. Similarly, the block's time
@@ -178,7 +178,7 @@ is checked against the Unix timestamp, which is 5 seconds later than the default
 Several events on the blockchain occur after a period longer than a few seconds. In such cases,
 incrementing the block time multiple times until the desired time is reached would be impractical.
 In **`MultiTest`**, it is possible to advance the block using a specific block height and time. To
-achieve this, pass a custom closure to the [`update_block{:rust}`][update_block] function. This
+achieve this, pass a custom closure to the [`update_block(){:rust}`][update_block] function. This
 closure takes a mutable [`BlockInfo{:rust}`][BlockInfo] structure as an argument and modifies its
 properties, as shown in the example below.
 
@@ -210,7 +210,7 @@ assert_eq!("cosmos-testnet-14002", block.chain_id);
 ```
 
 In line 4, the default block is initialized during the chain start. Then in line 7, the
-[`update_block{:rust}`][update_block] function takes a custom closure as an argument. This closure
+[`update_block(){:rust}`][update_block] function takes a custom closure as an argument. This closure
 increments the block height by **10000** and advances the block time by **6 days**. Similarly like
 in prevous examples, the new block metadata is retrieved and the current properties are checked. The
 new block height should be `12345{:rust}` + `10000{:rust}` = `22345{:rust}`. The new block time

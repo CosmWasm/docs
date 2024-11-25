@@ -24,7 +24,7 @@ caller can be matched against this address in execution endpoints.
 
 Here's how to store and manipulate an admin address, or any other simple data.
 
-```rust template="storage" showLineNumbers {6,10-13,15-17,20}
+```rust template="storage" showLineNumbers {5,9-12,14-16,19}
 use cw_storey::containers::Item;
 use cw_storey::CwStorage;
 
@@ -32,7 +32,6 @@ const ADMIN_IX: u8 = 0;
 
 let admin: Item<String> = Item::new(ADMIN_IX);
 let mut cw_storage = CwStorage(&mut storage);
-let mut access = admin.access(&mut cw_storage);
 
 assert_eq!(
     admin.access(&cw_storage).get().unwrap(),
@@ -49,13 +48,13 @@ assert_eq!(
 );
 ```
 
-- _line 6:_ Here we construct the `Item` facade. The constructor takes a key, which is the key the
+- _line 5:_ Here we construct the `Item` facade. The constructor takes a key, which is the key the
   data will be stored at in the underlying storage backend. See also
   [_Containers - Namespace_](.#namespace).
-- _lines 10-13_: This assertion is just to show you the `Item` is empty (`Option::None`) before it's
+- _lines 9-12_: This assertion is just to show you the `Item` is empty (`Option::None`) before it's
   initialized.
-- _lines 15-17_: Here we commit a value to storage.
-- _line 20_: Here we retrieve the value from storage.
+- _lines 14-16_: Here we commit a value to storage.
+- _line 19_: Here we retrieve the value from storage.
 
 ### Maintaining a config structure
 

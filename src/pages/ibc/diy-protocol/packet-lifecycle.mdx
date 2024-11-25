@@ -170,6 +170,9 @@ using the `IbcMsg::WriteAcknowledgement` message.
   Not acknowledging can lead to problems for the sender of the packet.
 </Callout>
 
+<Tabs items={['StoragePlus', 'Storey']}>
+  <Tabs.Tab>
+
 ```rust filename="ibc.rs" template="core"
 use cw_storage_plus::Map;
 
@@ -213,6 +216,61 @@ pub fn async_ack(
 
 const ACK_LATER: Map<&(u64, String), String> = Map::new("ack_later");
 ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust filename="ibc.rs" template="core"
+use cw_storey::containers::{Item, Map};
+use cw_storey::CwStorage;
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_packet_receive(
+    deps: DepsMut,
+    _env: Env,
+    msg: IbcPacketReceiveMsg,
+) -> StdResult<IbcReceiveResponse> {
+    // save the data we need for the async acknowledgement in contract state
+    // note: we are just saving a String here, but you can save any information
+    // you need for the acknowledgement later
+    ACK_LATER.access(&mut CwStorage(deps.storage))
+        .entry_mut(&msg.packet.sequence)
+        .entry_mut(&msg.packet.dest.channel_id)
+        .set(&"ack str".to_string())?;
+
+    // return without an acknowledgement
+    Ok(IbcReceiveResponse::without_ack())
+}
+
+/// Called somewhere in the contract to acknowledge the packet
+pub fn async_ack(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    packet_sequence: u64,
+    channel_id: String,
+) -> StdResult<Response> {
+    // load data from contract state
+    let ack_str = ACK_LATER.access(&CwStorage(deps.storage))
+        .entry(&packet_sequence)
+        .entry(&channel_id)
+        .try_get()
+        .map_err(|_| StdError::generic_err("error accessing ACK_LATER"))?;
+
+    // send the acknowledgement
+    Ok(Response::new().add_message(IbcMsg::WriteAcknowledgement {
+        packet_sequence,
+        channel_id,
+        ack: IbcAcknowledgement::new(StdAck::success(ack_str.as_bytes())),
+    }))
+}
+
+const ACK_LATER_IX: u8 = 0;
+const ACK_LATER: Map<u64, Map<String, Item<String>>> = Map::new(ACK_LATER_IX);
+```
+
+  </Tabs.Tab>
+</Tabs>
 
 ## Receiving a packet acknowledgement
 

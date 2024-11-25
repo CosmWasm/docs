@@ -19,7 +19,7 @@ For most of your needs, you can likely do what you need to with the built-in con
 For more advanced use cases, you can build your own containers as described in the
 [_Implementing new containers_](container-impl) section.
 
-# Namespace
+## Namespace
 
 To construct a container, you need to provide a single byte. This byte is used to distinguish
 between different "root" containers in the same storage space.
@@ -43,7 +43,33 @@ container.
 
 To avoid key collisions, you must provide a different byte to each container.
 
-# Composition
+## Accessor
+
+Every container has a corresponding "accessor" type that is used to perform all read/write
+operations.
+
+To get the accessor of a top-level container, the [`access` method] must be called. It takes a reference
+to a storage backend.
+
+```rust template="storage"
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+let item: Item<u32> = Item::new(0);
+
+item.access(&mut CwStorage(&mut storage))
+    .set(&42)
+    .unwrap();
+
+assert_eq!(
+    item.access(&CwStorage(&storage))
+        .get()
+        .unwrap(),
+    Some(42)
+);
+```
+
+## Composition
 
 Some containers can be composed together to create more complex data structures. Right now, the only
 built-in container that supports composition is the `Map` container.
@@ -99,7 +125,7 @@ assert_eq!(
 It's possible to define custom containers that enable composition similar to maps. If done properly,
 they can be mixed with any other containers, including built-in ones.
 
-# Encoding
+## Encoding
 
 Types like `Item` or `Column` need a way to encode values in a binary store. If you're using the
 `Item` and `Column` types from `cw-storey`, the [MessagePack](https://msgpack.org/) format is used.
@@ -108,3 +134,6 @@ This is a binary encoding that should generally be a storage performance improve
 If you need to use a different encoding, you can instead import the `Item`/`Column` type from the
 `storey` crate and specify an alternative encoding. A guide to implementing your encoding can be
 found in the [_Alternative encodings_](encodings) section.
+
+[`access` method]:
+  https://docs.rs/cw-storey/latest/cw_storey/containers/type.Item.html#method.access

@@ -5,5 +5,6 @@
   "query": "Creating a query",
   "testing-query": "Testing the query",
   "multitest-introduction": "Multitest introduction",
-  "state": "Storing state"
+  "state": "Storing state",
+  "execution": "Execution messages"
 }

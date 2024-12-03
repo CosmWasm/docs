@@ -3,11 +3,11 @@ import { Tabs } from "nextra/components";
 # Contract state
 
 The contract we are working on already has some behavior that can answer a query. Unfortunately, it
-is very predictable with its answers, and it has nothing to alter them. In this chapter, I introduce
-the notion of state, which would allow us to bring true life to a smart contract.
+is very predictable with its answers, and it has no way of altering them. In this chapter, I
+introduce the notion of state, which allows us to bring true life to a smart contract.
 
-The state would still be static for now - it would be initialized on contract instantiation. The
-state would contain a list of admins who would be eligible to execute messages in the future.
+We'll keep the state static for now - it will be initialized on contract instantiation. The state
+will contain a list of admins who will be eligible to execute messages in the future.
 
 The first thing to do is to update `Cargo.toml` with yet another dependency. We have two options:
 
@@ -61,7 +61,7 @@ cw-multi-test = "2.2.0"
   </Tabs.Tab>
 </Tabs>
 
-Now create a new file where you will keep a state for the contract - we typically call it
+Now create a new file where you will keep the state for the contract - we typically call it
 `src/state.rs`:
 
 <Tabs items={['Storey', 'StoragePlus']}>
@@ -88,7 +88,7 @@ pub const ADMINS: Item<Vec<Addr>> = Item::new("admins");
   </Tabs.Tab>
 </Tabs>
 
-And make sure we declare the module in `src/lib.rs`:
+And make sure to declare the module in `src/lib.rs`:
 
 ```rust {8} filename="src/lib.rs"
 use cosmwasm_std::{
@@ -131,7 +131,7 @@ type - `Vec<Addr>` in this case. And what would be a key to this item in the sto
 matter to us - it would be figured out to be unique, based on a unique string passed to the `new`
 function.
 
-Before we would go into initializing our state, we need some better instantiate message. Go to
+Before we work on initializing our state, we need some better instantiate message. Go to
 `src/msg.rs` and create one:
 
 ```rust {3-6} filename="src/msg.rs"
@@ -374,8 +374,8 @@ Voila, that's all that is needed to update the state!
 
 First, we need to transform the vector of strings into the vector of addresses to be stored. We
 cannot take addresses as a message argument because not every string is a valid address. It might be
-a bit confusing when we were working on tests. Any string could be used in the place of address. Let
-me explain.
+a bit confusing when compared to working on tests. In tests, any string could be used as an address.
+Let me explain.
 
 Every string can be technically considered an address. However, not every string is an actual
 existing blockchain address. When we keep anything of type `Addr` in the contract, we assume it is a
@@ -433,9 +433,9 @@ Damn, we broke something! But be calm. Let's start with carefully reading an err
 > src/contract.rs:67:14
 ```
 
-The problem is that in the test, we send an empty instantiation message in our test, but right now,
-our endpoint expects to have an `admin` field. The MultiTest framework tests contract from the entry
-point to results, so sending messages using MT functions first serializes them. Then the contract
+The problem is that in the test, we send an empty instantiation message, but right now, our endpoint
+expects to have an `admin` field. The MultiTest framework tests contract from the entry point to
+results, so sending messages using MT functions first serializes them. Then the contract
 deserializes them on the entry. But now it tries to deserialize the empty JSON to some non-empty
 message! We can quickly fix it by updating the test. To shorten the code snippet we will present
 only the test part:
@@ -651,7 +651,7 @@ mod tests {
 
 The test is simple - instantiate the contract twice with different initial admins, and ensure the
 query result is proper each time. This is often the way we test our contract - we execute bunch o
-messages on the contract, and then we query it for some data, verifying if query responses are like
+messages on the contract, and then we query it for some data, verifying if query responses are as
 expected.
 
 We are doing a pretty good job developing our contract. Now it is time to use the state and allow

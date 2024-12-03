@@ -5,3 +5,119 @@ tags: ["storey", "containers"]
 import { Callout } from "nextra/components";
 
 # Item
+
+An [`Item`] is the simplest container. It stores a single value at a specific key.
+
+An `Item` that's never been [`set`] is empty, and will return `None` upon a [`get`].
+
+<Callout>
+  For a more in-depth look at the `Item` container, check out the [API documentation].
+</Callout>
+
+## Usage examples
+
+### Saving an admin address
+
+Quite often it is necessary for a contract to keep track of who is its "owner" or "admin". In order
+to do that, we can store an admin address (usually in instantiation). Later, the address of the
+caller can be matched against this address in execution endpoints.
+
+Here's how to store and manipulate an admin address, or any other simple data.
+
+```rust template="storage" showLineNumbers {5,9-12,14-16,19}
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+const ADMIN_IX: u8 = 0;
+
+let admin: Item<String> = Item::new(ADMIN_IX);
+let mut cw_storage = CwStorage(&mut storage);
+
+assert_eq!(
+    admin.access(&cw_storage).get().unwrap(),
+    None,
+);
+
+admin.access(&mut cw_storage)
+    .set(&String::from("some_address"))
+    .unwrap();
+
+assert_eq!(
+    admin.access(&cw_storage).get().unwrap(),
+    Some(String::from("some_address")),
+);
+```
+
+- _line 5:_ Here we construct the `Item` facade. The constructor takes a key, which is the key the
+  data will be stored at in the underlying storage backend. See also
+  [_Containers - Namespace_](.#namespace).
+- _lines 9-12_: This assertion is just to show you the `Item` is empty (`Option::None`) before it's
+  initialized.
+- _lines 14-16_: Here we commit a value to storage.
+- _line 19_: Here we retrieve the value from storage.
+
+### Maintaining a config structure
+
+It's also common to save a whole struct in an `Item`, with a variety of data. Often the struct
+represents a contract's "config".
+
+```rust template="storage" showLineNumbers {6}
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+const CFG_IX: u8 = 0;
+
+#[cw_serde]
+struct Config {
+    pub admin: String,
+    pub interest_rate: Decimal,
+}
+
+let item: Item<Config> = Item::new(CFG_IX);
+let mut cw_storage = CwStorage(&mut storage);
+let mut access = item.access(&mut cw_storage);
+
+let cfg = Config {
+    admin: "some_address".to_string(),
+    interest_rate: Decimal::percent(5),
+};
+
+access.set(&cfg).unwrap();
+assert_eq!(access.get().unwrap(), Some(cfg));
+```
+
+Note the highlighted line. The struct must be encodable. For _CosmWasm_ contracts this generally
+means it implements `serde::{Serialize, Deserialize}`. The best idiomatic way to achieve that is by
+using the `cosmwasm_schema::cw_serde` macro we provide.
+
+### Default values
+
+Sometimes you might like to read a value, but expect to receive a default if it's never been
+initialized. This is a common pattern for counters or other numeric values.
+
+```rust template="storage" showLineNumbers {10}
+use cw_storey::containers::Item;
+use cw_storey::CwStorage;
+
+const COUNTER_IX: u8 = 0;
+
+let counter: Item<u32> = Item::new(COUNTER_IX);
+let mut cw_storage = CwStorage(&mut storage);
+let mut access = counter.access(&mut cw_storage);
+
+let mut total = access.get().unwrap().unwrap_or(0);
+
+assert_eq!(total, 0);
+total += 1;
+
+access.set(&total).unwrap();
+```
+
+There's no magic here, just
+[`Option::unwrap_or`](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or) at the
+highlighted line. This is less a feature of the framework and more a pattern you might find useful.
+
+[`Item`]: https://docs.rs/cw-storey/latest/cw_storey/containers/type.Item.html
+[API documentation]: https://docs.rs/cw-storey/latest/cw_storey/containers/type.Item.html
+[`get`]: https://docs.rs/storey/latest/storey/containers/struct.ItemAccess.html#method.get
+[`set`]: https://docs.rs/storey/latest/storey/containers/struct.ItemAccess.html#method.set

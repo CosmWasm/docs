@@ -107,3 +107,95 @@ impl Executor
     }
 }
 ```
+
+## ContractApi implementation
+
+The [`contract`](../contract) macro generates an implementation of
+[`ContractApi`](https://docs.rs/sylvia/latest/sylvia/types/trait.ContractApi.html) on the contract
+type.
+
+This trait was created for internal use of the generated code to ease work with generic contracts.
+
+<Callout>We reserve the right to break the API of this trait between minor releases.</Callout>
+
+```rust, template="sylvia-empty"
+impl sylvia::types::ContractApi for Contract {
+    type ContractExec = ContractExecMsg;
+    type ContractQuery = ContractQueryMsg;
+    type ContractSudo = ContractSudoMsg;
+    type Exec = ExecMsg;
+    type Query = QueryMsg;
+    type Sudo = SudoMsg;
+    type Instantiate = InstantiateMsg;
+    type Migrate = sylvia::cw_std::Empty;
+    type Remote<'remote> = sylvia::types::Remote<'remote, Self>;
+    type Querier<'querier> = sylvia::types::BoundQuerier<'querier, Empty, Self>;
+    type CustomMsg = Empty;
+    type CustomQuery = Empty;
+}
+```
+
+## InterfaceApi implementation
+
+<Callout>
+  This trait will is deprecated and will be removed in the `2.0.0` release in favor of generated
+  `InterfaceMessagesApi`.
+</Callout>
+
+The [`interface`](../interface) macro generates an `Api` type and implements the
+[`InterfaceApi`](https://docs.rs/sylvia/latest/sylvia/types/trait.InterfaceApi.html) on the it.
+
+This trait was created for internal use of the generated code to ease working with generic
+contracts.
+
+<Callout>We reserve the right to break the API of this trait between the minor releases.</Callout>
+
+```rust, template="sylvia-empty"
+pub struct Api<ExecC, QueryC, CounterT> {
+    _phantom: std::marker::PhantomData<(ExecC, QueryC, CounterT)>,
+}
+
+#[allow(deprecated)]
+impl<ExecC, QueryC, CounterT> sylvia::types::InterfaceApi for Api<ExecC, QueryC, CounterT>
+where
+    ExecC: CustomMsg,
+    QueryC: CustomQuery,
+    CounterT: Serialize + DeserializeOwned + std::fmt::Debug,
+{
+    type Exec = ExecMsg<CounterT>;
+    type Query = QueryMsg<CounterT>;
+    type Sudo = SudoMsg;
+    type Querier<'querier, Contract> =
+        sylvia::types::BoundQuerier<'querier, sylvia::cw_std::Empty, Contract>;
+}
+```
+
+## InterfaceMessagesApi trait generation
+
+The [`interface`](../interface) macro generates an `Api` type and implements the
+[`InterfaceApi`](https://docs.rs/sylvia/latest/sylvia/types/trait.InterfaceApi.html) on the it.
+
+This trait was created for internal use of the generated code to ease working with generic
+contracts.
+
+<Callout>We reserve the right to break the API of this trait between the minor releases.</Callout>
+
+```rust, template="sylvia-empty"
+pub struct Api<ExecC, QueryC, CounterT> {
+    _phantom: std::marker::PhantomData<(ExecC, QueryC, CounterT)>,
+}
+
+#[allow(deprecated)]
+impl<ExecC, QueryC, CounterT> sylvia::types::InterfaceApi for Api<ExecC, QueryC, CounterT>
+where
+    ExecC: CustomMsg,
+    QueryC: CustomQuery,
+    CounterT: Serialize + DeserializeOwned + std::fmt::Debug,
+{
+    type Exec = ExecMsg<CounterT>;
+    type Query = QueryMsg<CounterT>;
+    type Sudo = SudoMsg;
+    type Querier<'querier, Contract> =
+        sylvia::types::BoundQuerier<'querier, sylvia::cw_std::Empty, Contract>;
+}
+```

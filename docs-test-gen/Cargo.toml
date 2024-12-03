@@ -12,9 +12,10 @@ phf = { version = "0.11.2", features = ["macros"] }
 strum = { version = "0.26.3", features = ["derive"] }
 
 [dev-dependencies]
-sylvia = "*"
+sylvia = { version = "*", features = ["cosmwasm_2_0"] }
 cw2 = "*"
 cw-storage-plus = { version = "*", features = ["macro"] }
+cw-utils = "*"
 cosmwasm-schema = "*"
 cosmwasm-std = { version = "*", features = [
   "stargate",

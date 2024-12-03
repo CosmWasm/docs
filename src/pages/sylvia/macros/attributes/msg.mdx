@@ -23,7 +23,7 @@ List of macros supporting the `sv::msg` attribute:
 
 ## Usage
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub struct CounterContract;
 
 #[cw_serde]
@@ -89,3 +89,105 @@ fn some_query(&self, ctx: QueryCtx) -> SomeResult {
     Ok(SomeResponse)
 }
 ```
+
+## Handling replies
+
+<Callout>
+  To use attributes present in this paragraph pre-Sylvia `2.0.0`, you need to enable the `replies`
+  feature using the [`sv::features`](features) attribute.
+</Callout>
+
+You can use additional parameters `handlers` and `reply_on` in the `#[sv::msg(reply)]` attribute.
+
+```rust {1} template="sylvia-cw-storage-contract"
+#[sv::msg(reply, handlers=[remote_instantiated], reply_on=success)]
+fn store_remote_address(
+    &self,
+    ctx: ReplyCtx,
+    #[sv::data(instantiate, opt)] data: Option<MsgInstantiateContractResponse>,
+    payload: Option<String>
+) -> StdResult<Response> {
+    Ok(Response::new())
+}
+```
+
+<Callout>
+  This approach requires the use of `sylvia::ctx::ReplyCtx` instead of `sylvia::types::ReplyCtx` due
+  to additional fields added to this type.
+</Callout>
+
+### The handlers parameter
+
+The `handlers` parameter allows the list of names of the reply handlers that would be supported by
+the contract to be specified. Sylvia takes every unique handler name from across every `reply`
+message and generates the **reply IDs**, **dispatching** and `SubMsg` **building methods** for them.
+If the `handlers` parameter is not used, the method name is used as the handler name.
+
+```rust {1} template="sylvia-cw-storage-contract"
+#[sv::msg(reply, handlers=[tokens_transfered, tokens_staked])]
+fn update_state(
+    &self,
+    ctx: ReplyCtx,
+    result: SubMsgResult,
+    #[sv::payload(raw)] payload: Binary,
+) -> StdResult<Response> {
+    Ok(Response::new())
+}
+```
+
+### The reply_on parameter
+
+The `reply_on` parameter specifies in which scenario should the reply method be called. It reflects
+the [`cosmwasm_std::ReplyOn`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.ReplyOn.html)
+and it supports values: `success`, `error` and `always`. The `ReplyOn::Never` is not reflected since
+creating a reply method that would never be called is counterproductive. If the `reply_on` parameter
+is not used, the default value is `always`.
+
+The same handler name can be used twice across the methods only if one has `reply_on=Success` and
+the other one `reply_on=Error`. This way, we can have different handling for **success** and
+**error** for the same **reply ID**.
+
+```rust {1, 5, 11, 15, 21, 25} template="sylvia-cw-storage-contract"
+#[sv::msg(reply, handlers=[tokens_transfered], reply_on=success)]
+fn update_state(
+    &self,
+    ctx: ReplyCtx,
+    #[sv::data(raw)] data: Binary,
+    #[sv::payload(raw)] payload: Binary,
+) -> StdResult<Response> {
+    Ok(Response::new())
+}
+
+#[sv::msg(reply, handlers=[tokens_transfered], reply_on=error)]
+fn revert_state(
+    &self,
+    ctx: ReplyCtx,
+    error: String,
+    #[sv::payload(raw)] payload: Binary,
+) -> StdResult<Response> {
+    Ok(Response::new())
+}
+
+#[sv::msg(reply, reply_on=always)]
+fn update_or_revert_state(
+    &self,
+    ctx: ReplyCtx,
+    result: SubMsgResult,
+    #[sv::payload(raw)] payload: Binary,
+) -> StdResult<Response> {
+    Ok(Response::new())
+}
+```
+
+Notice different method parameters depending on the `reply_on` value. On:
+
+- `success` -
+  [`SubMsgResponse::data`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsgResponse.html)
+  is being passed as an argument to the method. Depending on the [`sv::data`](data) value, it can
+  be, among others, forwarded as an `Option<Binary>` or deserialized to your custom type.
+- `error` -
+  [`SubMsgResult::Err(error)`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.SubMsgResult.html)
+  is forwarded as an argument to the method.
+- `always` -
+  [`SubMsgResult`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.SubMsgResult.html) is
+  passed as an argument to the method.

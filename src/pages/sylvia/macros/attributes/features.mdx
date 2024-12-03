@@ -1,0 +1,55 @@
+---
+tags: ["sylvia", "attributes"]
+---
+
+import { Callout } from "nextra/components";
+
+# `sv::features` attribute
+
+Use `sv::features` to enable Sylvia features that would be considered semver breaking between minor
+releases.
+
+## Macros
+
+List of macros supporting the `sv::features` attribute:
+
+- [`contract`](../contract)
+- [`entry_points`](../entry-points)
+
+## Usage
+
+```rust {5}, template="sylvia-empty"
+pub struct Contract;
+
+#[cfg_attr(feature = "library", sylvia::entry_points)]
+#[contract]
+#[sv::features(replies)]
+impl Contract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+
+    #[sv::msg(reply, handlers=[remote_instantiated], reply_on=success)]
+    fn store_remote_address(
+        &self,
+        ctx: ReplyCtx,
+        #[sv::data(instantiate)] data: MsgInstantiateContractResponse,
+        #[sv::payload(raw)] payload: Binary,
+    ) -> StdResult<Response> {
+        Ok(Response::new())
+    }
+}
+```
+
+Parameters supported by the `sv::features`:
+
+- replies - enables better reply handling. This includes:
+  - Auto dispatching of replies to the correct handler,
+  - Deserialization of the `data` and `payload` fields,
+  - Reply id generation.
+  - [`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html) builder trait

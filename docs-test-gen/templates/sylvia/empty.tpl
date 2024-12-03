@@ -1,4 +1,4 @@
-#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports)]
+#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports, clippy::new_without_default)]
 
 use sylvia::cw_std::{Addr, Binary, Coin, entry_point, Reply, SubMsg, WasmMsg, to_json_binary, DepsMut, Empty, Env, IbcChannelOpenMsg, IbcChannelOpenResponse, Response, StdError, StdResult, SubMsgResult};
 use sylvia::{contract, entry_points, interface};

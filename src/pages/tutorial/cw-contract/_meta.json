@@ -6,5 +6,6 @@
   "testing-query": "Testing the query",
   "multitest-introduction": "Multitest introduction",
   "state": "Storing state",
-  "execution": "Execution messages"
+  "execution": "Execution messages",
+  "event": "Passing events"
 }

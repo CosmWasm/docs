@@ -3,9 +3,9 @@ import { Tabs } from "nextra/components";
 # Execution messages
 
 We went through instantiate and query messages. It is finally time to introduce the last basic entry
-point - the execute messages. It is similar to what we have done so far that I expect this to be
-just chilling and revisiting our knowledge. I encourage you to try implementing what I am describing
-here on your own as an exercise - without checking out the source code.
+point - the execute messages. It is similar to what we have done so far and it should be just
+revisiting our knowledge. I encourage you to try implementing what I am describing here on your own
+as an exercise - without checking out the source code.
 
 The idea of the contract will be easy - every contract admin would be eligible to call two execute
 messages:
@@ -13,7 +13,7 @@ messages:
 - `AddMembers` message would allow the admin to add another address to the admin's list
 - `Leave` would allow and admin to remove himself from the list
 
-Not too complicated. Let's go coding. Start with defining messages:
+Not too complicated. Let's get coding. Start with defining messages:
 
 ```rust {9-13} filename="src/msg.rs"
 use cosmwasm_std::Addr;

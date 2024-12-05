@@ -539,13 +539,27 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 
 // ...
 
-pub fn admins_list(deps: Deps) -> StdResult<AdminsListResp> {
-    let cw_storage = CwStorage(deps.storage);
-    let admins = ADMINS.access(&cw_storage).get()?;
-    let resp = AdminsListResp {
-        admins: admins.unwrap_or_default(),
-    };
-    Ok(resp)
+mod query {
+    use crate::msg::AdminsListResp;
+
+    use super::*;
+
+    pub fn greet() -> StdResult<GreetResp> {
+        let resp = GreetResp {
+            message: "Hello World".to_owned(),
+        };
+
+        Ok(resp)
+    }
+
+    pub fn admins_list(deps: Deps) -> StdResult<AdminsListResp> {
+        let cw_storage = CwStorage(deps.storage);
+        let admins = ADMINS.access(&cw_storage).get()?;
+        let resp = AdminsListResp {
+            admins: admins.unwrap_or_default(),
+        };
+        Ok(resp)
+    }
 }
 ```
 
@@ -568,10 +582,24 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 
 // ...
 
-pub fn admins_list(deps: Deps) -> StdResult<AdminsListResp> {
-    let admins = ADMINS.load(deps.storage)?;
-    let resp = AdminsListResp { admins };
-    Ok(resp)
+mod query {
+    use crate::msg::AdminsListResp;
+
+    use super::*;
+
+    pub fn greet() -> StdResult<GreetResp> {
+        let resp = GreetResp {
+            message: "Hello World".to_owned(),
+        };
+
+        Ok(resp)
+    }
+
+    pub fn admins_list(deps: Deps) -> StdResult<AdminsListResp> {
+        let admins = ADMINS.load(deps.storage)?;
+        let resp = AdminsListResp { admins };
+        Ok(resp)
+    }
 }
 ```
 

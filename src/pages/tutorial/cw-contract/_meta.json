@@ -4,5 +4,7 @@
   "building-contract": "Building the contract",
   "query": "Creating a query",
   "testing-query": "Testing the query",
-  "multitest-introduction": "Multitest introduction"
+  "multitest-introduction": "Multitest introduction",
+  "state": "Storing state",
+  "execution": "Execution messages"
 }

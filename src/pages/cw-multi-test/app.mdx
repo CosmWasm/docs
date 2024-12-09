@@ -1,0 +1,34 @@
+---
+tags: ["multitest", "App"]
+---
+
+[App]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html
+
+# `App`
+
+The [App] struct in **`MultiTest`** represents the blockchain simulator. Creating `App{:rust}`
+mimics the startup of a real-life blockchain within tests that utilize **`MultiTest`**.
+
+## `default`
+
+The most straightforward way to create the `App{:rust}` is by using the `default` method, which is
+the equivalent of calling the `new` constructor with an empty initialization callback.
+
+```rust showLineNumbers copy /default/
+use cw_multi_test::App;
+
+let app = App::default();
+```
+
+```rust showLineNumbers copy /new/
+use cw_multi_test::{no_init, App};
+
+let app = App::new(no_init);
+```
+
+In both cases, the newly created `App{:rust}` object simulates a blockchain with the default
+settings, as summarized in [Features summary](features#features-summary).
+
+## `new`
+
+WIP

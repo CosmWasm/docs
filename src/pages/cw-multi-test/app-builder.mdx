@@ -4,15 +4,19 @@ tags: ["multitest", "AppBuilder"]
 
 [AppBuilder]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html
 [Builder Pattern]: https://en.wikipedia.org/wiki/Builder_pattern
+[BlockInfo]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html
+[with_block]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_block
+[build]: #build
 
 # `AppBuilder`
 
-[AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible and modular way to
-construct the [App](app) blockchain simulator. It allows smart contract developers to configure various
-components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually through dedicated
-`with_*` methods. Each method modifies and returns a new instance of the builder, enabling method chaining
-for a fluent interface. The [build](#build) method finalizes the construction process, ensuring that
-all components are correctly initialized and integrated.
+[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible
+and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart contract developers
+to configure various components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually
+through dedicated `with_*` methods. Each method modifies and returns a new instance of the builder, enabling
+method chaining for a fluent interface. The [`build(){:rust}`][build] method finalizes the construction
+process, ensuring that all components are correctly initialized and integrated.
 
 The following sections detail all builder functions, providing specific usage examples.
 
@@ -38,7 +42,13 @@ WIP
 
 ## `with_block`
 
-```rust showLineNumbers {15} /with_block/
+While the default block configuration is sufficient for most test cases, you can initialize the
+chain with a custom [`BlockInfo{:rust}`][BlockInfo] using the [`with_block(){:rust}`][with_block]
+method provided by [`AppBuilder{:rust}`][AppBuilder].
+
+The following example demonstrates this use case in detail.
+
+```rust showLineNumbers copy {15} /with_block/
 use cosmwasm_std::{BlockInfo, Timestamp};
 use cw_multi_test::{no_init, AppBuilder};
 
@@ -67,6 +77,21 @@ assert_eq!(1723627489, block.time.seconds());
 // now the chain identifier is "starship-testnet"
 assert_eq!("starship-testnet", block.chain_id);
 ```
+
+The [`AppBuilder{:rust}`][AppBuilder] is initialized with default settings in line 5. A custom block
+is created in lines 8-12 and passed to the [`with_block(){:rust}`][with_block] method in line 15.
+Since this is the only customization in this example, the blockchain construction is finalized in
+the same line by calling the [`build(){:rust}`][build] function.
+
+The current block metadata is retrieved in line 18, followed by value checks:
+
+- line 21: the block height is now `1{:rust}`,
+- line 24: the block time is set to the Unix timestamp `1723627489{:rust}`, representing
+  `Wednesday, August 14, 2024, 09:24:49 GMT`,
+- line 27: the chain identifier is now `"starship-testnet"{:rust}`.
+
+The [`with_block(){:rust}`][with_block] method of [`AppBuilder{:rust}`][AppBuilder] can be combined
+with any other `with_*` methods to configure a custom starting block.
 
 ## `with_custom`
 

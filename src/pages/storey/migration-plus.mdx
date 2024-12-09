@@ -1,0 +1,75 @@
+---
+tags: ["storey", "storage-plus"]
+---
+
+import { Callout, Tabs } from "nextra/components";
+
+This section is a "cheat sheet" to migrating from `cw-storage-plus` to `storey`. It's ideal for
+those who have already used `cw-storage-plus`. Feel free to use it to migrate your contracts.
+
+## Composite keys (tuples)
+
+`cw-storage-plus` uses tuples to encode composite keys. `storey` takes a different approach.
+
+In `cw-storage-plus`, you might use something like `Map<(Addr, Token), u128>` to store balances for
+different users and tokens.
+
+In `storey`, you would use composition: multiple maps within a [map], which would look like this:
+`Map<Addr, Map<Token, Item<u128>>>`.
+
+Here's a simple example:
+
+<Tabs items={['StoragePlus', 'Storey']}>
+  <Tabs.Tab>
+```rust template="storage"
+use cw_storage_plus::Map;
+
+type Address = String; type Token = String;
+
+let balances: Map<(Address, Token), u128> = Map::new("b");
+
+balances .save(&mut storage, ("alice".to_string(), "uusd".to_string()), &100) .unwrap();
+
+assert_eq!( balances .load(&storage, ("alice".to_string(), "uusd".to_string())) .unwrap(), 100 );
+
+````
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust template="storage"
+use cw_storey::containers::{Item, Map};
+use cw_storey::CwStorage;
+
+type Address = String;
+type Token = String;
+
+const BALANCES_IX: u8 = 1;
+
+let balances: Map<Address, Map<Token, Item<u128>>> = Map::new(BALANCES_IX);
+let mut cw_storage = CwStorage(&mut storage);
+
+balances
+    .access(&mut cw_storage)
+    .entry_mut("alice")
+    .entry_mut("uusd")
+    .set(&100)
+    .unwrap();
+
+assert_eq!(
+    balances
+        .access(&cw_storage)
+        .entry("alice")
+        .entry("uusd")
+        .get()
+        .unwrap(),
+    Some(100)
+);
+````
+
+  </Tabs.Tab>
+</Tabs>
+
+For more features and examples, see the [map] documentation.
+
+[map]: /storey/containers/map

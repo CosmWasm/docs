@@ -6,8 +6,8 @@ import { Callout } from "nextra/components";
 
 # Column
 
-A [`Column`] is a collection of items indexed by auto-incrementing `u32` keys.
-This might sound similar to a relational database table; in fact, it is a good analogy.
+A [`Column`] is a collection of items indexed by auto-incrementing `u32` keys. This might sound
+similar to a relational database table; in fact, it is a good analogy.
 
 A [`Column`] makes it efficient to push items to it and access the last element.
 
@@ -15,6 +15,7 @@ A [`Column`] makes it efficient to push items to it and access the last element.
 It should be noted that in a future version indexing will start at `1`, not `0`.
 
 This change will also break existing contracts that rely on the current `Column` implementation!
+
 </Callout>
 
 ## Examples
@@ -38,9 +39,10 @@ access.push(&"Hello, world!".to_string()).unwrap();
 assert_eq!(access.get(0).unwrap(), Some("Hello, world!".to_string()));
 ```
 
-- _line 6:_ Here we construct the `Column` facade. The constructor takes a key, which is the prefix of
-  the keys in the underlying storage backend.
-- _line 8:_ The [`access`] method returns a [`ColumnAccess`] entity, which allows manipulating the column.
+- _line 6:_ Here we construct the `Column` facade. The constructor takes a key, which is the prefix
+  of the keys in the underlying storage backend.
+- _line 8:_ The [`access`] method returns a [`ColumnAccess`] entity, which allows manipulating the
+  column.
 - _line 10:_ Here we push a message to the column.
 - _line 12:_ We check that the message is stored correctly.
 
@@ -75,24 +77,27 @@ assert_eq!(messages, vec![
 ```
 
 - _line 4:_ We import the `IterableAccessor` trait to use iteration methods.
-- _line 17:_ The `pairs` method produces an iterator
-    over tuples of `(index, value)`. In this case, we collect the iterator into a `Vec` for ease of making our assertion later.
+- _line 17:_ The `pairs` method produces an iterator over tuples of `(index, value)`. In this case,
+  we collect the iterator into a `Vec` for ease of making our assertion later.
 
-Similarly to [`Map`], you can use the [`keys`], [`values`], and [`pairs`] methods to iterate over the items.
+Similarly to [`Map`], you can use the [`keys`], [`values`], and [`pairs`] methods to iterate over
+the items.
 
 #### Bounded iteration
 
-If you want to perform bounded iteration, it is possible.
-This time you need the [`BoundedIterableAccessor`] trait, and the relevant methods are
-[`bounded_pairs`], [`bounded_keys`], and [`bounded_values`].
+If you want to perform bounded iteration, it is possible. This time you need the
+[`BoundedIterableAccessor`] trait, and the relevant methods are [`bounded_pairs`], [`bounded_keys`],
+and [`bounded_values`].
 
-The following example is the same as the previous one except for the bounds
-found in line 17, and the limited results.
+The following example is the same as the previous one except for the bounds found in line 17, and
+the limited results.
 
 <Callout>
 Currently, the lower bound is inclusive, and the upper bound is exclusive.
 
-This will change in a future version, where you'll be able to choose between inclusive and exclusive bounds as suits you.
+This will change in a future version, where you'll be able to choose between inclusive and exclusive
+bounds as suits you.
+
 </Callout>
 
 ```rust template="storage" showLineNumbers {4, 17}
@@ -130,7 +135,11 @@ assert_eq!(messages, vec![
 [`MapAccess`]: https://docs.rs/storey/latest/storey/containers/struct.MapAccess.html
 [`ItemAccess`]: https://docs.rs/storey/latest/storey/containers/struct.ItemAccess.html
 [`IterableAccessor`]: https://docs.rs/storey/latest/storey/containers/trait.IterableAccessor.html
-[`BoundedIterableAccessor`]: https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html
-[`bounded_pairs`]: https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html#method.bounded_pairs
-[`bounded_keys`]: https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html#method.bounded_keys
-[`bounded_values`]: https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html#method.bounded_values
+[`BoundedIterableAccessor`]:
+  https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html
+[`bounded_pairs`]:
+  https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html#method.bounded_pairs
+[`bounded_keys`]:
+  https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html#method.bounded_keys
+[`bounded_values`]:
+  https://docs.rs/storey/latest/storey/containers/trait.BoundedIterableAccessor.html#method.bounded_values

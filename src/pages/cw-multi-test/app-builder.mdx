@@ -2,24 +2,21 @@
 tags: ["multitest", "AppBuilder"]
 ---
 
+[AppBuilder]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html
+[Builder Pattern]: https://en.wikipedia.org/wiki/Builder_pattern
+
 # `AppBuilder`
 
-- [build](app-builder#build)
-- [new](app-builder#new)
-- [new_custom](app-builder#new_custom)
-- [with_api](app-builder#with_api)
-- [with_bank](app-builder#with_bank)
-- [with_block](app-builder#with_block)
-- [with_custom](app-builder#_with_custom)
-- [with_distribution](app-builder#with_distribution)
-- [with_gov](app-builder#with_gov)
-- [with_ibc](app-builder#with_ibc)
-- [with_staking](app-builder#with_staking)
-- [with_stargate](app-builder#with_stargate)
-- [with_storage](app-builder#with_storage)
-- [with_wasm](app-builder#with_wasm)
+[AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible and modular way to
+construct the [App](app) blockchain simulator. It allows smart contract developers to configure various
+components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually through dedicated
+`with_*` methods. Each method modifies and returns a new instance of the builder, enabling method chaining
+for a fluent interface. The [build](#build) method finalizes the construction process, ensuring that
+all components are correctly initialized and integrated.
 
-## `build`
+The following sections detail all builder functions, providing specific usage examples.
+
+## `default`
 
 WIP
 
@@ -100,5 +97,9 @@ WIP
 WIP
 
 ## `with_wasm`
+
+WIP
+
+## `build`
 
 WIP

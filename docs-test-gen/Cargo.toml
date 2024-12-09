@@ -29,3 +29,4 @@ serde = "*"
 cw-storey = "*"
 schemars = "0.8.21" # Used in entrypoint example
 thiserror = "1.0.65"
+storey = "*"

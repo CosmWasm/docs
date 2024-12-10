@@ -2,10 +2,11 @@ import { Tabs } from "nextra/components";
 
 # Events attributes and data
 
-The only way our contract can communicate to the world, for now, is by queries. Smart contracts are
-passive - they cannot invoke any action by themselves. They can do it only as a reaction to a call.
-But if you tried playing with [`wasmd`](https://github.com/CosmWasm/wasmd), you know that execution
-on the blockchain can return some metadata.
+The only way our contract can communicate with the world, for now, is through queries. Smart
+contracts are passive - they cannot invoke any action by themselves. They can do it only as a
+reaction to a call. But if you've ever tried playing with
+[`wasmd`](https://github.com/CosmWasm/wasmd), you know that execution on the blockchain can return
+some metadata.
 
 There are two things the contract can return to the caller: events and data. Events are something
 produced by almost every real-life smart contract. In contrast, data is rarely used, designed for
@@ -257,17 +258,17 @@ mod tests {
 As you can see, testing events on a simple test made it clunky. First of all, every event is heavily
 string-based - a lack of type control makes writing such tests difficult. Also, event types are
 prefixed with "wasm-" - it may not be a huge problem, but it doesn't clarify verification. But the
-problem is, how layered events structure are, which makes verifying them tricky. Also, the "wasm"
-event is particularly tricky, as it contains an implied attribute - `_contract_addr` containing an
-address called a contract. My general rule is - do not test emitted events unless some logic depends
-on them.
+problem is how layered the structure of events is, which makes verifying them tricky. Also, the
+"wasm" event is particularly tricky, as it contains an implied attribute - `_contract_addr`
+containing the address that called the contract. My general rule is - do not test emitted events
+unless some logic depends on them.
 
 ## Data
 
 Besides events, any smart contract execution may produce a `data` object. In contrast to events,
-`data` can be structured. It makes it a way better choice to perform any communication logic relies
-on. On the other hand, it turns out it is very rarely helpful outside of contract-to-contract
-communication. Data is always only one single object on the response, which is set using the
+`data` can be structured. It makes it a way better choice to perform any communication the logic
+relies on. On the other hand, it turns out it is very rarely helpful outside of contract-to-contract
+communication. Data is always a singular object within the response, and it's set with the
 [`set_data`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html#method.set_data)
 function. Because of its low usefulness in a single contract environment, we will not spend time on
 it right now - an example of it will be covered later when contract-to-contract communication will

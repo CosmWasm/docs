@@ -15,7 +15,7 @@ tags: ["multitest", "AppBuilder"]
 and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart contract developers
 to configure various components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually
 through dedicated `with_*` methods. Each method modifies and returns a new instance of the builder, enabling
-method chaining for a fluent interface. The [`build(){:rust}`][build] method finalizes the construction
+method chaining for a fluent interface. The [`build{:rust}`][build] method finalizes the construction
 process, ensuring that all components are correctly initialized and integrated.
 
 The following sections detail all builder functions, providing specific usage examples.
@@ -43,7 +43,7 @@ The following sections detail all builder functions, providing specific usage ex
 ## `with_block`
 
 While the default block configuration is sufficient for most test cases, you can initialize the
-chain with a custom [`BlockInfo{:rust}`][BlockInfo] using the [`with_block(){:rust}`][with_block]
+chain with a custom [`BlockInfo{:rust}`][BlockInfo] using the [`with_block{:rust}`][with_block]
 method provided by [`AppBuilder{:rust}`][AppBuilder].
 
 The following example demonstrates this use case in detail.
@@ -79,9 +79,9 @@ assert_eq!("starship-testnet", block.chain_id);
 ```
 
 The [`AppBuilder{:rust}`][AppBuilder] is initialized with default settings in line 5. A custom block
-is created in lines 8-12 and passed to the [`with_block(){:rust}`][with_block] method in line 15.
+is created in lines 8-12 and passed to the [`with_block{:rust}`][with_block] method in line 15.
 Since this is the only customization in this example, the blockchain construction is finalized in
-the same line by calling the [`build(){:rust}`][build] function.
+the same line by calling the [`build{:rust}`][build] method.
 
 The current block metadata is retrieved in line 18, followed by value checks:
 
@@ -90,7 +90,7 @@ The current block metadata is retrieved in line 18, followed by value checks:
   `Wednesday, August 14, 2024, 09:24:49 GMT`,
 - line 27: the chain identifier is now `"starship-testnet"{:rust}`.
 
-The [`with_block(){:rust}`][with_block] method of [`AppBuilder{:rust}`][AppBuilder] can be combined
+The [`with_block{:rust}`][with_block] method of [`AppBuilder{:rust}`][AppBuilder] can be combined
 with any other `with_*` methods to configure a custom starting block.
 
 ## `with_custom`

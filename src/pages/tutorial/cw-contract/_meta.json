@@ -7,5 +7,6 @@
   "multitest-introduction": "Multitest introduction",
   "state": "Storing state",
   "execution": "Execution messages",
-  "event": "Passing events"
+  "event": "Passing events",
+  "funds": "Handling funds"
 }

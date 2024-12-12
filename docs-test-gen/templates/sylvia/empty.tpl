@@ -1,13 +1,17 @@
 #![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports, clippy::new_without_default)]
 
-use sylvia::cw_std::{Addr, Binary, Coin, entry_point, Reply, SubMsg, WasmMsg, to_json_binary, DepsMut, Empty, Env, IbcChannelOpenMsg, IbcChannelOpenResponse, Response, StdError, StdResult, SubMsgResult};
+use sylvia::cw_std::{Addr, Binary, Coin, entry_point, MessageInfo, Reply, SubMsg, WasmMsg, to_json_binary, DepsMut, Empty, Env, IbcChannelOpenMsg, IbcChannelOpenResponse, Response, StdError, StdResult, SubMsgResult};
 use sylvia::{contract, entry_points, interface};
-use sylvia::types::Remote;
+use sylvia::types::{Remote, CustomMsg, CustomQuery};
 use sylvia::ctx::{InstantiateCtx, QueryCtx, ExecCtx, ReplyCtx, SudoCtx, MigrateCtx};
 use sylvia::cw_schema::cw_serde;
 use cw_utils::MsgInstantiateContractResponse;
 use cw_storey::CwStorage;
 use external_contract::ExternalContract;
+use std::marker::PhantomData;
+use external_interface::SomeInterface;
+use serde::{Deserialize, Serialize};
+use serde::de::DeserializeOwned;
 
 pub mod external_contract {
     use sylvia::contract;
@@ -43,6 +47,20 @@ pub enum ExternalExecMsg {
 pub enum ExternalQueryMsg {
     Count {}
 }
+
+#[cw_serde]
+pub struct ExampleMsg {}
+
+#[cw_serde]
+pub struct ExampleQuery {}
+
+impl sylvia::cw_std::CustomMsg for ExampleMsg {}
+
+impl sylvia::cw_std::CustomQuery for ExampleQuery {}
+
+#[cw_serde]
+pub struct SomeResponse;
+
 
 #[cw_serde]
 pub struct ExternalResponse {}

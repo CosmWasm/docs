@@ -82,7 +82,7 @@ passes:
 cosmwasm-check ../../target/wasm32-unknown-unknown/release/
 ```
 
-```shell
+```shell filename="TERMINAL"
 cw-plus/contracts/cw1-whitelist $ cosmwasm-check
 ../../target/wasm32-unknown-unknown/release/cw1_whitelist.wasm Available capabilities: {"iterator",
 "cosmwasm_1_1", "cosmwasm_1_2", "stargate", "staking"}
@@ -90,4 +90,16 @@ cw-plus/contracts/cw1-whitelist $ cosmwasm-check
 ../../target/wasm32-unknown-unknown/release/cw1_whitelist.wasm: pass
 
 All contracts (1) passed checks!
+```
+
+## Macro expansion
+
+In VSCode you can hower over a macro like [`#[contract]`](../sylvia/macros/contract), do `shift+p`
+and then type: `rust analyzer: Expand macro recursively`. This will open a window with a fully
+expanded macro, which you can browse. In Vim you can consider installing the
+[rustaceanvim](https://github.com/mrcjkb/rustaceanvim) plugin. You can also use `cargo expand` tool
+from CLI, like this:
+
+```shell copy filename="TERMINAL"
+cargo expand --lib
 ```

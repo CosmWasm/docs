@@ -1,0 +1,88 @@
+# Generating first messages
+
+We have set up our dependencies. Now let's use them to create simple messages.
+
+## Creating an instantiation message
+
+For this step we will create a new file:
+
+- `src/contract.rs` - here, we will define our messages and behavior of the contract upon receiving
+  them
+
+Add this module to `src/lib.rs`. You want it to be public, as users might want to get access to
+types stored inside your contract.
+
+```rust copy filename="src/lib.rs"
+pub mod contract;
+```
+
+Now let's create an `instantiate` method for our contract. In `src/contract.rs`
+
+```rust copy filename="src/contract.rs" template="sylvia-empty"
+use sylvia::cw_std::{Response, StdResult};
+use sylvia::contract;
+use sylvia::ctx::InstantiateCtx;
+
+pub struct CounterContract;
+
+#[contract]
+impl CounterContract {
+    pub const fn new() -> Self {
+        Self
+    }
+
+    #[sv::msg(instantiate)]
+    pub fn instantiate(&self, _ctx: InstantiateCtx) -> StdResult<Response> {
+        Ok(Response::default())
+    }
+}
+```
+
+So what is going on here? First, we define the `CounterContract` struct. It is empty right now but
+later when we learn about states, we will use its fields to store them. We mark the `impl` block
+with [`contract`](../../sylvia/macros/contract) attribute macro. It will parse every method inside
+the `impl` block marked with the [`sv::msg(...)`](../../sylvia/macros/attributes/msg) attribute and
+create proper messages and utilities like
+[MultiTest helpers](../../sylvia/macros/generated-types/multitest) for them. More on them later.
+
+CosmWasm contract requires only the [instantiate](../../core/entrypoints/instantiate) entry point,
+and it is mandatory to specify it for the [`contract`](../../sylvia/macros/contract) macro. We have
+to provide it with the proper context type
+[`InstantiateCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.InstantiateCtx.html).
+
+Context gives us access to the blockchain state, information about our contract, and the sender of
+the message. We return the
+[`StdResult`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/type.StdResult.html) which uses
+standard CosmWasm error
+[`StdError`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/enum.StdError.html). It's generic over
+[`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html). For now, we
+will return the `default` value of it.
+
+I recommend expanding the macro now and seeing what Sylvia generates. It might be overwhelming, as
+there will be a lot of things generated that seem not relevant to our code, so for the bare minimum
+check the [`InstantiateMsg`](../../sylvia/macros/generated-types/message-types#contract-messages)
+and its `impl` block.
+
+## Next step
+
+If we build our contract with command:
+
+```shell copy filename="TERMINAL"
+cargo build --release --target wasm32-unknown-unknown --lib
+```
+
+and then run:
+
+```shell copy filename="TERMINAL"
+cosmwasm-check target/wasm32-unknown-unknown/release/contract.wasm
+```
+
+The output should look like this:
+
+```shell filename="TERMINAL"
+Available capabilities: {"cosmwasm_1_3", "cosmwasm_2_0", "cosmwasm_1_2", "stargate", "iterator", "cosmwasm_1_1", "cosmwasm_1_4", "staking", "cosmwasm_2_1"}
+
+target/wasm32-unknown-unknown/release/contract.wasm: pass
+
+All contracts (1) passed checks!
+```

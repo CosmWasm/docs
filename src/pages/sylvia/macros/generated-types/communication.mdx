@@ -16,7 +16,7 @@ implementing traits with methods representing execute and query methods
 
 Examples in the following paragraphs are generated from the below contract:
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub struct Contract;
 
 #[contract]
@@ -49,7 +49,7 @@ Sylvia macros generate a `Querier` trait that mirrors all of the methods marked 
 [`BoundQuerier`](../../types/communication#boundquerier) type. Implementation of each method
 constructs the appropriate message and sends it to the contract.
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub trait Querier {
     fn some_query(&self, addr: String) -> Result<SomeResponse, sylvia::cw_std::StdError>;
 }
@@ -72,7 +72,7 @@ constructs the appropriate message and returns the
 [`ExecutorBuilder`](../../types/communication#executorbuilder) generic over
 [`ReadyExecutorBuilderState`](https://docs.rs/sylvia/latest/sylvia/types/struct.ReadyExecutorBuilderState.html).
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub trait Executor {
     fn some_exec(
         self,
@@ -118,7 +118,7 @@ This trait was created for internal use of the generated code to ease work with 
 
 <Callout>We reserve the right to break the API of this trait between minor releases.</Callout>
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 impl sylvia::types::ContractApi for Contract {
     type ContractExec = ContractExecMsg;
     type ContractQuery = ContractQueryMsg;
@@ -150,7 +150,7 @@ contracts.
 
 <Callout>We reserve the right to break the API of this trait between the minor releases.</Callout>
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub struct Api<ExecC, QueryC, CounterT> {
     _phantom: std::marker::PhantomData<(ExecC, QueryC, CounterT)>,
 }
@@ -180,7 +180,7 @@ contracts.
 
 <Callout>We reserve the right to break the API of this trait between the minor releases.</Callout>
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub struct Api<ExecC, QueryC, CounterT> {
     _phantom: std::marker::PhantomData<(ExecC, QueryC, CounterT)>,
 }

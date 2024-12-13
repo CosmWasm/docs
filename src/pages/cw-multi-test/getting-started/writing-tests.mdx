@@ -315,7 +315,7 @@ since we haven't written any tests yet. Follow the next chapters, and make the c
 [0;30m use cosmwasm_std::{Response, StdResult};
 [0;30m use cw_storage_plus::Item;
 [0;30m use sylvia::contract;
-[0;30m use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+[0;30m use sylvia::ctx::{ExecCtx, InstantiateCtx, QueryCtx};
 [0;30m
 [0;30m pub struct CounterContract {
 [0;30m     pub count: Item<u8>,

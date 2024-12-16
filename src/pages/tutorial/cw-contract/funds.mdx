@@ -2,21 +2,21 @@ import { Tabs } from "nextra/components";
 
 # Dealing with funds
 
-When you hear smart contracts, you think blockchain. When you hear blockchain, you often think of
-cryptocurrencies. It is not the same, but crypto assets, or as we often call them: tokens, are very
-closely connected to the blockchain. CosmWasm has a notion of a native token. Native tokens are
+When you hear "smart contracts", you think "blockchain". When you hear blockchain, you often think
+of cryptocurrencies. It is not the same, but crypto assets, or as we often call them: tokens, are
+very closely connected to the blockchain. CosmWasm has a notion of a native token. Native tokens are
 assets managed by the blockchain core instead of smart contracts. Often such assets have some
 special meaning, like being used for paying
 [gas fees](https://docs.cosmos.network/v0.52/learn/beginner/gas-fees) or
 [staking](https://en.wikipedia.org/wiki/Proof_of_stake) for consensus algorithm, but can be just
 arbitrary assets.
 
-Native tokens are assigned to their owners but can be transferred by their nature. Everything had an
-address in the blockchain is eligible to have its native tokens. As a consequence - tokens can be
-assigned to smart contracts! Every message sent to the smart contract can have some funds sent with
-it. In this chapter, we will take advantage of that and create a way to reward hard work performed
-by admins. We will create a new message - `Donate`, which will be used by anyone to donate some
-funds to admins, divided equally.
+Native tokens are assigned to their owners but can be transferred. Everything have an address in the
+blockchain is eligible to have its native tokens. As a consequence - tokens can be assigned to smart
+contracts! Every message sent to the smart contract can have some funds sent with it. In this
+chapter, we will take advantage of that and create a way to reward hard work performed by admins. We
+will create a new message - `Donate`, which will be used by anyone to donate some funds to admins,
+divided equally.
 
 ## Preparing messages
 
@@ -336,11 +336,12 @@ mod exec {
 
 Sending the funds to another contract is performed by adding bank messages to the response. The
 blockchain would expect any message which is returned in contract response as a part of an
-execution. This design is related to an actor model implemented by CosmWasm. The whole actor model
-will be described in detail later. For now, you can assume this is a way to handle token transfers.
-Before sending tokens to admins, we have to calculate the amount of donation per admin. It is done
-by searching funds for an entry describing our donation token and dividing the number of tokens sent
-by the number of admins. Note that because the integral division is always rounding down.
+execution. This design is related to an actor model implemented by CosmWasm. You can read about it
+[here](../../core/architecture/actor-model), but for now, you can assume this is a way to handle
+token transfers. Before sending tokens to admins, we have to calculate the amount of donation per
+admin. It is done by searching funds for an entry describing our donation token and dividing the
+number of tokens sent by the number of admins. Note that because the integral division is always
+rounding down.
 
 As a consequence, it is possible that not all tokens sent as a donation would end up with no admins
 accounts. Any leftover would be left on our contract account forever. There are plenty of ways of
@@ -468,14 +469,13 @@ attribute.
 
 The critical thing to talk about is how `app` creation changed. Because we need some initial tokens
 on a `user` account, instead of using the default constructor, we have to provide it with an
-initializer function. Unfortunately,
-[`new`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.new) documentation
-is not easy to follow - even if a function is not very complicated. What it takes as an argument is
-a closure with three arguments - the
-[`Router`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.Router.html) with all modules
-supported by multi-test, the API object, and the state. This function is called once during contract
-instantiation. The `router` object contains some generic fields - we are interested in `bank` in
-particular. It has a type of
+initializer function. Unfortunately, even though the
+[`new`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.new) function is
+not very complicated, it's not easy to use. What it takes as an argument is a closure with three
+arguments - the [`Router`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.Router.html)
+with all modules supported by multi-test, the API object, and the state. This function is called
+once during contract instantiation. The `router` object contains some generic fields - we are
+interested in `bank` in particular. It has a type of
 [`BankKeeper`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html), where the
 [`init_balance`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html#method.init_balance)
 function sits.
@@ -492,6 +492,5 @@ adding himself to the list and receiving twice as many rewards as others!
 Try to write a test that detects such a bug, then fix it and ensure the bug nevermore occurs.
 
 Even if the admin cannot add the same address to the list, he can always create new accounts and add
-them, but this is something unpreventable on the contract level, so do not prevent that. Handling
-this kind of case is done by properly designing whole applications, which is out of this chapter's
-scope.
+them. Handling this kind of case is done by properly designing whole applications, which is out of
+this chapter's scope.

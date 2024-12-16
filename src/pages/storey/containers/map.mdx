@@ -46,6 +46,19 @@ assert_eq!(access.entry("alice").get().unwrap(), Some(Uint128::new(1000)));
 
 #### Iterating over the balances
 
+<Callout type="warning">
+  When iterating over the entries in a `Map` using the `pairs`, `keys`, and `values` methods, the
+  **order of the keys is not guaranteed to be sensible** (though it is deterministic). If you need a
+  sensible order, try using the bounded iterators. If they do not exist (`BoundedIterableAccessor` is not implemented for the accessor), sensibly ordered iteration is not
+  possible.
+
+Bounded or sensibly ordered iteration is not possible when both of the following conditions are met:
+
+- The key is dynamically sized (e.g. `String`, `Vec<u8>`, etc.).
+- The value type is a collection (`Map`, `Column`, etc.) rather than something like `Item`.
+
+</Callout>
+
 Iterating over the balances is pretty straightforward. The [`keys`] method returns an iterator over
 the keys, the [`values`] method returns an iterator over the values, and the [`pairs`] method
 returns an iterator over both.
@@ -205,21 +218,9 @@ different level.
 
 We can of course do the same with the `keys` and `values` methods.
 
-<Callout type="warning">
-  When iterating over the entries in a `Map` using the `pairs`, `keys`, and `values` methods, the
-  **order of the keys is not guaranteed to be sensible** (though it is deterministic). If you need a
-  sensible order, try using the bounded iterators. If they do not exist (`BoundedIterableAccessor` is not implemented for the accessor), sensibly ordered iteration is not
-  possible.
-
-Bounded or sensibly ordered iteration is not possible when both of the following conditions are met:
-
-- The key is dynamically sized (e.g. `String`, `Vec<u8>`, etc.).
-- The value type is a collection (`Map`, `Column`, etc.) rather than something like `Item`.
-
-This is why, in the example above, bounded iteration (and a sensible order) is only possible for the
-inner map.
-
-</Callout>
+In the example above, bounded iteration (and a sensible order of iteration) is only possible for the
+inner map. The reason for that is explained in the [warning box at the beginning of the
+section](#iterating-over-the-balances).
 
 [`cw-storage-plus`]: /cw-storage-plus/containers/map
 [`bounded_pairs`]:

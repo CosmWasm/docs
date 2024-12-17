@@ -257,7 +257,7 @@ use crate::msg::{CounterInitMsg, CounterResponse};
 use cosmwasm_std::{Response, StdResult};
 use cw_storage_plus::Item;
 use sylvia::contract;
-use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+use sylvia::ctx::{ExecCtx, InstantiateCtx, QueryCtx};
 
 pub struct CounterContract {
     pub count: Item<u8>,
@@ -322,7 +322,7 @@ use crate::msg::{CounterInitMsg, CounterResponse};
 use cosmwasm_std::{Response, StdResult};
 use cw_storage_plus::Item;
 use sylvia::contract;
-use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+use sylvia::ctx::{ExecCtx, InstantiateCtx, QueryCtx};
 ```
 
 The first `use{:rust}` statement imports message structures for handling initialization of the

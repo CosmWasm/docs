@@ -26,26 +26,15 @@ Here's a simple example:
 ```rust template="storage"
 use cw_storage_plus::Map;
 
-type Address = String;
-type Token = String;
+type Address = String; type Token = String;
 
 let balances: Map<(Address, Token), u128> = Map::new("b");
 
-balances
-    .save(
-        &mut storage,
-        ("alice".to_string(), "uusd".to_string()),
-        &100,
-    )
-    .unwrap();
+balances .save( &mut storage, ("alice".to_string(), "uusd".to_string()), &100, ) .unwrap();
 
-assert_eq!(
-    balances
-        .load(&storage, ("alice".to_string(), "uusd".to_string()))
-        .unwrap(),
-    100
-);
-```
+assert_eq!( balances .load(&storage, ("alice".to_string(), "uusd".to_string())) .unwrap(), 100 );
+
+````
 
   </Tabs.Tab>
   <Tabs.Tab>
@@ -78,7 +67,7 @@ assert_eq!(
         .unwrap(),
     Some(100)
 );
-```
+````
 
   </Tabs.Tab>
 </Tabs>

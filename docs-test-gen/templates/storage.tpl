@@ -1,15 +1,8 @@
-#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports)]
+#![allow(unexpected_cfgs, dead_code, unused_variables, unused_imports, clippy::new_without_default)]
 
-#[allow(unused_imports)]
-mod imports {
-    pub use cosmwasm_schema::cw_serde;
-    pub use cosmwasm_std::*;
-}
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::*;
 
-#[allow(unused_imports)]
-use imports::*;
-
-#[allow(dead_code, unused_variables)]
 mod users {
     use super::*;
 

@@ -23,15 +23,18 @@ simplifies address creation for testing purposes in two steps:
 - and then the 32-byte hash is encoded using Bech32 format; a human-readable prefix (HRP), specific
   to the blockchain is prepended.
 
-The following examples demonstrate how to generate a Bech32 address with a specified prefix using
-two common approaches: the `addr_make` function and the `IntoAddr`, `IntoBech32` and `IntoBech32m`
-traits.
+The following examples demonstrate (in several ways) how to generate a Bech32 address with a
+specified prefix using two common approaches: the `addr_make{:rust}` function and the
+`IntoAddr{:rust}`, `IntoBech32{:rust}` and `IntoBech32m{:rust}` traits.
 
 ### App
 
-`App.api().addr_make`
+**WAY 1: Calling `addr_make{:rust}` on `app.api()`**
 
-> Default prefix is `cosmwasm`, default format is `Bech32`
+Having the chain simulator `App{:rust}` already created, you can just call `addr_make{:rust}`
+providing any string as an argument, like shown below in line 5. The address returned by this
+function is by default encoded in **Bech32** format and has a default prefix **cosmwasm**. Notice,
+that the `App{:rust}` is created with default settings in line 3.
 
 ```rust showLineNumbers copy /addr_make/
 use cw_multi_test::App;

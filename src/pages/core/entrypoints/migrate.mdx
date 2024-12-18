@@ -42,9 +42,53 @@ That's what you do in the `migrate` entrypoint. You transform the structure of t
 
 ## Example
 
+For CosmWasm `v2.2.0` and newer the new migrate info feature can be used:
+
 ```rust filename="contract.rs" template="core"
-const CONTRACT_NAME: &str = "my_contract";
+const MIGRATE_VERSION: u64 = 2;
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+#[migrate_version(MIGRATE_VERSION)]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg, migrate_info: MigrateInfo) -> StdResult<Response> {
+    match migrate_info.old_migrate_version {
+      Some(1) | None => {
+        // If the old on-chain version of the contract don't use the
+        // `migrate_version` macro, there will be no version provided here
+        // (it's the `None` variant).
+
+        // Load the old data
+        let Some(old_data) = deps.storage.get(b"persisted_data") else {
+          return Err(StdError::generic_err("Data not found"));
+        };
+        // Deserialize it from the old format
+        let old_data: OldData = cosmwasm_std::from_json(&old_data)?;
+
+        // Transform it
+        let new_data = transform(old_data);
+
+        // Serialize the new data
+        let new_data = cosmwasm_std::to_json_vec(&new_data)?;
+        // Store the new data
+        deps.storage.set(b"persisted_data", &new_data);
+      }
+      Some(x) if x >= MIGRATE_VERSION => {
+        // Assume we don't support downgrading the contract's state version
+        // Note that `migrate_info.old_migrate_version` is never eq to `MIGRATE_VERSION`.
+        return Err(StdError::generic_err("Downgrades are not supported for this contract."));
+      }
+      _ => {
+        return Err(StdError::generic_err("Unexpected migrate version."));
+      }
+    }
+    Ok(Response::default())
+}
+```
+
+For CosmWasm versions older than `v2.2.0` the old method looks like this:
+
+```rust filename="contract.rs" template="core"
 const STATE_VERSION: &str = "v2";
+const CONTRACT_NAME: &str = "my_contract";
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
@@ -71,6 +115,20 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response
 ```
 
 ## Definition
+
+To get the additional migrate info, the new signature can be used (CW `v2.2.0` and newer):
+
+```rust filename="contract.rs" template="core"
+const MIGRATE_VERSION: u64 = 2;
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+#[migrate_version(MIGRATE_VERSION)]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg, _migrate_info: MigrateInfo) -> StdResult<Response> {
+    Ok(Response::default())
+}
+```
+
+The legacy migrate entry-point function signtature is defined as:
 
 ```rust filename="contract.rs" template="core"
 #[cfg_attr(not(feature = "library"), entry_point)]

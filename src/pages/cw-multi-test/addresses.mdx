@@ -6,18 +6,26 @@ tags: ["multitest", "addresses"]
 
 ## User address
 
-On real-life blockchain based on Cosmos-SDK, user addresses are derived from the public key of the
-user in the following manner:
+In the real-life blockchain based on Cosmos-SDK, user addresses are derived from the public key of
+the user in the following manner:
 
 - the public key of the user (in raw bytes) is first hashed using SHA-256,
 - then the resulting SHA-256 hash is hashed again using RIPEMD-160; this step reduces the hash to 20
   bytes, which is the standard length of addresses in Cosmos-SDK),
 - finally the resulting RIPEMD-160 hash is then encoded using Bech32 format; a human-readable prefix
-  (specific to the blockchain, e.g., cosmos for the Cosmos Hub) is prepended.
+  (HRP), specific to the blockchain is prepended.
 
 In **`MultiTest`**, user addresses are indeed derived from a user-provided string, such as an alias
-(e.g., "alice", "bob", "creator", "owner", etc.), and not from an actual public/private key pair,
-which simplifies address creation for testing purposes.
+(e.g., **alice**, **creator**, etc.) and not from an actual public/private key pair, which
+simplifies address creation for testing purposes in two steps:
+
+- the alias or any provided string is first hashed using SHA-256,
+- and then the 32-byte hash is encoded using Bech32 format; a human-readable prefix (HRP), specific
+  to the blockchain is prepended.
+
+The following examples demonstrate how to generate a Bech32 address with a specified prefix using
+two common approaches: the `addr_make` function and the `IntoAddr`, `IntoBech32` and `IntoBech32m`
+traits.
 
 ### App
 

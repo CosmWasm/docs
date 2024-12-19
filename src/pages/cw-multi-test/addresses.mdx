@@ -247,13 +247,24 @@ assert_eq!(
 );
 ```
 
+<Callout>
+  All the methods of generating user addresses described above are built on the functionality
+  provided by the [`MockApi{:rust}`][MockApi], [`MockApiBech32{:rust}`][MockApiBech32] and
+  [`MockApiBech32m{:rust}`][MockApiBech32m] structs. In certain scenarios, you might find
+  it useful to use these structs directly - for instance, when creating utility functions
+  for tests or custom testing frameworks. Examples of their usage are provided below.
+</Callout>
+
 ### MockApi
 
-`cosmwasm_std::testing::MockApi`
+<Callout emoji="🖝">
+  Using [`MockApi{:rust}`][MockApi] struct
+</Callout>
 
-> Default prefix is `cosmwasm`, format is always `Bech32`
+To generate an address with default prefix **cosmwasm** encoded in **Bech32** format use method
+`addr_make{:rust}` on default instance of [`MockApi{:rust}`][MockApi]:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /addr_make/
 use cosmwasm_std::testing::MockApi;
 
 let addr = MockApi::default().addr_make("owner");
@@ -264,9 +275,10 @@ assert_eq!(
 );
 ```
 
-> Custom prefix, format is always `Bech32`
+The `with_prefix{:rust}` method applies a custom prefix and **Bech32** encoding to generated
+address:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /with_prefix/ /addr_make/
 use cosmwasm_std::testing::MockApi;
 
 let addr = MockApi::default().with_prefix("nebula").addr_make("owner");
@@ -279,11 +291,13 @@ assert_eq!(
 
 ### MockApiBech32
 
-`cw_multi_test::MockApiBech32`
+<Callout emoji="🖝">
+  Using [`MockApiBech32{:rust}`][MockApiBech32] struct
+</Callout>
 
-> Default prefix is `cosmwasm`, format is always `Bech32`
+**cosmwasm** prefix and **Bech32** encoding:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /MockApiBech32::new/ /addr_make/
 use cw_multi_test::MockApiBech32;
 
 let addr = MockApiBech32::new("cosmwasm").addr_make("owner");
@@ -294,9 +308,9 @@ assert_eq!(
 );
 ```
 
-> Custom prefix, format is always `Bech32`
+Custom prefix and **Bech32** encoding:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /MockApiBech32::new/ /addr_make/
 use cw_multi_test::MockApiBech32;
 
 let addr = MockApiBech32::new("nebula").addr_make("owner");
@@ -309,11 +323,13 @@ assert_eq!(
 
 ### MockApiBech32m
 
-`cw_multi_test::MockApiBech32m`
+<Callout emoji="🖝">
+  Using [`MockApiBech32m{:rust}`][MockApiBech32m] struct
+</Callout>
 
-> Default prefix is `cosmwasm`, format is always `Bech32m`
+**cosmwasm** prefix and **Bech32m** encoding:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /MockApiBech32m::new/ /addr_make/
 use cw_multi_test::MockApiBech32m;
 
 let addr = MockApiBech32m::new("cosmwasm").addr_make("owner");
@@ -324,9 +340,9 @@ assert_eq!(
 );
 ```
 
-> Custom prefix, format is always `Bech32m`
+Custom prefix and **Bech32m** encoding:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /MockApiBech32m::new/ /addr_make/
 use cw_multi_test::MockApiBech32m;
 
 let addr = MockApiBech32m::new("nebula").addr_make("owner");

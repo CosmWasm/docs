@@ -32,7 +32,7 @@ List of attributes supported by
 
 ## Usage
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub struct Contract;
 
 #[cw_serde]
@@ -94,7 +94,7 @@ functionality of one contract with another one. In such a case you might want to
 possibility for the user to use it with types that suits their purpose. You can do that by defining
 generics on your contract.
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 use cw_storage_plus::Item;
 
 pub struct Contract<ExecParamT, FieldT> {
@@ -178,7 +178,7 @@ it makes testing it in the [MultiTest](../../cw-multi-test) environment with dif
 messages tricky. We recommend that if your contract is meant to be chain agnostic, define it with a
 generic custom message and custom query.
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 pub struct Contract<CMsgT, CQueryT> {
     _phantom: PhantomData<(CMsgT, CQueryT)>,
 }

@@ -12,7 +12,7 @@ state and define a behavior.
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 use cw_storey::containers::Item;
 
 pub struct CounterContract { pub count: Item<u64>, }
@@ -21,8 +21,8 @@ pub struct CounterContract { pub count: Item<u64>, }
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust, template="sylvia-empty"
-use sylvia::cw_storage_plus::Item;
+```rust template="sylvia-empty"
+use cw_storage_plus::Item;
 
 pub struct CounterContract { pub count: Item<u64>, }
 ```
@@ -38,16 +38,21 @@ Let's take a look at the behavior implementation.
 <Tabs items={['Storey', 'StoragePlus']}>
   <Tabs.Tab>
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 use cosmwasm_schema::cw_serde;
 use cw_storey::CwStorage;
+use cw_storey::containers::Item;
 use sylvia::contract;
 use sylvia::cw_std::{Response, StdError, StdResult};
-use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+use sylvia::ctx::{ExecCtx, InstantiateCtx, QueryCtx};
 
 #[cw_serde]
 pub struct CountResponse {
     pub count: u64,
+}
+
+pub struct CounterContract {
+    pub count: Item<u64>,
 }
 
 #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
@@ -94,15 +99,20 @@ impl CounterContract {
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
+use cw_storage_plus::Item;
 use cosmwasm_schema::cw_serde;
 use sylvia::contract;
 use sylvia::cw_std::{Response, StdError, StdResult};
-use sylvia::types::{ExecCtx, InstantiateCtx, QueryCtx};
+use sylvia::ctx::{ExecCtx, InstantiateCtx, QueryCtx};
 
 #[cw_serde]
 pub struct CountResponse {
     pub count: u64,
+}
+
+pub struct CounterContract {
+    pub count: Item<u64>,
 }
 
 #[cfg_attr(not(feature = "library"), sylvia::entry_points)]

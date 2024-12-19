@@ -2,6 +2,8 @@
 tags: ["multitest", "addresses"]
 ---
 
+import { Callout } from "nextra/components";
+
 # Addresses
 
 ## User address
@@ -13,30 +15,34 @@ the user in the following manner:
 - then the resulting SHA-256 hash is hashed again using RIPEMD-160; this step reduces the hash to 20
   bytes, which is the standard length of addresses in Cosmos-SDK),
 - finally the resulting RIPEMD-160 hash is then encoded using Bech32 format; a human-readable prefix
-  (HRP), specific to the blockchain is prepended.
+  (HRP) specific to the blockchain is prepended.
 
 In **`MultiTest`**, user addresses are indeed derived from a user-provided string, such as an alias
 (e.g., **alice**, **creator**, etc.) and not from an actual public/private key pair, which
 simplifies address creation for testing purposes in two steps:
 
 - the alias or any provided string is first hashed using SHA-256,
-- and then the 32-byte hash is encoded using Bech32 format; a human-readable prefix (HRP), specific
+- and then the 32-byte hash is encoded using Bech32 format; a human-readable prefix (HRP) specific
   to the blockchain is prepended.
 
-The following examples demonstrate (in several ways) how to generate a Bech32 address with a
-specified prefix using two common approaches: the `addr_make{:rust}` function and the
-`IntoAddr{:rust}`, `IntoBech32{:rust}` and `IntoBech32m{:rust}` traits.
+The following examples demonstrate (in several ways) how to generate a Bech32 addresses (optionally
+with custom prefix) using two common approaches:
+
+- the `addr_make{:rust}` function,
+- the `IntoAddr{:rust}`, `IntoBech32{:rust}` and `IntoBech32m{:rust}` traits.
 
 ### App
 
-**WAY 1: Calling `addr_make{:rust}` on `app.api()`**
+<Callout emoji="🖝">
+  Calling `addr_make{:rust}` on `app.api(){:rust}`.
+</Callout>
 
 Having the chain simulator `App{:rust}` already created, you can just call `addr_make{:rust}`
-providing any string as an argument, like shown below in line 5. The address returned by this
-function is by default encoded in **Bech32** format and has a default prefix **cosmwasm**. Notice,
-that the `App{:rust}` is created with default settings in line 3.
+function, providing any string as an argument, like shown below in line 5. The address returned by
+this function is by default encoded in **Bech32** format and has a default prefix **cosmwasm**.
+Notice, that the `App{:rust}` is created with default settings (line 3).
 
-```rust showLineNumbers copy /addr_make/
+```rust showLineNumbers {5} copy /addr_make/ /App::default()/
 use cw_multi_test::App;
 
 let app = App::default();

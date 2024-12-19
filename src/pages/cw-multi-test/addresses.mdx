@@ -355,7 +355,15 @@ assert_eq!(
 
 ### Initialization callback
 
-```rust showLineNumbers copy /addr_make/
+During blockchain initialization, a common use case is supplying user accounts with tokens before
+running tests. In these scenarios, user addresses can be generated directly within the
+initialization callback function, passed as an argument to the `App::new{:rust}` or
+`AppBuilder::build{:rust}` methods. Examples of such usage are provided below and are
+self-explanatory.
+
+Default **cosmwasm** prefix with **Bech32** encoding:
+
+```rust {4} showLineNumbers copy /addr_make/ / api,/
 use cw_multi_test::App;
 
 let app = App::new(|router, api, storage| {
@@ -367,7 +375,9 @@ let app = App::new(|router, api, storage| {
 });
 ```
 
-```rust {4} showLineNumbers copy /addr_make/
+Custom prefix prefix with **Bech32** encoding:
+
+```rust {6} showLineNumbers copy /addr_make/ / api,/
 use cw_multi_test::{AppBuilder, MockApiBech32};
 
 let app = AppBuilder::default()
@@ -381,7 +391,9 @@ let app = AppBuilder::default()
     });
 ```
 
-```rust {4} showLineNumbers copy /addr_make/
+Custom prefix with **Bech32m** encoding:
+
+```rust {6} showLineNumbers copy /addr_make/ / api,/
 use cw_multi_test::{AppBuilder, MockApiBech32m};
 
 let app = AppBuilder::default()
@@ -395,7 +407,9 @@ let app = AppBuilder::default()
     });
 ```
 
-```rust {4} showLineNumbers copy /addr_make/
+**cosmwasm** prefix with **Bech32m** encoding:
+
+```rust {6} showLineNumbers copy /addr_make/ / api,/
 use cw_multi_test::{AppBuilder, MockApiBech32m};
 
 let app = AppBuilder::default()

@@ -94,7 +94,7 @@ possible to initialize the chain with a custom [`BlockInfo{:rust}`][BlockInfo] u
 [`set_block{:rust}`][set_block] method provided by `App{:rust}`. The following example explains this
 case in detail.
 
-```rust showLineNumbers {8-12} /set_block/ /BlockInfo/
+```rust showLineNumbers copy {8-12} /set_block/ /BlockInfo/
 use cosmwasm_std::{BlockInfo, Timestamp};
 use cw_multi_test::App;
 
@@ -147,7 +147,7 @@ function - provided by **`MultiTest`** - increases the block height by `1` and a
 time by `5` seconds, simulating the generation of a new block every `5` seconds in a real-life
 blockchain. The `chain_id{:rust}` remains unchanged.
 
-```rust showLineNumbers {7} /update_block/ /next_block/
+```rust showLineNumbers copy {7} /update_block/ /next_block/
 use cw_multi_test::{next_block, App};
 
 // create the default chain simulator
@@ -188,7 +188,7 @@ achieve this, pass a custom closure to the [`update_block{:rust}`][update_block]
 closure takes a mutable [`BlockInfo{:rust}`][BlockInfo] structure as an argument and modifies its
 properties, as shown in the example below.
 
-```rust showLineNumbers {7-10} /update_block/
+```rust showLineNumbers copy {7-10} /update_block/
 use cw_multi_test::App;
 
 // create the default chain simulator

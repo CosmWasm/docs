@@ -4,8 +4,12 @@ tags: ["multitest", "addresses"]
 
 import { Callout } from "nextra/components";
 
+[MockApi]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html
 [MockApiBech32]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.MockApiBech32.html
 [MockApiBech32m]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.MockApiBech32m.html
+[IntoAddr]: https://docs.rs/cw-multi-test/latest/cw_multi_test/trait.IntoAddr.html
+[IntoBech32]: https://docs.rs/cw-multi-test/latest/cw_multi_test/trait.IntoBech32.html
+[IntoBech32m]: https://docs.rs/cw-multi-test/latest/cw_multi_test/trait.IntoBech32m.html
 
 # Addresses
 
@@ -38,7 +42,7 @@ with custom prefix) using these common approaches:
 ### App
 
 <Callout emoji="🖝">
-  Calling `addr_make{:rust}` on `app.api(){:rust}`.
+  Calling `addr_make{:rust}` on `app.api(){:rust}`
 </Callout>
 
 Having the chain simulator `App{:rust}` already created, you can just call `addr_make{:rust}`
@@ -138,11 +142,18 @@ assert_eq!(
 
 ### IntoAddr
 
-`cw_multi_test::IntoAddr`
+<Callout emoji="🖝">
+  Using `cw_multi_test::IntoAddr{:rust}` trait
+</Callout>
 
-> Default prefix is `cosmwasm`, default format is `Bech32`
+The most generic and future-proof way to generate a user address is by using
+[`IntoAddr{:rust}`][IntoAddr] trait. Internally, this trait uses [`MockApi{:rust}`][MockApi] struct
+which currently generates addresses encoded in **Bech32** format with the default prefix
+**cosmwasm**. Should the format or prefix change in the future, this trait will generate addresses
+adjusted to these changes. To convert any string to the address, just call `into_addr{:rust}` method
+on it, like shown in line 3:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /into_addr/
 use cw_multi_test::IntoAddr;
 
 let addr = "owner".into_addr();
@@ -153,9 +164,10 @@ assert_eq!(
 )
 ```
 
-> `Bech32m` with custom prefix
+Similarly, when you need an address with the prefix to be the same as in your blockchain, then call
+`into_addr_with_prefix{:rust}` method on any string, like in line 3 shown below:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /into_addr_with_prefix/
 use cw_multi_test::IntoAddr;
 
 let addr = "owner".into_addr_with_prefix("nebula");
@@ -168,11 +180,15 @@ assert_eq!(
 
 ### IntoBech32
 
-`cw_multi_test::IntoBech32`
+<Callout emoji="🖝">
+  Using `cw_multi_test::IntoBech32{:rust}` trait
+</Callout>
 
-> Default prefix is `cosmwasm`, format is always `Bech32`
+When you want to stick to **Bech32** format in tests, then always use
+[`IntoBech32{:rust}`][IntoBech32] trait. To generate an address with the default prefix
+**cosmwasm**, just call `into_bech32{:rust}` method on any string like in line 3:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /into_bech32/
 use cw_multi_test::IntoBech32;
 
 let addr = "owner".into_bech32();
@@ -183,9 +199,9 @@ assert_eq!(
 );
 ```
 
-> Custom prefix, format is always `Bech32`
+Custom prefix can be used by calling `into_bech32_with_prefix{:rust}` function on the string:
 
-```rust showLineNumbers copy
+```rust showLineNumbers {3} copy /into_bech32_with_prefix/
 use cw_multi_test::IntoBech32;
 
 let addr = "owner".into_bech32_with_prefix("nebula");
@@ -198,7 +214,9 @@ assert_eq!(
 
 ### IntoBech32m
 
-`cw_multi_test::IntoBech32m`
+<Callout emoji="🖝">
+  Using `cw_multi_test::IntoBech32m{:rust}` trait
+</Callout>
 
 > Default prefix is `cosmwasm`, format is always `Bech32m`
 

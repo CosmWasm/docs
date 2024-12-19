@@ -24,7 +24,7 @@ Example: we could upload a generic "ERC20 mintable" contract, and many people co
 independent instances based on the same bytecode, where the local data defines the token name, the
 issuer, the max issuance, etc.
 
-1. First you **create** a _contract_,
+1. First you **store** a _contract_,
 2. Then you **instantiate** an _instance_,
 3. Finally users **invoke** the _instance_.
 
@@ -75,7 +75,7 @@ may either return a success (with data and events) or an error. In the case of a
 will revert the entire transaction in the block.
 
 In this document we focus on the `execute` entry-point implementation and call to show you the
-execution flow if the smart contracts. For more information on how to create contract and define
+execution flow of the smart contracts. For more information on how to create contract and define
 other basic entry-points, check [the entrypoints section](entrypoints.mdx).
 
 ### Basic Execution
@@ -126,7 +126,7 @@ more complex actions. This is where messages come in. We return
 serializable representation of any external call the contract can make.
 
 This may be hard to understand at first. "Why can't I just call another contract?", you may ask.
-However, we do this to prevent one of most widespread and hardest to detect security holes in
+However, we do this to prevent one of the most widespread and hardest to detect security holes in
 Ethereum contracts - reentrancy. We do this by following the actor model, which doesn't nest
 function calls, but returns messages that will be executed later. This means all state that is
 carried over between one call and the next happens in storage and not in memory. For more
@@ -148,18 +148,18 @@ cache. If `gas_limit` is set, it is sandboxed to how much gas it can use until i
 `OutOfGasError`. This error is caught and returned to the caller like any other error returned from
 contract execution (unless it burned the entire gas limit of the transaction).
 
-If it return success, the temporary state is committed (into the caller's cache), and the
+If it returns success, the temporary state is committed (into the caller's cache), and the
 [`Response`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.Response.html) is processed as
 normal. Once the response is fully processed, this may then be intercepted by the calling contract
 (for `ReplyOn::Always` and `ReplyOn::Success`). On an error, the subcall will revert any partial
 state changes due to this message, but not revert any state changes in the calling contract. The
 error may then be intercepted by the calling contract (for `ReplyOn::Always` and `ReplyOn::Error`).
-In this case, the messages error doesn't abort the whole transaction.
+In this case, the message's error doesn't abort the whole transaction.
 
 Note, that error doesn't abort the whole transaction _if and only if_ the `reply` is called - so in
 case of `ReplyOn::Always` and `ReplyOn::Error`. If the submessage is called with `ReplyOn::Success`
-or `ReplyOn::Never`, the error in subsequent call would result in failing whole transaction and not
-commit the changes for it. The rule here is as follows: if for any reason you want your message
+or `ReplyOn::Never`, the error in a subsequent call would result in failing whole transaction and
+not commit the changes for it. The rule here is as follows: if for any reason you want your message
 handling to succeed on submessage failure, you always have to reply on failure.
 
 #### Handling the reply
@@ -198,7 +198,7 @@ messages. In that case all the message responses from each are concatenated into
 
 #### Order of execution and rollback procedure
 
-Submessages handling follow a _depth first_ order rules. Let's see the following example scenario:
+Submessages handling follows _depth first_ order rules. Let's see the following example scenario:
 
 ```mermaid
 
@@ -221,9 +221,9 @@ Submessages handling follow a _depth first_ order rules. Let's see the following
 path. It means that for e.g. if `Contract2` will not explicitly handle response from `Contract3` and
 forward any data, then `Contract1` will never learn about results from `Contract3`.
 
-**Note2:** If `Contract2` return an error, the error message can be handled by the `Contract1` reply
-entry-point and prevent the whole transaction from rollback. In such a case only the `Contract2` and
-`Contract3` states changes are reverted.
+**Note2:** If `Contract2` returns an error, the error message can be handled by the `Contract1`
+reply entry-point and prevent the whole transaction from rollback. In such a case only the
+`Contract2` and `Contract3` states changes are reverted.
 
 ## Query Semantics
 

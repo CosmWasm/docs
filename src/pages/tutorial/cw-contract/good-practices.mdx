@@ -8,8 +8,8 @@ Due to Rust style, all our message variants are spelled in a
 [camel-case](https://en.wikipedia.org/wiki/CamelCase). It is standard practice, but it has a
 drawback - all messages are serialized and deserialized by serde using those variant names. The
 problem is that it is more common to use [snake cases](https://en.wikipedia.org/wiki/Snake_case) for
-field names in the JSON world. Fortunately, there is an effortless way to tell serde, to change the
-names casing for serialization purposes. Let's update our messages with a `#[serde]` attribute:
+field names in the JSON world. Fortunately, there is an effortless way to tell serde to change the
+casing for serialization purposes. Let's update our messages with a `#[serde]` attribute:
 
 ```rust {5, 12, 20, 26, 32} filename="src/msg.rs" template="empty"
 use cosmwasm_std::Addr;
@@ -52,10 +52,9 @@ pub enum QueryMsg {
 
 ## JSON schema
 
-Talking about JSON API, it is worth mentioning JSON Schema. It is a way of defining a shape for JSON
-messages. It is good practice to provide a way to generate schemas for contract API. The problem is
-that writing JSON schemas by hand is a pain. The good news is that there is a crate that would help
-us with that. Go to the `Cargo.toml`:
+Talking about JSON API, it is worth mentioning JSON Schema. It is a way of defining the structure of
+JSON messages. It is good practice to provide a way to generate schemas for contract API. The good
+news is that there is a crate that would help us with that. Go to the `Cargo.toml`:
 
 ```toml {15-16} filename="Cargo.toml"
 [package]
@@ -213,7 +212,7 @@ is a trait that requires the `#[returns(...)]` attribute to all your query varia
 additional information about the query-response relationship.
 
 Now, we want to make the `msg` module public and accessible by crates depending on our contract (in
-this case - for schema example). Update a `src/lib.rs`:
+this case - for schema example). Update your `src/lib.rs`:
 
 ```rust {5-8} filename="src/lib.rs"
 use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -277,7 +276,7 @@ Now we can generate our schemas:
 cargo run schema
 ```
 
-I encourage you to go to generated file to see what the schema looks like.
+I encourage you to go to the generated file to see what the schema looks like.
 
 The problem is that, unfortunately, creating this binary makes our project fail to compile on the
 Wasm target - which is, in the end, the most important one. Fortunately, we don't need to build the
@@ -297,10 +296,10 @@ so that one can generate schema calling simply `cargo schema`.
 ## Disabling entry points for libraries
 
 Since we added the "rlib" target for the contract, it is, as mentioned before, useable as a
-dependency. The problem is that the contract depended on ours would have Wasm entry points generated
-twice - once in the dependency and once in the final contract. We can work this around by disabling
-generating Wasm entry points for the contract if the crate is used as a dependency. We would use
-[feature flags](https://doc.rust-lang.org/cargo/reference/features.html) for that.
+dependency. The problem is that the contract dependent on ours would have Wasm entry points
+generated twice - once in the dependency and once in the final contract. We can work this around by
+disabling generating Wasm entry points for the contract if the crate is used as a dependency. We
+would use [feature flags](https://doc.rust-lang.org/cargo/reference/features.html) for that.
 
 Start with updating `Cargo.toml`:
 

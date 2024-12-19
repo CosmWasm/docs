@@ -53,10 +53,11 @@ And implement execute handling:
   <Tabs.Tab>
 
 ```rust filename="src/contract.rs"
-use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, GreetResp, InstantiateMsg, QueryMsg};
 use crate::state::ADMINS;
-use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{
+    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+};
 use cw_storey::CwStorage;
 
 // ...

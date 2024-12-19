@@ -1,0 +1,496 @@
+import { Tabs } from "nextra/components";
+
+# Dealing with funds
+
+When you hear "smart contracts", you think "blockchain". When you hear blockchain, you often think
+of cryptocurrencies. It is not the same, but crypto assets, or as we often call them: tokens, are
+very closely connected to the blockchain. CosmWasm has a notion of a native token. Native tokens are
+assets managed by the blockchain core instead of smart contracts. Often such assets have some
+special meaning, like being used for paying
+[gas fees](https://docs.cosmos.network/v0.52/learn/beginner/gas-fees) or
+[staking](https://en.wikipedia.org/wiki/Proof_of_stake) for consensus algorithm, but can be just
+arbitrary assets.
+
+Native tokens are assigned to their owners but can be transferred. Everything have an address in the
+blockchain is eligible to have its native tokens. As a consequence - tokens can be assigned to smart
+contracts! Every message sent to the smart contract can have some funds sent with it. In this
+chapter, we will take advantage of that and create a way to reward hard work performed by admins. We
+will create a new message - `Donate`, which will be used by anyone to donate some funds to admins,
+divided equally.
+
+## Preparing messages
+
+Traditionally we need to prepare our messages. We need to create a new `ExecuteMsg` variant, but we
+will also modify the `Instantiate` message a bit - we need to have some way of defining the name of
+a native token we would use for donations. It would be possible to allow users to send any tokens
+they want, but we want to simplify things for now.
+
+```rust {7, 14} filename="src/msg.rs" template="empty"
+use cosmwasm_std::Addr;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+pub struct InstantiateMsg {
+    pub admins: Vec<String>,
+    pub donation_denom: String,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+pub enum ExecuteMsg {
+    AddMembers { admins: Vec<String> },
+    Leave {},
+    Donate {},
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+pub struct GreetResp {
+    pub message: String,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+pub struct AdminsListResp {
+    pub admins: Vec<Addr>,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+pub enum QueryMsg {
+    Greet {},
+    AdminsList {},
+}
+```
+
+We also need to add a new state part, to keep the `donation_denom`:
+
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust {5, 7} filename="src/state.rs" template="empty"
+use cosmwasm_std::Addr;
+use cw_storey::containers::Item;
+
+const ADMIN_ID: u8 = 0;
+const DONATION_DENOM_ID: u8 = 1;
+pub const ADMINS: Item<Vec<Addr>> = Item::new(ADMIN_ID);
+pub const DONATION_DENOM: Item<String> = Item::new(DONATION_DENOM_ID);
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust {5} filename="src/state.rs" template="empty"
+use cosmwasm_std::Addr;
+use cw_storage_plus::Item;
+
+pub const ADMINS: Item<Vec<Addr>> = Item::new("admins");
+pub const DONATION_DENOM: Item<String> = Item::new("donation_denom");
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+And instantiate it properly:
+
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust {3, 21-23} filename="src/contract.rs"
+use crate::error::ContractError;
+use crate::msg::{ExecuteMsg, GreetResp, InstantiateMsg, QueryMsg};
+use crate::state::{ADMINS, DONATION_DENOM};
+use cosmwasm_std::{to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cw_storey::CwStorage;
+
+pub fn instantiate(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: InstantiateMsg,
+) -> StdResult<Response> {
+    let admins = msg
+        .admins
+        .into_iter()
+        .map(|addr| deps.api.addr_validate(&addr))
+        .collect::<StdResult<Vec<_>>>()?;
+
+    let mut cw_storage = CwStorage(deps.storage);
+    ADMINS.access(&mut cw_storage).set(&admins)?;
+    DONATION_DENOM
+        .access(&mut cw_storage)
+        .set(&msg.donation_denom)?;
+
+    Ok(Response::new())
+}
+
+// ...
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust {3, 18} filename="src/contract.rs"
+use crate::error::ContractError;
+use crate::msg::{AdminsListResp, ExecuteMsg, GreetResp, InstantiateMsg, QueryMsg};
+use crate::state::{ADMINS, DONATION_DENOM};
+use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+
+pub fn instantiate(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: InstantiateMsg,
+) -> StdResult<Response> {
+    let admins: StdResult<Vec<_>> = msg
+        .admins
+        .into_iter()
+        .map(|addr| deps.api.addr_validate(&addr))
+        .collect();
+    ADMINS.save(deps.storage, &admins?)?;
+    DONATION_DENOM.save(deps.storage, &msg.donation_denom?)?;
+
+    Ok(Response::new())
+}
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+What also needs some corrections are tests - instantiate messages have a new field. I leave it to
+you as an exercise. Now we have everything we need to implement donating funds to admins. First, a
+minor update to the `Cargo.toml` - we will use an additional utility crate:
+
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```toml {14} filename="Cargo.toml"
+[package]
+name = "contract"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+cosmwasm-std = { version = "2.1.4", features = ["staking"] }
+serde = { version = "1.0.214", default-features = false, features = ["derive"] }
+cw-storey = "0.4.0"
+thiserror = "2.0.3"
+cw-utils = "2.0.0"
+
+[dev-dependencies]
+cw-multi-test = "2.2.0"
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```toml {14} filename="Cargo.toml"
+[package]
+name = "contract"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+cosmwasm-std = { version = "2.1.4", features = ["staking"] }
+serde = { version = "1.0.214", default-features = false, features = ["derive"] }
+cw-storage-plus = "2.0.0"
+thiserror = "2.0.3"
+cw-utils = "2.0.0"
+
+[dev-dependencies]
+cw-multi-test = "2.2.0"
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+Then we can implement the donate handler:
+
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust {22, 33-55} filename="src/contract.rs"
+use crate::error::ContractError;
+use crate::msg::{AdminsListResp, ExecuteMsg, GreetResp, InstantiateMsg, QueryMsg};
+use crate::state::{ADMINS, DONATION_DENOM};
+use cosmwasm_std::{
+    coins, to_binary, BankMsg, Binary, Deps, DepsMut, Env, Event, MessageInfo,
+    Response, StdResult,
+};
+
+// ...
+
+pub fn execute(
+    deps: DepsMut,
+    _env: Env,
+    info: MessageInfo,
+    msg: ExecuteMsg,
+) -> Result<Response, ContractError> {
+    use ExecuteMsg::*;
+
+    match msg {
+        AddMembers { admins } => exec::add_members(deps, info, admins),
+        Leave {} => exec::leave(deps, info).map_err(Into::into),
+        Donate {} => exec::donate(deps, info),
+    }
+}
+
+mod exec {
+    use cosmwasm_std::{coins, BankMsg, Event};
+
+    use super::*;
+
+    // ...
+
+    pub fn donate(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractError> {
+        let cw_storage = CwStorage(deps.storage);
+
+        let denom = DONATION_DENOM.access(&cw_storage).get()?.unwrap();
+        let admins = ADMINS.access(&cw_storage).get()?.unwrap();
+
+        let donation = cw_utils::must_pay(&info, &denom)?.u128();
+
+        let donation_per_admin = donation / (admins.len() as u128);
+
+        let messages = admins.into_iter().map(|admin| BankMsg::Send {
+            to_address: admin.to_string(),
+            amount: coins(donation_per_admin, &denom),
+        });
+
+        let resp = Response::new()
+            .add_messages(messages)
+            .add_attribute("action", "donate")
+            .add_attribute("amount", donation.to_string())
+            .add_attribute("per_admin", donation_per_admin.to_string());
+
+        Ok(resp)
+    }
+}
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust {22, 33-55} filename="src/contract.rs"
+use crate::error::ContractError;
+use crate::msg::{AdminsListResp, ExecuteMsg, GreetResp, InstantiateMsg, QueryMsg};
+use crate::state::{ADMINS, DONATION_DENOM};
+use cosmwasm_std::{
+    coins, to_binary, BankMsg, Binary, Deps, DepsMut, Env, Event, MessageInfo,
+    Response, StdResult,
+};
+
+// ...
+
+pub fn execute(
+    deps: DepsMut,
+    _env: Env,
+    info: MessageInfo,
+    msg: ExecuteMsg,
+) -> Result<Response, ContractError> {
+    use ExecuteMsg::*;
+
+    match msg {
+        AddMembers { admins } => exec::add_members(deps, info, admins),
+        Leave {} => exec::leave(deps, info).map_err(Into::into),
+        Donate {} => exec::donate(deps, info),
+    }
+}
+
+mod exec {
+    use cosmwasm_std::{coins, BankMsg, Event};
+
+    use super::*;
+
+    // ...
+
+    pub fn donate(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractError> {
+        let denom = DONATION_DENOM.load(deps.storage)?;
+        let admins = ADMINS.load(deps.storage)?;
+
+        let donation = cw_utils::must_pay(&info, &denom)?.u128();
+
+        let donation_per_admin = donation / (admins.len() as u128);
+
+        let messages = admins.into_iter().map(|admin| BankMsg::Send {
+            to_address: admin.to_string(),
+            amount: coins(donation_per_admin, &denom),
+        });
+
+        let resp = Response::new()
+            .add_messages(messages)
+            .add_attribute("action", "donate")
+            .add_attribute("amount", donation.to_string())
+            .add_attribute("per_admin", donation_per_admin.to_string());
+
+        Ok(resp)
+    }
+}
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+Sending the funds to another contract is performed by adding bank messages to the response. The
+blockchain would expect any message which is returned in contract response as a part of an
+execution. This design is related to an actor model implemented by CosmWasm. You can read about it
+[here](../../core/architecture/actor-model), but for now, you can assume this is a way to handle
+token transfers. Before sending tokens to admins, we have to calculate the amount of donation per
+admin. It is done by searching funds for an entry describing our donation token and dividing the
+number of tokens sent by the number of admins. Note that because the integral division is always
+rounding down.
+
+As a consequence, it is possible that not all tokens sent as a donation would end up with no admins
+accounts. Any leftover would be left on our contract account forever. There are plenty of ways of
+dealing with this issue - figuring out one of them would be a great exercise.
+
+The last missing part is updating the `ContractError` - the `must_pay` call returns a
+`cw_utils::PaymentError` which we can't convert to our error type yet:
+
+```rust {2, 11-12} filename="src/error.rs" template="empty"
+use cosmwasm_std::{Addr, StdError};
+use cw_utils::PaymentError;
+use thiserror::Error;
+
+#[derive(Error, Debug, PartialEq)]
+pub enum ContractError {
+    #[error("{0}")]
+    StdError(#[from] StdError),
+    #[error("{sender} is not contract admin")]
+    Unauthorized { sender: Addr },
+    #[error("Payment error: {0}")]
+    Payment(#[from] PaymentError),
+}
+```
+
+As you can see, to handle incoming funds, I used the utility function - I encourage you to take a
+look at [its implementation](https://docs.rs/cw-utils/latest/src/cw_utils/payment.rs.html#32-39) -
+this would give you a good understanding of how incoming funds are structured in `MessageInfo`.
+
+Now it's time to check if the funds are distributed correctly. The way for that is to write a test.
+
+```rust filename="src/contract.rs"
+// ...
+
+#[cfg(test)]
+mod tests {
+    use cosmwasm_std::coins;
+    use cw_multi_test::{App, ContractWrapper, Executor, IntoAddr};
+
+    use crate::msg::AdminsListResp;
+
+    use super::*;
+
+    #[test]
+    fn donations() {
+        let owner = "owner".into_addr();
+        let user = "user".into_addr();
+        let admin1 = "admin1".into_addr();
+        let admin2 = "admin2".into_addr();
+
+        let mut app = App::new(|router, _, storage| {
+            router
+                .bank
+                .init_balance(storage, &user, coins(5, "eth"))
+                .unwrap()
+        });
+
+        let code = ContractWrapper::new(execute, instantiate, query);
+        let code_id = app.store_code(Box::new(code));
+
+        let addr = app
+            .instantiate_contract(
+                code_id,
+                owner,
+                &InstantiateMsg {
+                    admins: vec![admin1.to_string(), admin2.to_string()],
+                    donation_denom: "eth".to_owned(),
+                },
+                &[],
+                "Contract",
+                None,
+            )
+            .unwrap();
+
+        app.execute_contract(
+            user.clone(),
+            addr.clone(),
+            &ExecuteMsg::Donate {},
+            &coins(5, "eth"),
+        )
+        .unwrap();
+
+        assert_eq!(
+            app.wrap()
+                .query_balance(user.as_str(), "eth")
+                .unwrap()
+                .amount
+                .u128(),
+            0
+        );
+
+        assert_eq!(
+            app.wrap()
+                .query_balance(&addr, "eth")
+                .unwrap()
+                .amount
+                .u128(),
+            1
+        );
+
+        assert_eq!(
+            app.wrap()
+                .query_balance(admin1.as_str(), "eth")
+                .unwrap()
+                .amount
+                .u128(),
+            2
+        );
+
+        assert_eq!(
+            app.wrap()
+                .query_balance(admin2.as_str(), "eth")
+                .unwrap()
+                .amount
+                .u128(),
+            2
+        );
+    }
+}
+```
+
+Fairly simple. I don't particularly appreciate that every balance check is eight lines of code, but
+it can be improved by enclosing this assertion into a separate function, probably with the
+[`#[track_caller]`](https://doc.rust-lang.org/reference/attributes/diagnostics.html#the-track_caller-attribute)
+attribute.
+
+The critical thing to talk about is how `app` creation changed. Because we need some initial tokens
+on a `user` account, instead of using the default constructor, we have to provide it with an
+initializer function. Unfortunately, even though the
+[`new`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.new) function is
+not very complicated, it's not easy to use. What it takes as an argument is a closure with three
+arguments - the [`Router`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.Router.html)
+with all modules supported by multi-test, the API object, and the state. This function is called
+once during contract instantiation. The `router` object contains some generic fields - we are
+interested in `bank` in particular. It has a type of
+[`BankKeeper`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html), where the
+[`init_balance`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html#method.init_balance)
+function sits.
+
+## Plot Twist
+
+As we covered most of the important basics about building Rust smart contracts, I have a serious
+exercise for you.
+
+The contract we built has an exploitable bug. All donations are distributed equally across admins.
+However, every admin is eligible to add another admin. And nothing is preventing the admin from
+adding himself to the list and receiving twice as many rewards as others!
+
+Try to write a test that detects such a bug, then fix it and ensure the bug nevermore occurs.
+
+Even if the admin cannot add the same address to the list, he can always create new accounts and add
+them. Handling this kind of case is done by properly designing whole applications, which is out of
+this chapter's scope.

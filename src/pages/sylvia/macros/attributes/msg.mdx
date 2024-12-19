@@ -83,7 +83,7 @@ requires however additional action. Due to
 macro derive on generated `query` message, we have to explicitly provide the return type, as the
 macro wouldn't be able to deduce that from the alias.
 
-```rust, template="sylvia-cw-storage-contract"
+```rust template="sylvia-cw-storage-contract"
 #[sv::msg(query, resp=SomeResponse)]
 fn some_query(&self, ctx: QueryCtx) -> SomeResult {
     Ok(SomeResponse)

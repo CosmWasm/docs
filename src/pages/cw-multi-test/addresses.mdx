@@ -4,6 +4,9 @@ tags: ["multitest", "addresses"]
 
 import { Callout } from "nextra/components";
 
+[MockApiBech32]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.MockApiBech32.html
+[MockApiBech32m]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.MockApiBech32m.html
+
 # Addresses
 
 ## User address
@@ -26,10 +29,11 @@ simplifies address creation for testing purposes in two steps:
   to the blockchain is prepended.
 
 The following examples demonstrate (in several ways) how to generate a Bech32 addresses (optionally
-with custom prefix) using two common approaches:
+with custom prefix) using these common approaches:
 
 - the `addr_make{:rust}` function,
-- the `IntoAddr{:rust}`, `IntoBech32{:rust}` and `IntoBech32m{:rust}` traits.
+- the `IntoAddr{:rust}`, `IntoBech32{:rust}` and `IntoBech32m{:rust}` traits,
+- the `MockApi{:rust}`, `MockApiBech32{:rust}` and `MockApiBech32m{:rust}` structs.
 
 ### App
 
@@ -40,9 +44,9 @@ with custom prefix) using two common approaches:
 Having the chain simulator `App{:rust}` already created, you can just call `addr_make{:rust}`
 function, providing any string as an argument, like shown below in line 5. The address returned by
 this function is by default encoded in **Bech32** format and has a default prefix **cosmwasm**.
-Notice, that the `App{:rust}` is created with default settings (line 3).
+Notice, that the `App{:rust}` is created with default settings (line 3):
 
-```rust showLineNumbers {5} copy /addr_make/ /App::default()/
+```rust showLineNumbers {3,5} copy /addr_make/
 use cw_multi_test::App;
 
 let app = App::default();
@@ -55,9 +59,33 @@ assert_eq!(
 );
 ```
 
-> `Bech32` with custom prefix
+Exactly the same address will be generated when the `App{:rust}` is created using the default
+settings in `AppBuilder{:rust}`, like shown below in lines 3 and 5:
 
-```rust showLineNumbers copy /addr_make/ /MockApiBech32::new/
+```rust showLineNumbers {3,5} copy /addr_make/
+use cw_multi_test::AppBuilder;
+
+let app = AppBuilder::default().build(no_init);
+
+let addr = app.api().addr_make("owner");
+
+assert_eq!(
+    "cosmwasm1fsgzj6t7udv8zhf6zj32mkqhcjcpv52yph5qsdcl0qt94jgdckqs2g053y",
+    addr.as_str()
+);
+```
+
+The next two code snippets demonstrate how to customize the `App{:rust}` using `AppBuilder{:rust}`
+to generate addresses with the custom prefix, just like in your blockchain. For this purpose, the
+[`MockApiBech32{:rust}`][MockApiBech32] and [`MockApiBech32m{:rust}`][MockApiBech32m] structs can be
+used along with `with_api{:rust}` method of `AppBuilder{:rust}`.
+
+If the address should be encoded in **Bech32** format then use
+[`MockApiBech32{:rust}`][MockApiBech32] to configure the `AppBuilder{:rust}` like shown in line 4,
+and then call the `addr_make{:rust}` function (line 7) exactly the same way as in the previous
+examples:
+
+```rust showLineNumbers {4,7} copy /addr_make/ /MockApiBech32::new/
 use cw_multi_test::{no_init, AppBuilder, MockApiBech32};
 
 let app = AppBuilder::default()
@@ -72,9 +100,10 @@ assert_eq!(
 );
 ```
 
-> `Bech32m` with custom prefix
+When **Bech32m** is the required address encoding, then just use
+[`MockApiBech32m{:rust}`][MockApiBech32m] to configure the `AppBuilder{:rust}`:
 
-```rust showLineNumbers copy /addr_make/ /MockApiBech32m::new/
+```rust showLineNumbers {4,7} copy /addr_make/ /MockApiBech32m::new/
 use cw_multi_test::{no_init, AppBuilder, MockApiBech32m};
 
 let app = AppBuilder::default()
@@ -89,9 +118,10 @@ assert_eq!(
 );
 ```
 
-> `Bech32m` with custom prefix equal to default prefix `cosmwasm`
+The last example demonstrates how to generate addresses encoded in **Bech32m** format with the
+default human-readable prefix **cosmwasm**:
 
-```rust showLineNumbers copy /addr_make/ /MockApiBech32m::new/
+```rust showLineNumbers {4,7} copy /addr_make/ /MockApiBech32m::new/
 use cw_multi_test::{no_init, AppBuilder, MockApiBech32m};
 
 let app = AppBuilder::default()

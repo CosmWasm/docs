@@ -8,5 +8,6 @@
   "state": "Storing state",
   "execution": "Execution messages",
   "event": "Passing events",
-  "funds": "Handling funds"
+  "funds": "Handling funds",
+  "good-practices": "Good practices"
 }

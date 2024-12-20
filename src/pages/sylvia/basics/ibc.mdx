@@ -47,7 +47,7 @@ pub fn ibc_channel_open(
 }
 ```
 
-You can also define a trait for the IBC methods and implement it for on the contract.
+You can also define a trait for the IBC methods and implement it on the contract.
 
 ```rust {7, 10, 12-13, 21-22}, template="sylvia-empty"
 #[cfg_attr(not(feature = "library"), entry_point)]

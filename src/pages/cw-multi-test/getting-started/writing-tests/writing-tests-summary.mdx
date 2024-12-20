@@ -1,0 +1,46 @@
+---
+tags: ["multitest", "getting started", "tests", "summary"]
+---
+
+import { Callout, Steps } from "nextra/components";
+
+[App]: ../../app
+[AppBuilder]: ../../app-builder
+
+# Summary
+
+To summarize the process of writing tests with **`MultiTest`**, leveraging both pure CosmWasm
+libraries and the Sylvia framework, let’s review the general structure of a test. High-quality tests
+typically follow a series of common steps to ensure thorough validation and reliability.
+
+By adhering to these structured steps, you can create maintainable and robust test suites that
+effectively validate your CosmWasm contracts:
+
+<Steps>
+  ### Initialize the chain
+
+🖝 Set up the blockchain simulator for testing.
+
+### Store contract(s) on chain
+
+🖝 Upload the contract(s) code to the chain.
+
+### Instantiate contract(s)
+
+🖝 Instantiate contract(s) with the desired initial state.
+
+### Interact with contract(s)
+
+🖝 Perform actions such as queries and executes on instantiated contract(s).
+
+### Assert expected results
+
+🖝 Verify the outcomes against expected values to confirm correct behavior.
+
+</Steps>
+
+<Callout>
+  While the detailed implementation of each step may vary depending on whether you are using pure
+  CosmWasm libraries or the Sylvia framework — and will also differ based on the specifics of the
+  test — the overall structure remains consistent, as outlined above.
+</Callout>

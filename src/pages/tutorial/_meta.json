@@ -1,4 +1,5 @@
 {
   "setup-environment": "Environment setup",
-  "cw-contract": "CosmWasm Contract"
+  "cw-contract": "CosmWasm Contract",
+  "sylvia-contract": "Sylvia Contract"
 }

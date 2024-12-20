@@ -2,7 +2,20 @@
   "installation": "Installation",
   "features": "Features",
   "getting-started": "Getting started",
+  "app": "App",
   "app-builder": "AppBuilder",
+  "contract": "Contract",
+  "contract-wrapper": "ContractWrapper",
   "blocks": "Blocks",
-  "addresses": "Addresses"
+  "api": "API",
+  "addresses": "Addresses",
+  "storage": "Storage",
+  "bank": "Bank",
+  "staking": "Staking",
+  "distribution": "Distribution",
+  "governance": "Governance",
+  "stargate": "Stargate",
+  "wasm": "Wasm",
+  "custom": "Custom",
+  "ibc": "IBC"
 }

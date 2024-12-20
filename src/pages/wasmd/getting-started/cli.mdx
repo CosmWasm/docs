@@ -178,7 +178,7 @@ ALICE_ADDR=$(wasmd keys show alice -a --keyring-backend=test)
 # Retrieve the address of Bob's account
 BOB_ADDR=$(wasmd keys show bob -a --keyring-backend=test)
 
-# Define init parameters fo the contract
+# Define init parameters for the contract
 INIT="{\"verifier\":\"$ALICE_ADDR\", \"beneficiary\":\"$BOB_ADDR\"}"
 ```
 

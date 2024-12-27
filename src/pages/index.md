@@ -10,7 +10,7 @@ are security, performance, and interoperability. It is tailored for a tight inte
 SDK and to build IBC contracts.
 
 We chose to target a Rust programming language as a smart contract development stack, as it is
-popular amonst blockchain developers and has the best Wasm compiler on the market so far. We do not
+popular amongst blockchain developers and has the best Wasm compiler on the market so far. We do not
 provide bindings to help write smart contracts in another stack that compiles to Wasm, and we don't
 support that.
 

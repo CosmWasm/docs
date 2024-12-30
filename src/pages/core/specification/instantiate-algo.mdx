@@ -18,7 +18,7 @@ relatively simple, relying on the contract code identifier and the contract inst
 
 The example implementation in Rust, using [sha2] crate is shown in the following code snippet:
 
-```rust copy filename="instantiate.rs"
+```rust copy filename="instantiate.rs" /code_id/ /instance_id/
 use cosmwasm_std::CanonicalAddr;
 use sha2::digest::Update;
 use sha2::{Digest, Sha256};

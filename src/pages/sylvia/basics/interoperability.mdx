@@ -241,7 +241,7 @@ type provides all the API as the MultiTest counterpart, exposing the underlying 
 support for using the Sylvia-generated helpers. It can also be used to simulate the execution of
 standard CosmWasm contracts as well
 
-```rust, template="sylvia-empty"
+```rust
 use sylvia::multitest::App;
 use sylvia::cw_multi_test::BasicMtApp;
 
@@ -259,7 +259,7 @@ We can access the underlying
 [`store_code`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.store_code)
 of the CosmWasm contract.
 
-```rust, template="sylvia-empty"
+```rust
 fn cosmwasm_contract() -> Box<dyn Contract<Empty>> { ... }
 
 let cosmwasm_code = app.app_mut().store_code(cosmwasm_contract());
@@ -268,7 +268,7 @@ let cosmwasm_code = app.app_mut().store_code(cosmwasm_contract());
 To instantiate the CosmWasm contract, we will also use the
 [`app_mut`](https://docs.rs/sylvia/latest/sylvia/multitest/struct.App.html#method.app_mut).
 
-```rust, template="sylvia-empty"
+```rust
 let cosmwasm_contract = app
     .app_mut()
     .instantiate_contract(

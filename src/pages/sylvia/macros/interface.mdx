@@ -13,7 +13,7 @@ semantical parts of your contracts.
 
 ## Usage
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 #[cw_serde]
 pub struct InterfaceQueryResp {}
 
@@ -54,7 +54,7 @@ If you want to allow the users to use the interface with their own specified cus
 declare `ExecC` and `QueryC` associated types, where `ExecC` specifies the `CustomMsg` and `QueryC`
 the `CustomQuery`.
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 #[cw_serde]
 pub struct InterfaceQueryResp {}
 
@@ -83,7 +83,7 @@ The `interface` macro does not support generics. Instead, you can provide generi
 using the associated types. It's because Sylvia interfaces can be implemented only once per
 contract, and in such a case, associated types are semantically correct in Rust.
 
-```rust, template="sylvia-empty"
+```rust template="sylvia-empty"
 #[interface]
 pub trait Interface {
     type Error: From<StdError>;

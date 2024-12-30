@@ -24,7 +24,7 @@ You need to provide the following inputs:
   Make sure you convert all the integers into their **big-endian** byte representation!
 </Callout>
 
-```rust filename="instantiate2.rs" template="instantiate-spec"
+```rust filename="instantiate2.rs" template="instantiate2-spec"
 let c_checksum = concat!((checksum.len() as u64).to_be_bytes(), checksum);
 let c_creator = concat!((creator.len() as u64).to_be_bytes(), creator);
 let c_salt = concat!((salt.len() as u64).to_be_bytes(), salt);

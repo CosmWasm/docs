@@ -19,10 +19,11 @@ relatively simple, relying on the contract code identifier and the contract inst
 The example implementation in Rust, using [sha2] crate is shown in the following code snippet:
 
 ```rust copy filename="instantiate.rs" template="instantiate-spec"
-fn instantiate(code_id: u64, instance_id: u64) -> CanonicalAddr {
-    use sha2::digest::Update;
-    use sha2::{Digest, Sha256};
+use cosmwasm_std::CanonicalAddr;
+use sha2::digest::Update;
+use sha2::{Digest, Sha256};
 
+fn instantiate(code_id: u64, instance_id: u64) -> CanonicalAddr {
     Sha256::new()
         .chain(Sha256::digest(b"module"))
         .chain(b"wasm\0")

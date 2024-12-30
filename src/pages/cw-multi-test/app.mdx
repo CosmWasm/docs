@@ -3,9 +3,8 @@ tags: ["multitest", "App"]
 ---
 
 [App]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html
-[App::new]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.new
-[AppBuilder::build]:
-  https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.build
+[new]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.new
+[build]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.build
 [no_init]: https://docs.rs/cw-multi-test/latest/cw_multi_test/fn.no_init.html
 
 # `App`
@@ -36,10 +35,44 @@ settings as summarized in the chapter [Features summary](features#features-summa
 
 ## `new`
 
-WIP
+Using the [`App::new{:rust}`][new] constructor enables additional initialization of the blockchain
+at startup, prior to executing any tests. Initialization is done inside the callback function passed
+as an argument to the `new{:rust}` constructor (lines 7-13 in the code snippet shown below).
+
+Initialization callback function takes three arguments:
+
+- **router** - provides access to other modules of the blockchain,
+- **api** - provides access to CosmWasm API,
+- **storage** - provides access to the blockchain's storage.
+
+An example of funds initialization inside the custom callback function is shown below:
+
+```rust showLineNumbers {7-13} copy /router, api, storage/
+use cosmwasm_std::coin;
+use cw_multi_test::App;
+
+let me = "me";
+let my_funds = vec![coin(20, "OSMO")];
+
+let app = App::new(|router, api, storage| {
+    let my_address = api.addr_make(me);
+    router
+        .bank
+        .init_balance(storage, &my_address, my_funds)
+        .unwrap();
+});
+
+let my_coins = app
+    .wrap()
+    .query_all_balances(app.api().addr_make(me))
+    .unwrap();
+
+assert_eq!(1, my_coins.len());
+assert_eq!("20OSMO", my_coins[0].to_string());
+```
 
 ## `no_init`
 
 The [`no_init{:rust}`][no_init] function serves as an empty chain initialization callback, offering
-a convenient option when no specific chain initialization is required. Usually, used when calling
-[`App::new{:rust}`][App::new] or [`AppBuilder::build{:rust}`][AppBuilder::build] methods.
+a convenient option when no specific chain initialization is required. Usually used when calling
+[`App::new{:rust}`][new] or [`AppBuilder::build{:rust}`][build] methods.

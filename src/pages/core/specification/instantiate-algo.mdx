@@ -1,0 +1,41 @@
+---
+tags: ["core", "specification", "instantiate"]
+---
+
+import { Callout } from "nextra/components";
+
+[sha2]: https://crates.io/crates/sha2
+
+# Instantiate algorithm
+
+Using the instantiate algorithm, a quasi-unpredictable address is generated for a new instance of
+the contract. We use SHA-256 as the underlying hashing algorithm. The underlying mechanism is
+relatively simple, relying on the contract code identifier and the contract instance identifier:
+
+- **code_id**: identifier of the Wasm code stored on chain the contract is instantiated from (starts
+  from 1),
+- **instance_id**: identifier of the contract instance (starts from 1).
+
+The example implementation in Rust, using [sha2] crate is shown in the following code snippet:
+
+```rust copy filename="instantiate.rs" template="instantiate-spec"
+fn instantiate(code_id: u64, instance_id: u64) -> CanonicalAddr {
+    use sha2::digest::Update;
+    use sha2::{Digest, Sha256};
+
+    Sha256::new()
+        .chain(Sha256::digest(b"module"))
+        .chain(b"wasm\0")
+        .chain(code_id.to_be_bytes())
+        .chain(instance_id.to_be_bytes())
+        .finalize()
+        .to_vec()
+        .into()
+}
+```
+
+<Callout emoji="🖝">
+  Make sure you convert the integers into their **big-endian** byte representation!
+</Callout>
+
+<Callout>Note that **code_id** and **instance_id** are 64-bit unsigned integers.</Callout>

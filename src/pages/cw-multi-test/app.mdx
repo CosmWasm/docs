@@ -3,6 +3,9 @@ tags: ["multitest", "App"]
 ---
 
 [App]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html
+[App::new]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.new
+[AppBuilder::build]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.build
 [no_init]: https://docs.rs/cw-multi-test/latest/cw_multi_test/fn.no_init.html
 
 # `App`
@@ -37,4 +40,6 @@ WIP
 
 ## `no_init`
 
-WIP
+The [`no_init{:rust}`][no_init] function serves as an empty chain initialization callback, offering
+a convenient option when no specific chain initialization is required. Usually, used when calling
+[`App::new{:rust}`][App::new] or [`AppBuilder::build{:rust}`][AppBuilder::build] methods.

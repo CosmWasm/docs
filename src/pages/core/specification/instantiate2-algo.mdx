@@ -4,6 +4,8 @@ tags: ["core", "specification", "instantiate2"]
 
 import { Callout } from "nextra/components";
 
+[sha2]: https://crates.io/crates/sha2
+
 # Instantiate2 algorithm
 
 With the instantiate2 algorithm you can create a contract address in a predictable and deterministic
@@ -41,3 +43,41 @@ let canonical_address = hash_sha256(
     ),
 );
 ```
+
+---
+
+> My proposal
+
+The example implementation in Rust, using [sha2] crate is shown in the following code snippet:
+
+```rust copy filename="instantiate.rs" /checksum/ /creator/ /salt/ /msg/
+use cosmwasm_std::CanonicalAddr;
+use sha2::digest::Update;
+use sha2::{Digest, Sha256};
+
+fn instantiate2(checksum: &[u8], creator: &[u8], salt: &[u8], msg: &[u8]) -> CanonicalAddr {
+    use sha2::digest::Update;
+    use sha2::{Digest, Sha256};
+
+    Sha256::new()
+        .chain(Sha256::digest(b"module"))
+        .chain(b"wasm\0")
+        .chain((checksum.len() as u64).to_be_bytes())
+        .chain(checksum)
+        .chain((creator.len() as u64).to_be_bytes())
+        .chain(creator)
+        .chain((salt.len() as u64).to_be_bytes())
+        .chain(salt)
+        .chain((msg.len() as u64).to_be_bytes())
+        .chain(msg)
+        .finalize()
+        .to_vec()
+        .into()
+}
+```
+
+<Callout emoji="🖝">
+  Make sure you convert all integers into their **big-endian** byte representation!
+</Callout>
+
+<Callout>Note that all lengths are converted to 64-bit unsigned integers.</Callout>

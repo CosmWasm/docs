@@ -128,7 +128,7 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg, _migrate_info: Migrat
 }
 ```
 
-The legacy migrate entry-point function signtature is defined as:
+The legacy migrate entry-point function signature is defined as:
 
 ```rust filename="contract.rs" template="core"
 #[cfg_attr(not(feature = "library"), entry_point)]

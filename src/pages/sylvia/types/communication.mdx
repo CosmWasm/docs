@@ -2,7 +2,7 @@
 tags: ["sylvia", "types"]
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
 
 # Communication helpers
 
@@ -39,27 +39,77 @@ These methods are:
 
 The `Remote` can be stored as a representation of a specific contract:
 
-```rust, template="sylvia-empty"
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust template="sylvia-empty"
+use cw_storey::containers::Item;
+
 pub struct Contract<'a> {
     remote: Item<Remote<'a, ExternalContract>>,
 }
 ```
 
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust template="sylvia-empty"
+use cw_storage_plus::Item;
+
+pub struct Contract<'a> {
+    remote: Item<Remote<'a, ExternalContract>>,
+}
+```
+
+  </Tabs.Tab>
+</Tabs>
+
 we can also store a `Remote` to some contract implementing an interface:
 
-```rust, template="sylvia-empty"
-pub struct Contract<'a> {
-    remote: Remote<
-        'a,
-        dyn SomeInterface<
-            Error = StdError,
-            ExecC = ExampleMsg,
-            QueryC = ExampleQuery,
-            CounterT = CounterT,
+<Tabs items={['Storey', 'StoragePlus']}>
+  <Tabs.Tab>
+
+```rust template="sylvia-empty"
+use cw_storey::containers::Item;
+
+pub struct Contract<'a, CounterT> {
+    remote: Item<
+        Remote<
+            'a,
+            dyn SomeInterface<
+                Error = StdError,
+                ExecC = ExampleMsg,
+                QueryC = ExampleQuery,
+                CounterT = CounterT,
+            >,
         >,
     >,
 }
 ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```rust template="sylvia-empty"
+use cw_storage_plus::Item;
+
+pub struct Contract<'a, CounterT> {
+    remote: Item<
+        Remote<
+            'a,
+            dyn SomeInterface<
+                Error = StdError,
+                ExecC = ExampleMsg,
+                QueryC = ExampleQuery,
+                CounterT = CounterT,
+            >,
+        >,
+    >,
+}
+```
+
+  </Tabs.Tab>
+</Tabs>
 
 <Callout>
   Note that we have to use the dynamic dispatch here and also provide values for every associated

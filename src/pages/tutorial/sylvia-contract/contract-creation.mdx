@@ -16,7 +16,7 @@ cargo generate CosmWasm/sylvia-template
 
 The [`sylvia-template`](https://github.com/CosmWasm/sylvia-template) will generate a lot of code for
 you. Because this tutorial aims to guide you step-by-step through the process of creating your first
-contract we will omit the use of the template and show you how to create it from the start.
+contract we will omit the use of the template and show you how to create it from the scratch.
 
 ## New project
 
@@ -48,7 +48,7 @@ sylvia = "1.3.1"
   [documentation](https://docs.rs/sylvia/latest/sylvia/#reexports).
 </Callout>
 
-As you can see, I added a `crate-type` field for the library section. Generating the
+As you can see, we added a `crate-type` field for the library section. Generating the
 [`cdylib`](https://doc.rust-lang.org/reference/linkage.html) is required to create a proper web
 assembly binary. The downside of this is that such a library cannot be used as a dependency for
 other Rust crates - for now, it is not needed, but later we will show how to approach reusing

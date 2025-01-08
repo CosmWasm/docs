@@ -9,6 +9,7 @@ import { Callout } from "nextra/components";
 In this section, we will implement a custom key type for use with [maps].
 
 Let's say we have a `Denom` enum to represent different kinds of tokens:
+
 - native tokens
 - [CW20] tokens
 
@@ -40,13 +41,17 @@ impl Key for Denom {
 }
 ```
 
-The [`Kind`] associated type is used to signal to the framework whether the key is dynamically sized or not. In this case, we use [`DynamicKey`] because the key size is not fixed.
-If it was always exactly 8 bytes, we could use [`FixedSizeKey<8>`] instead.
+The [`Kind`] associated type is used to signal to the framework whether the key is dynamically sized
+or not. In this case, we use [`DynamicKey`] because the key size is not fixed. If it was always
+exactly 8 bytes, we could use [`FixedSizeKey<8>`] instead.
 
 <Callout>
 Why does this matter? The framework uses this information to determine how to encode the key. If there are more keys following this one (e.g. in a multi-level map), the framework needs to know how to tell where this one ends during decoding.
 
-For a dynamically sized key, the framework will length-prefix it when necessary. For a fixed-size key, it will use the static information you provide with `FixedSizeKey<L>` to figure out how many bytes to eat - a more performant solution.
+For a dynamically sized key, the framework will length-prefix it when necessary. For a fixed-size
+key, it will use the static information you provide with `FixedSizeKey<L>` to figure out how many
+bytes to eat - a more performant solution.
+
 </Callout>
 
 The [`encode`] method is used to serialize the key into a byte vector. Let's implement it now!
@@ -77,9 +82,12 @@ impl Key for Denom {
 }
 ```
 
-The code should be pretty self-explanatory. We use a simple encoding scheme where we write a single byte discriminant followed by the actual data. The discriminant is how we tell a native token from a CW20 token.
+The code should be pretty self-explanatory. We use a simple encoding scheme where we write a single
+byte discriminant followed by the actual data. The discriminant is how we tell a native token from a
+CW20 token.
 
-One little improvement we can go for is to avoid hardcoding the discriminant. We'll want to reuse these values in the decoding logic, so let's define them as constants:
+One little improvement we can go for is to avoid hardcoding the discriminant. We'll want to reuse
+these values in the decoding logic, so let's define them as constants:
 
 ```rust template="storage" {8-11, 18-19}
 use storey::containers::map::{key::DynamicKey, Key};
@@ -112,7 +120,8 @@ impl Key for Denom {
 }
 ```
 
-Alright. The `Key` trait allows us to access the data in a map using our custom key type. We still need a way to decode the key back into the enum. This is used for example in iteration.
+Alright. The `Key` trait allows us to access the data in a map using our custom key type. We still
+need a way to decode the key back into the enum. This is used for example in iteration.
 
 ## The OwnedKey trait
 
@@ -164,15 +173,18 @@ impl OwnedKey for Denom {
 }
 ```
 
-The [`from_bytes`] method should return an instance of the key type or an error if the data is invalid. Here it does the following:
+The [`from_bytes`] method should return an instance of the key type or an error if the data is
+invalid. Here it does the following:
+
 - read the discriminant byte
 - read the data bytes as a UTF-8 string, erroring out if it's not valid
 - match the discriminant to the enum variant, or error if invalid
 - return the deserialized key
 
 <Callout>
-What we have is functional. There's one last improvement you could make here - a proper error type. We used `()` as a placeholder, but in production code it's good practice to define an enum. In this case, the enum could hold variants
-like `InvalidDiscriminant` and `InvalidUTF8`.
+  What we have is functional. There's one last improvement you could make here - a proper error
+  type. We used `()` as a placeholder, but in production code it's good practice to define an enum.
+  In this case, the enum could hold variants like `InvalidDiscriminant` and `InvalidUTF8`.
 </Callout>
 
 ## Using the thing
@@ -247,7 +259,9 @@ Voilà! It works just like it would with any other key.
 [CW20]: /docs/getting-started/cw20
 [`Kind`]: https://docs.rs/storey/latest/storey/containers/map/key/trait.Key.html#associatedtype.Kind
 [`DynamicKey`]: https://docs.rs/storey/latest/storey/containers/map/key/struct.DynamicKey.html
-[`FixedSizeKey<8>`]: https://docs.rs/storey/latest/storey/containers/map/key/struct.FixedSizeKey.html
+[`FixedSizeKey<8>`]:
+  https://docs.rs/storey/latest/storey/containers/map/key/struct.FixedSizeKey.html
 [`encode`]: https://docs.rs/storey/latest/storey/containers/map/key/trait.Key.html#tymethod.encode
 [`OwnedKey`]: https://docs.rs/storey/latest/storey/containers/map/key/trait.OwnedKey.html
-[`from_bytes`]: https://docs.rs/storey/latest/storey/containers/map/key/trait.OwnedKey.html#tymethod.from_bytes
+[`from_bytes`]:
+  https://docs.rs/storey/latest/storey/containers/map/key/trait.OwnedKey.html#tymethod.from_bytes

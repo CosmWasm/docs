@@ -1,13 +1,6 @@
-import TagDots from "@/components/TagDots";
 import TagPills from "@/components/TagPills";
 import { iceland } from "@/utils/fonts";
-import { useEffect, useState } from "react";
-import { cn } from "./lib/utils";
-
-const title = "Official guide to CosmWasm development";
-const description =
-  "Learn how to build smart contracts for CosmWasm-enabled blockchains, how they can interact with the chain and how to integrate CosmWasm into your blockchain.";
-const socialPreviewImg = "https://docs.cosmwasm.com/social-preview.png";
+import { useConfig } from "nextra-theme-docs";
 
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -38,9 +31,9 @@ export default {
       </span>
     </>
   ),
-  editLink: { text: "Edit this page on GitHub" },
+  editLink: { content: "Edit this page on GitHub" },
   footer: {
-    text: (
+    content: (
       <div>
         <p>CosmWasm is proudly created and maintained by Confio.</p>
         <p style={{ marginTop: "8px" }}>
@@ -62,7 +55,8 @@ export default {
   sidebar: {
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,
-    titleComponent: ({ title, route }) => {
+    // NOTE this property no longer exists
+    /* titleComponent: ({ title, route }) => {
       const [isDocRoute, setIsDocRoute] = useState(false);
 
       useEffect(() => {
@@ -74,52 +68,44 @@ export default {
           <span>{title}</span> <TagDots route={route} />
         </div>
       );
-    },
+    }, */
   },
-  useNextSeoProps() {
-    return {
-      title,
-      description,
-      openGraph: { title, description, images: [{ url: socialPreviewImg }] },
-      additionalLinkTags: [
-        {
-          href: "/apple-touch-icon.png",
-          rel: "apple-touch-icon",
-          sizes: "180x180",
-        },
-        {
-          href: "/favicon-32x32.png",
-          rel: "icon",
-          sizes: "32x32",
-          type: "image/png",
-        },
-        {
-          href: "/favicon-16x16.png",
-          rel: "icon",
-          sizes: "16x16",
-          type: "image/png",
-        },
-        {
-          href: "/site.webmanifest",
-          rel: "manifest",
-        },
-        {
-          href: "/safari-pinned-tab.svg",
-          rel: "mask-icon",
-          color: "#000",
-        },
-      ],
-      additionalMetaTags: [
-        { content: "en", httpEquiv: "Content-Language" },
-        { content: "CosmWasm Docs", name: "apple-mobile-web-app-title" },
-        { content: "CosmWasm Docs", name: "application-name" },
-        { content: "#000", name: "msapplication-TileColor" },
-        { content: "#000000", name: "theme-color" },
-        { content: socialPreviewImg, name: "twitter:image" },
-        { content: title, name: "twitter:title" },
-        { content: description, name: "twitter:description" },
-      ],
-      twitter: { handle: "@CosmWasm", site: "@CosmWasm" },
-    };
+  head: function useHead() {
+    const config = useConfig();
+
+    const title = config.title !== "Index" ? `${config.title} – CosmWasm` : "Official guide to CosmWasm development";
+    const description =
+      config.frontMatter.description ||
+      "Learn how to build smart contracts for CosmWasm-enabled blockchains, how they can interact with the chain and how to integrate CosmWasm into your blockchain.";
+    const socialPreviewImg = config.frontMatter.image || "https://docs.cosmwasm.com/social-preview.png";
+
+    return (
+      <>
+        <title>{title}</title>
+
+        <meta httpEquiv="Content-Language" content="en" />
+        <meta name="description" content={description} />
+
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta name="og:image" content={socialPreviewImg} />
+
+        <meta name="apple-mobile-web-app-title" content="CosmWasm Docs" />
+        <meta name="application-name" content="CosmWasm Docs" />
+        <meta name="msapplication-TileColor" content="#000" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={socialPreviewImg} />
+        <meta name="twitter:site" content="@CosmWasm" />
+        <meta name="twitter:creator" content="@CosmWasm" />
+
+        <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
+        <link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
+        <link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+        <link href="/site.webmanifest" rel="manifest" />
+        <link href="/safari-pinned-tab.svg" rel="mask-icon" color="#000" />
+      </>
+    );
   },
 };

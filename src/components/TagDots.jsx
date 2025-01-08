@@ -1,8 +1,4 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import tagsObj from "@/utils/tags.json";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import Link from "next/link";

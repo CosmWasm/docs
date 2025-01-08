@@ -1,6 +1,6 @@
 import tagsObj from "@/utils/tags.json";
-import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import TagPill from "./TagPill";
 
 export default function TagFilter() {
@@ -9,16 +9,11 @@ export default function TagFilter() {
   const urlTags = searchParams.getAll("tag");
 
   const routes = Object.entries(tagsObj.routes)
-    .filter(
-      ([, tags]) =>
-        !urlTags.length || urlTags.find((urlTag) => tags.includes(urlTag)),
-    )
+    .filter(([, tags]) => !urlTags.length || urlTags.find((urlTag) => tags.includes(urlTag)))
     .map(([route]) => route)
     .sort();
 
-  const minRouteDepth = Math.min(
-    ...routes.map((route) => route.match(/\//gi).length),
-  );
+  const minRouteDepth = Math.min(...routes.map((route) => route.match(/\//gi).length));
 
   const toggleTag = (selectedTag) => {
     let newTags = [];
@@ -34,17 +29,10 @@ export default function TagFilter() {
 
   return (
     <>
-      <p className="my-4">
-        Select one or more tags to list its associated articles
-      </p>
+      <p className="my-4">Select one or more tags to list its associated articles</p>
       <div className="my-4 flex flex-wrap gap-2">
         {tagsObj.allTags.map((tag) => (
-          <TagPill
-            key={tag}
-            tag={tag}
-            onClick={() => toggleTag(tag)}
-            checked={urlTags.includes(tag)}
-          />
+          <TagPill key={tag} tag={tag} onClick={() => toggleTag(tag)} checked={urlTags.includes(tag)} />
         ))}
       </div>
       {routes.length ? (

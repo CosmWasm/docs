@@ -6,8 +6,10 @@ import { Callout } from "nextra/components";
 
 # Implementing new containers
 
-Storey provides a set of built-in containers, but you're not limited to just those. For special needs, you can go ahead and create your own containers that will
-play along nicely with the rest of the Storey "ecosystem". If it's appropriate, your container could for example allow for nesting other containers - like [`Map`].
+Storey provides a set of built-in containers, but you're not limited to just those. For special
+needs, you can go ahead and create your own containers that will play along nicely with the rest of
+the Storey "ecosystem". If it's appropriate, your container could for example allow for nesting
+other containers - like [`Map`].
 
 # MyMap
 
@@ -33,12 +35,15 @@ impl<V> MyMap<V> {
 }
 ```
 
-No magic here. The `prefix` field is used when this collection is a top-level collection - it's a single-byte key that creates a subspace for this collection's internal data.
+No magic here. The `prefix` field is used when this collection is a top-level collection - it's a
+single-byte key that creates a subspace for this collection's internal data.
 
-The `phantom` field allows us to use the type parameter `V` without actually storing any values of that type.
+The `phantom` field allows us to use the type parameter `V` without actually storing any values of
+that type.
 
-The `V` type parameter is the type of the **container** inside the map. If you've followed the [`Map`] documentation,
-you'll know that `Map` is a composable container - it holds another container inside.
+The `V` type parameter is the type of the **container** inside the map. If you've followed the
+[`Map`] documentation, you'll know that `Map` is a composable container - it holds another container
+inside.
 
 The constructor is simple - it just initializes the fields.
 
@@ -105,30 +110,33 @@ where
 
 Whew. Let's break this down.
 
-The `MyMapAccess` struct is our accessor. It's a facade that's used to actually
-access the data in the collection given a `Storage` instance - this is usually a subspace of the "root" storage backend.
+The `MyMapAccess` struct is our accessor. It's a facade that's used to actually access the data in
+the collection given a `Storage` instance - this is usually a subspace of the "root" storage
+backend.
 
-The [`Storable`] trait is the main trait a container must implement. It's currently a mix of things. The associated types tell the framework:
-| Associated type | Details                                                                 |
-|-------------------|-------------------------------------------------------------------------|
-| `Kind`    | We put `NonTerminal` here to signify our container creates subkeys rather than just saving data at the root. |
-| `Accessor`     | The accessor type. `MyMapAccess` in our case.                                 |
-| `Key`          | The key type to be returned by iterators. Here a tuple of `u32` and the key type of the inner container.             |
-| `KeyDecodeError`  | The error to be returned on invalid key data. Here we don't care, so we use `()`. In production, use a proper error type. |
-| `Value`        | The value type to be returned by iterators. Here it's delegated to the inner container.                                       |
-| `ValueDecodeError`| The error type for invalid value data. Delegated to the inner container.                                       |
+The [`Storable`] trait is the main trait a container must implement. It's currently a mix of things.
+The associated types tell the framework: | Associated type | Details |
+|-------------------|-------------------------------------------------------------------------| |
+`Kind` | We put `NonTerminal` here to signify our container creates subkeys rather than just saving
+data at the root. | | `Accessor` | The accessor type. `MyMapAccess` in our case. | | `Key` | The key
+type to be returned by iterators. Here a tuple of `u32` and the key type of the inner container. | |
+`KeyDecodeError` | The error to be returned on invalid key data. Here we don't care, so we use `()`.
+In production, use a proper error type. | | `Value` | The value type to be returned by iterators.
+Here it's delegated to the inner container. | | `ValueDecodeError`| The error type for invalid value
+data. Delegated to the inner container. |
 
-The methods:
-| Method         | Function                                                                 |
-|----------------|-----------------------------------------------------------------------------|
-| `access_impl`  | Produces an accessor given a storage abstraction (usually representing a "slice" of the underlying storage.) |
-| `decode_key`   | Used for iteration. This is how the framework knows how to decode this map's keys given raw data from the storage backend. |
-| `decode_value` | Used for iteration. This is how the framework knows how to decode values given raw data. |
+The methods: | Method | Function |
+|----------------|-----------------------------------------------------------------------------| |
+`access_impl` | Produces an accessor given a storage abstraction (usually representing a "slice" of
+the underlying storage.) | | `decode_key` | Used for iteration. This is how the framework knows how
+to decode this map's keys given raw data from the storage backend. | | `decode_value` | Used for
+iteration. This is how the framework knows how to decode values given raw data. |
 
-`MyMap::access` is an access method in cases where you're using the container as a top-level container.
+`MyMap::access` is an access method in cases where you're using the container as a top-level
+container.
 
-There's one thing we're missing for this to actually by useful. We need some methods
-for the accessor.
+There's one thing we're missing for this to actually by useful. We need some methods for the
+accessor.
 
 ```rust template="storage" {2, 59-78}
 use storey::containers::{NonTerminal, Storable};
@@ -207,8 +215,9 @@ where
 }
 ```
 
-What does this new code do? It provides a way to create accessors for the inner container based on the `u32` key.
-The [`StorageBranch`] type is a helper that creates a "subspace" of the storage backend. It's used to create a "slice" of the storage granted to `MyMap`.
+What does this new code do? It provides a way to create accessors for the inner container based on
+the `u32` key. The [`StorageBranch`] type is a helper that creates a "subspace" of the storage
+backend. It's used to create a "slice" of the storage granted to `MyMap`.
 
 Time to see this in action.
 

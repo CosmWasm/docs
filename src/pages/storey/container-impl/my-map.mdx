@@ -1,0 +1,244 @@
+---
+tags: ["storey"]
+---
+
+import { Callout } from "nextra/components";
+
+# MyMap
+
+Let's build our own version of the [`Map`] container. We'll call it `MyMap`.
+
+This one will be a little limited. It only accepts `u32` keys.
+
+First, let's create our struct.
+
+```rust template="storage"
+struct MyMap<V> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<V>,
+}
+
+impl<V> MyMap<V> {
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+```
+
+No magic here. The `prefix` field is used when this collection is a top-level collection - it's a
+single-byte key that creates a subspace for this collection's internal data.
+
+The `phantom` field allows us to use the type parameter `V` without actually storing any values of
+that type.
+
+The `V` type parameter is the type of the **container** inside the map. If you've followed the
+[`Map`] documentation, you'll know that `Map` is a composable container - it holds another container
+inside.
+
+The constructor is simple - it just initializes the fields.
+
+The next step is to set up an accessor. Hold on tight! This will be a ride.
+
+```rust template="storage" {1-2, 10-11, 20-26, 29-46}
+use storey::containers::{NonTerminal, Storable};
+use storey::storage::{IntoStorage, StorageBranch};
+
+struct MyMap<V> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<V>,
+}
+
+impl<V> MyMap<V>
+where
+    V: Storable,
+{
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+
+    pub fn access<F, S>(&self, storage: F) -> MyMapAccess<V, StorageBranch<S>>
+    where
+        (F,): IntoStorage<S>,
+    {
+        let storage = (storage,).into_storage();
+        Self::access_impl(StorageBranch::new(storage, vec![self.prefix]))
+    }
+}
+
+pub struct MyMapAccess<V, S> {
+    storage: S,
+    phantom: std::marker::PhantomData<V>,
+}
+
+impl<V> Storable for MyMap<V>
+where
+    V: Storable,
+{
+    type Kind = NonTerminal;
+    type Accessor<S> = MyMapAccess<V, S>;
+
+    fn access_impl<S>(storage: S) -> MyMapAccess<V, S> {
+        MyMapAccess {
+            storage,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+```
+
+Whew. Let's break this down.
+
+The `MyMapAccess` struct is our accessor. It's a facade that's used to actually access the data in
+the collection given a `Storage` instance - this is usually a subspace of the "root" storage
+backend.
+
+The [`Storable`] trait is the main trait a container must implement. The associated types tell the framework:
+
+| Associated type | Details |
+|-------------------|-------------------------------------------------------------------------|
+| `Kind` | We put `NonTerminal` here to signify our container creates subkeys rather than just saving data at the root. |
+| `Accessor` | The accessor type. `MyMapAccess` in our case. |
+
+The method `access_impl` produces an accessor given a storage abstraction (usually representing a "slice" of the underlying storage.)
+
+`MyMap::access` is an access method in cases where you're using the container as a top-level
+container.
+
+There's one thing we're missing for this to actually by useful. We need some methods for the
+accessor.
+
+```rust template="storage" {49-64}
+use storey::containers::{NonTerminal, Storable};
+use storey::storage::{IntoStorage, StorageBranch};
+
+struct MyMap<V> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<V>,
+}
+
+impl<V> MyMap<V>
+where
+    V: Storable,
+{
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+
+    pub fn access<F, S>(&self, storage: F) -> MyMapAccess<V, StorageBranch<S>>
+    where
+        (F,): IntoStorage<S>,
+    {
+        let storage = (storage,).into_storage();
+        Self::access_impl(StorageBranch::new(storage, vec![self.prefix]))
+    }
+}
+
+pub struct MyMapAccess<V, S> {
+    storage: S,
+    phantom: std::marker::PhantomData<V>,
+}
+
+impl<V> Storable for MyMap<V>
+where
+    V: Storable,
+{
+    type Kind = NonTerminal;
+    type Accessor<S> = MyMapAccess<V, S>;
+
+    fn access_impl<S>(storage: S) -> MyMapAccess<V, S> {
+        MyMapAccess {
+            storage,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<V, S> MyMapAccess<V, S>
+where
+    V: Storable,
+{
+        pub fn entry(&self, key: u32) -> V::Accessor<StorageBranch<&S>> {
+            let key = key.to_be_bytes().to_vec();
+
+            V::access_impl(StorageBranch::new(&self.storage, key))
+        }
+
+        pub fn entry_mut(&mut self, key: u32) -> V::Accessor<StorageBranch<&mut S>> {
+            let key = key.to_be_bytes().to_vec();
+
+            V::access_impl(StorageBranch::new(&mut self.storage, key))
+        }
+}
+```
+
+What does this new code do? It provides a way to create accessors for the inner container based on
+the `u32` key. The [`StorageBranch`] type is a helper that creates a "subspace" of the storage
+backend. It's used to create a "slice" of the storage granted to `MyMap`.
+
+Time to see this in action.
+
+```rust template="storey-container-impl"
+use cw_storey::containers::{Item};
+
+const MAP_IX: u8 = 0;
+
+let my_map: MyMap<Item<u32>> = MyMap::new(MAP_IX);
+let mut access = my_map.access(&mut storage);
+
+access.entry_mut(1).set(&100).unwrap();
+access.entry_mut(2).set(&200).unwrap();
+
+assert_eq!(access.entry(1).get().unwrap(), Some(100));
+assert_eq!(access.entry(2).get().unwrap(), Some(200));
+```
+
+# Iteration
+
+To be continued...
+
+| Associated type | Details |
+|-------------------|-------------------------------------------------------------------------|
+| `Key` | The key type to be returned by iterators. Here a tuple of `u32` and the key type of the inner container. |
+| `KeyDecodeError` | The error to be returned on invalid key data. Here we don't care, so we use `()`. In production, use a proper error type. |
+| `Value` | The value type to be returned by iterators. Here it's delegated to the inner container. |
+| `ValueDecodeError`| The error type for invalid value data. Delegated to the inner container. |
+
+The methods:
+| Method | Function |
+|----------------|-----------------------------------------------------------------------------|
+| `decode_value` | Used for iteration. This is how the framework knows how to decode values given raw data. |
+
+```
+impl<V> IterableStorable for MyMap<V>
+where
+    V: IterableStorable,
+    <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
+{
+    type Key = (u32, V::Key);
+    type KeyDecodeError = ();
+    type Value = V::Value;
+    type ValueDecodeError = V::ValueDecodeError;
+
+    fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
+        todo!()
+    }
+
+    fn decode_value(value: &[u8]) -> Result<Self::Value, Self::ValueDecodeError> {
+        V::decode_value(value)
+    }
+}
+```
+
+[`Item`]: /storey/containers/item
+[`Map`]: /storey/containers/map
+[`Storable`]: https://docs.rs/storey/latest/storey/containers/trait.Storable.html
+[`StorageBranch`]: https://docs.rs/storey/latest/storey/storage/struct.StorageBranch.html

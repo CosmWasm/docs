@@ -55,20 +55,6 @@ export default {
   sidebar: {
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,
-    // NOTE this property no longer exists
-    /* titleComponent: ({ title, route }) => {
-      const [isDocRoute, setIsDocRoute] = useState(false);
-
-      useEffect(() => {
-        setIsDocRoute(window.location.pathname.startsWith("/how-to-doc"));
-      }, []);
-
-      return (
-        <div className={cn("group", !isDocRoute && title === "How to doc" ? "how-to-doc-dir" : "")}>
-          <span>{title}</span> <TagDots route={route} />
-        </div>
-      );
-    }, */
   },
   head: function useHead() {
     const config = useConfig();

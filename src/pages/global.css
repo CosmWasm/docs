@@ -10,10 +10,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Hide How to Doc directory on the sidebar */
-li:has(a > .how-to-doc-dir),
-/* Hide links to How to Doc index, except the prevLink on the page after that */
-a[href="/how-to-doc"]:not(:has(div))[class~="ltr:nx-ml-auto"] {
-  display: none;
-}

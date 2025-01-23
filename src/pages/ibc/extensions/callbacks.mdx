@@ -98,8 +98,8 @@ Ok(Response::new().add_message(msg))
 
 As you can see, you can request callbacks for both the source and destination chain. However, you
 can also request callbacks for only one of them. For this, you need to provide the address that
-should receive the callback and you can optionally set a gas limit for the callback execution.
-Please take a look at the `IbcCallbackRequest` docs for more information.
+should receive the callback. Optionally you can set a gas limit for the callback execution. Please
+take a look at the `IbcCallbackRequest` docs for more information.
 
 <Callout>
   The `address` of the source callback always needs to be the contract address that sends the

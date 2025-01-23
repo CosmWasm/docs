@@ -11,12 +11,13 @@ tags: ["multitest", "AppBuilder"]
 
 # `AppBuilder`
 
-[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible
-and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart contract developers
-to configure various components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually
-through dedicated `with_*` methods. Each method modifies and returns a new instance of the builder, enabling
-method chaining for a fluent interface. The [`build{:rust}`][build] method finalizes the construction
-process, ensuring that all components are correctly initialized and integrated.
+[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a
+flexible and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart
+contract developers to configure various components of the blockchain simulator (e.g., Bank,
+Staking, Gov, IBC) individually through dedicated `with_*` methods. Each method modifies and returns
+a new instance of the builder, enabling method chaining for a fluent interface. The
+[`build{:rust}`][build] method finalizes the construction process, ensuring that all components are
+correctly initialized and integrated.
 
 The following sections detail all builder functions, providing specific usage examples.
 
@@ -103,7 +104,21 @@ with any other `with_*` methods to configure a custom starting block.
 
 ## `with_gov`
 
-(WIP)
+```rust showLineNumbers copy /with_gov/ /GovFailingModule/
+use cw_multi_test::{no_init, AppBuilder, GovFailingModule};
+
+let app = AppBuilder::default()
+    .with_gov(GovFailingModule::new())
+    .build(no_init);
+```
+
+```rust showLineNumbers copy {15} /with_gov/ /GovAcceptingModule/
+use cw_multi_test::{no_init, AppBuilder, GovAcceptingModule};
+
+let _app = AppBuilder::default()
+    .with_gov(GovAcceptingModule::new())
+    .build(no_init);
+```
 
 ## `with_ibc`
 

@@ -8,15 +8,19 @@ tags: ["multitest", "AppBuilder"]
 [with_block]:
   https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_block
 [build]: #build
+[GovAcceptingModule]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovAcceptingModule.html
+[GovFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html
 
 # `AppBuilder`
 
-[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible
-and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart contract developers
-to configure various components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually
-through dedicated `with_*` methods. Each method modifies and returns a new instance of the builder, enabling
-method chaining for a fluent interface. The [`build{:rust}`][build] method finalizes the construction
-process, ensuring that all components are correctly initialized and integrated.
+[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a
+flexible and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart
+contract developers to configure various components of the blockchain simulator (e.g., Bank,
+Staking, Gov, IBC) individually through dedicated `with_*` methods. Each method modifies and returns
+a new instance of the builder, enabling method chaining for a fluent interface. The
+[`build{:rust}`][build] method finalizes the construction process, ensuring that all components are
+correctly initialized and integrated.
 
 The following sections detail all builder functions, providing specific usage examples.
 
@@ -102,6 +106,13 @@ with any other `with_*` methods to configure a custom starting block.
 (WIP)
 
 ## `with_gov`
+
+The `with_gov{:rust}` function allows you to customize the governance module of your test blockchain
+environment. This function enables you to override the default governance module with a custom
+implementation that suits your specific testing needs. Currently, **`MultiTest`** provides two
+minimal implementations of the governance module that do not attempt to replicate real blockchain
+behavior: [`GovAcceptingModule{:rust}`][GovAcceptingModule] and
+[`GovFailingModule{:rust}`][GovFailingModule].
 
 ```rust showLineNumbers copy /with_gov/ /GovFailingModule/
 use cw_multi_test::{no_init, AppBuilder, GovFailingModule};

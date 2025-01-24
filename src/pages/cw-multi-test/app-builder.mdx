@@ -2,12 +2,19 @@
 tags: ["multitest", "AppBuilder"]
 ---
 
+import { Callout } from "nextra/components";
+
 [AppBuilder]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html
 [Builder Pattern]: https://en.wikipedia.org/wiki/Builder_pattern
 [BlockInfo]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html
 [with_block]:
   https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_block
+[with_gov]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_gov
 [build]: #build
+[GovAcceptingModule]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovAcceptingModule.html
+[GovFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html
 
 # `AppBuilder`
 
@@ -103,7 +110,41 @@ with any other `with_*` methods to configure a custom starting block.
 
 ## `with_gov`
 
-(WIP)
+The [`with_gov{:rust}`][with_gov] function allows you to customize the governance module of your
+test blockchain environment. This function enables you to override the default governance module
+with a custom implementation that suits your specific testing needs. Currently, **`MultiTest`**
+provides two minimal implementations of the governance module that do not attempt to replicate real
+blockchain behavior: [`GovAcceptingModule{:rust}`][GovAcceptingModule] and
+[`GovFailingModule{:rust}`][GovFailingModule].
+
+To use a built-in governance module that accepts all messages, initialize the chain like shown below
+(line 4):
+
+```rust showLineNumbers copy {15} /with_gov/ /GovAcceptingModule/
+use cw_multi_test::{no_init, AppBuilder, GovAcceptingModule};
+
+let app = AppBuilder::default()
+    .with_gov(GovAcceptingModule::new())
+    .build(no_init);
+```
+
+When processing governance messages in your tests should always fail, initialize the chain like in
+the following code snippet (line 4):
+
+```rust showLineNumbers copy /with_gov/ /GovFailingModule/
+use cw_multi_test::{no_init, AppBuilder, GovFailingModule};
+
+let app = AppBuilder::default()
+    .with_gov(GovFailingModule::new())
+    .build(no_init);
+```
+
+<Callout>
+  Note that [`GovFailingModule{:rust}`][GovFailingModule] is the default one in `App{:rust}`.
+</Callout>
+
+You can find more usage examples of the built-in governance modules in the
+[Governance](./governance) chapter.
 
 ## `with_ibc`
 

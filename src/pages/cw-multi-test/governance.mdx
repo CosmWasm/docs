@@ -2,9 +2,29 @@
 tags: ["multitest", "governance"]
 ---
 
+[GovAcceptingModule]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovAcceptingModule.html
+[GovFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html
+
 # Governance
 
-```rust showLineNumbers copy
+**`MultiTest`** provides two minimal implementations of the governance module that **do not**
+replicate the real blockchain behavior: [`GovAcceptingModule{:rust}`][GovAcceptingModule] and
+[`GovFailingModule{:rust}`][GovFailingModule]. The default chain configuration is using
+[`GovFailingModule{:rust}`][GovFailingModule].
+
+The following sections provide examples of how to initialize a specific governance module and how to
+execute governance messages in tests.
+
+## Default governance module
+
+Currently, in **`MultiTest`**, the default governance module is
+[`GovFailingModule{:rust}`][GovFailingModule], and no additional configuration is required to use
+it.
+
+### `GovMsg::Vote`
+
+```rust showLineNumbers {5,20} copy /GovMsg::Vote/
 use cosmwasm_std::{GovMsg, VoteOption};
 use cw_multi_test::{no_init, AppBuilder, Executor, IntoAddr};
 
@@ -27,7 +47,9 @@ let response = app.execute(sender_addr, vote_msg.into()).unwrap_err();
 assert!(response.to_string().starts_with("Unexpected exec msg Vote"));
 ```
 
-```rust showLineNumbers copy
+### `GovMsg::VoteWeighted`
+
+```rust showLineNumbers {5,23} copy /GovMsg::VoteWeighted/
 use cosmwasm_std::{Decimal, GovMsg, Uint128, VoteOption, WeightedVoteOption};
 use cw_multi_test::{no_init, AppBuilder, Executor, IntoAddr};
 
@@ -50,12 +72,17 @@ let vote_msg = GovMsg::VoteWeighted {
 let response = app.execute(sender_addr, vote_msg.into()).unwrap_err();
 
 // Always an error is returned.
-assert!(response
-    .to_string()
-    .starts_with("Unexpected exec msg VoteWeighted"));
+assert!(response.to_string().starts_with("Unexpected exec msg VoteWeighted"));
 ```
 
-```rust showLineNumbers copy
+## Failing governance module
+
+Executing governance messages using [`GovFailingModule{:rust}`][GovFailingModule] always returns an
+error.
+
+### `GovMsg::Vote`
+
+```rust showLineNumbers {6,22} copy /GovMsg::Vote/
 use cosmwasm_std::{GovMsg, VoteOption};
 use cw_multi_test::{no_init, AppBuilder, Executor, GovFailingModule, IntoAddr};
 
@@ -80,7 +107,9 @@ let response = app.execute(sender_addr, vote_msg.into()).unwrap_err();
 assert!(response.to_string().starts_with("Unexpected exec msg Vote"));
 ```
 
-```rust showLineNumbers copy
+### `GovMsg::VoteWeighted`
+
+```rust showLineNumbers {6,25} copy /GovMsg::VoteWeighted/
 use cosmwasm_std::{Decimal, GovMsg, Uint128, VoteOption, WeightedVoteOption};
 use cw_multi_test::{no_init, AppBuilder, Executor, GovFailingModule, IntoAddr};
 
@@ -105,12 +134,17 @@ let vote_msg = GovMsg::VoteWeighted {
 let response = app.execute(sender_addr, vote_msg.into()).unwrap_err();
 
 // Always an error is returned.
-assert!(response
-    .to_string()
-    .starts_with("Unexpected exec msg VoteWeighted"));
+assert!(response.to_string().starts_with("Unexpected exec msg VoteWeighted"));
 ```
 
-```rust showLineNumbers copy
+## Accepting governance module
+
+Executing governance messages using [`GovAcceptingModule{:rust}`][GovAcceptingModule] always
+succeeds, but the returned data is empty.
+
+### `GovMsg::Vote`
+
+```rust showLineNumbers {6,22} copy /GovMsg::Vote/
 use cosmwasm_std::{GovMsg, VoteOption};
 use cw_multi_test::{no_init, AppBuilder, Executor, GovAcceptingModule, IntoAddr};
 
@@ -135,7 +169,9 @@ let response = app.execute(sender_addr, vote_msg.into()).unwrap();
 assert_eq!(None, response.data);
 ```
 
-```rust showLineNumbers copy
+### `GovMsg::VoteWeighted`
+
+```rust showLineNumbers {6,25} copy /GovMsg::VoteWeighted/
 use cosmwasm_std::{Decimal, GovMsg, Uint128, VoteOption, WeightedVoteOption};
 use cw_multi_test::{no_init, AppBuilder, Executor, GovAcceptingModule, IntoAddr};
 

@@ -5,7 +5,7 @@ tags: ["intro"]
 The [x/wasm module](https://github.com/CosmWasm/wasmd/tree/main/x/wasm), the root of CosmWasm, is a
 [Cosmos SDK](https://docs.cosmos.network/) module enabling smart contracts to execute on the
 CosmWasm virtual machine. CosmWasm itself refers to the whole ecosystem built around it with a
-mission to make smart contracts development easy and reliable. The focuses of the CosmWasm platform
+mission to make smart contracts development easy and reliable. The focus of the CosmWasm platform
 are security, performance, and interoperability. It is tailored for a tight integration with Cosmos
 SDK and to build IBC contracts.
 

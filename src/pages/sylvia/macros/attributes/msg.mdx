@@ -124,7 +124,7 @@ message and generates the **reply IDs**, **dispatching** and `SubMsg` **building
 If the `handlers` parameter is not used, the method name is used as the handler name.
 
 ```rust {1} template="sylvia-cw-storage-contract"
-#[sv::msg(reply, handlers=[tokens_transfered, tokens_staked])]
+#[sv::msg(reply, handlers=[tokens_transferred, tokens_staked])]
 fn update_state(
     &self,
     ctx: ReplyCtx,
@@ -148,7 +148,7 @@ the other one `reply_on=Error`. This way, we can have different handling for **s
 **error** for the same **reply ID**.
 
 ```rust {1, 5, 11, 15, 21, 25} template="sylvia-cw-storage-contract"
-#[sv::msg(reply, handlers=[tokens_transfered], reply_on=success)]
+#[sv::msg(reply, handlers=[tokens_transferred], reply_on=success)]
 fn update_state(
     &self,
     ctx: ReplyCtx,
@@ -158,7 +158,7 @@ fn update_state(
     Ok(Response::new())
 }
 
-#[sv::msg(reply, handlers=[tokens_transfered], reply_on=error)]
+#[sv::msg(reply, handlers=[tokens_transferred], reply_on=error)]
 fn revert_state(
     &self,
     ctx: ReplyCtx,

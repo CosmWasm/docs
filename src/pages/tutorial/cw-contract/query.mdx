@@ -94,7 +94,7 @@ We have a query entry point, but there is a problem with the query message. It i
 JSON. It is terrible - if we would like to add another query in the future, it would be difficult to
 have any reasonable distinction between query variants.
 
-In practice, we address this by using a non-empty query message type. Let`s improve our contract:
+In practice, we address this by using a non-empty query message type. Let's improve our contract:
 
 ```rust {11-14, 27, 30-38} copy filename="src/lib.rs" template="empty"
 use cosmwasm_std::{

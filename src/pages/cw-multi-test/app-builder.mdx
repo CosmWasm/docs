@@ -49,7 +49,19 @@ assert!(sender_addr.as_str().starts_with("cosmwasm1"));
 
 ## `new`
 
-(WIP)
+The constructor `new{:rust}` is an equivalent of the `default{:rust}` method in
+[`AppBuilder{:rust}`][AppBuilder]. The example below creates a chain with default settings as
+described in [Features summary](features#features-summary).
+
+```rust showLineNumbers {3} copy /new/ /build/
+use cw_multi_test::{no_init, AppBuilder};
+
+let app = AppBuilder::new().build(no_init);
+
+let sender_addr = app.api().addr_make("sender");
+
+assert!(sender_addr.as_str().starts_with("cosmwasm1"));
+```
 
 ## `new_custom`
 

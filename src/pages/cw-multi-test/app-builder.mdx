@@ -18,12 +18,13 @@ import { Callout } from "nextra/components";
 
 # `AppBuilder`
 
-[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible
-and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart contract developers
-to configure various components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually
-through dedicated `with_*` methods. Each method modifies and returns a new instance of the builder, enabling
-method chaining for a fluent interface. The [`build{:rust}`][build] method finalizes the construction
-process, ensuring that all components are correctly initialized and integrated.
+[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a
+flexible and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart
+contract developers to configure various components of the blockchain simulator (e.g., Bank,
+Staking, Gov, IBC) individually through dedicated `with_*` methods. Each method modifies and returns
+a new instance of the builder, enabling method chaining for a fluent interface. The
+[`build{:rust}`][build] method finalizes the construction process, ensuring that all components are
+correctly initialized and integrated.
 
 The following sections detail all builder functions, providing specific usage examples.
 

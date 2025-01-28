@@ -285,7 +285,7 @@ pub fn ibc_packet_ack(
     _env: Env,
     msg: IbcPacketAckMsg,
 ) -> StdResult<IbcBasicResponse> {
-    // this example assumes that the acknowledgement is an StdAck
+    // this example assumes that the acknowledgement is a StdAck
     let ack: StdAck = from_json(&msg.acknowledgement.data)?;
 
     // here you can do something with the acknowledgement

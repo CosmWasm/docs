@@ -304,7 +304,7 @@ The command will return a JSON object similar to the following:
 - `"ibc_port_id"` is the Port ID for Inter-Blockchain Communication [IBC](../../ibc.mdx). If the
   contract is set up to interact with other blockchains via IBC, this field will contain the
   relevant port ID.
-- `"extension"` is is an extension point to store custom metadata within the persistence model
+- `"extension"` is an extension point to store custom metadata within the persistence model
 
 ## Instantiation with Predictable Address
 
@@ -324,7 +324,7 @@ different salt values will result in different contract addresses.
 SALT=10
 ```
 
-Run the following command to instantiate the contract with predicatable address:
+Run the following command to instantiate the contract with predictable address:
 
 ```sh
 wasmd tx wasm instantiate2 "$CODE_ID" "$INIT" "$SALT" \

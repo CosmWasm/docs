@@ -4,6 +4,7 @@ tags: ["multitest", "AppBuilder"]
 
 import { Callout } from "nextra/components";
 
+[App]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html
 [AppBuilder]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html
 [Builder Pattern]: https://en.wikipedia.org/wiki/Builder_pattern
 [BlockInfo]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html
@@ -18,18 +19,34 @@ import { Callout } from "nextra/components";
 
 # `AppBuilder`
 
-[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a flexible
-and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart contract developers
-to configure various components of the blockchain simulator (e.g., Bank, Staking, Gov, IBC) individually
-through dedicated `with_*` methods. Each method modifies and returns a new instance of the builder, enabling
-method chaining for a fluent interface. The [`build{:rust}`][build] method finalizes the construction
-process, ensuring that all components are correctly initialized and integrated.
+[`AppBuilder{:rust}`][AppBuilder] is an implementation of the [Builder Pattern] that provides a
+flexible and modular way to construct the [`App{:rust}`](app) blockchain simulator. It allows smart
+contract developers to configure various components of the blockchain simulator (e.g., Bank,
+Staking, Gov, IBC) individually through dedicated `with_*` methods. Each method modifies and returns
+a new instance of the builder, enabling method chaining for a fluent interface. The
+[`build{:rust}`][build] method finalizes the construction process, ensuring that all components are
+correctly initialized and integrated.
 
 The following sections detail all builder functions, providing specific usage examples.
 
 ## `default`
 
-(WIP)
+The simplest way to create a chain using [`AppBuilder{:rust}`][AppBuilder] is by calling the
+`default{:rust}` method. Since [`AppBuilder{:rust}`][AppBuilder] follows the principles of the
+builder pattern, you need to finalize the building process by calling the `build{:rust}` method with
+a chain initialization callback function. When no specific chain initialization is required you can
+just use provided [`no_init`](app#no_init) callback. In the following code example, the chain is
+created with default settings as described in [Features summary](features#features-summary).
+
+```rust showLineNumbers {3} copy /default/ /build/
+use cw_multi_test::{no_init, AppBuilder};
+
+let app = AppBuilder::default().build(no_init);
+
+let sender_addr = app.api().addr_make("sender");
+
+assert!(sender_addr.as_str().starts_with("cosmwasm1"));
+```
 
 ## `new`
 

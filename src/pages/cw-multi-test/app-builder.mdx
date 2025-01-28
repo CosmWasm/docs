@@ -199,10 +199,10 @@ You can find more usage examples of the built-in governance modules in the
 ## `build`
 
 Since [`AppBuilder{:rust}`][AppBuilder] follows the principles of the builder pattern, you must
-always finalize the chain-building process by calling the [`build{:rust}`][build] method with a
-chain initialization callback function. If no specific chain initialization is required, you can use
-the provided [`no_init`](app#no_init) callback. Otherwise, you can initialize the chain using a
-custom callback function. An example of how to initialize a user's balance is shown below.
+always finalize the chain-building process by calling the [`build{:rust}`][build] method with an
+initialization callback function. If no specific chain initialization is required, you can use the
+provided [`no_init`](app#no_init) callback. Otherwise, you can initialize the chain using a custom
+callback function. An example of how to initialize a user's balance is shown below.
 
 ```rust showLineNumbers copy /build/
 use cosmwasm_std::coin;

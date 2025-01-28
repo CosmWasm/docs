@@ -1,7 +1,6 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "husky",
     "gen-tags": "node scripts/gen-tags.mjs",
     "predev": "npm run gen-tags && rm -r .next 2> /dev/null || true",
     "dev": "next",
@@ -27,7 +26,6 @@
     "autoprefixer": "^10.4.20",
     "git-format-staged": "^3.1.1",
     "gray-matter": "^4.0.3",
-    "husky": "^9.1.7",
     "postcss": "^8.4.49",
     "prettier": "3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",

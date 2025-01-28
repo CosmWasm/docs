@@ -253,7 +253,7 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
 I changed the visibility of all modules - as our crate can now be used as a dependency. If someone
 would like to do so, he may need access to handlers or state.
 
-The next step is to create a tool generating actual schemas. We will do it by creating an binary in
+The next step is to create a tool generating actual schemas. We will do it by creating a binary in
 our crate. Create a new `src/bin/schema.rs` file:
 
 ```rust filename="src/bin/schema.rs"

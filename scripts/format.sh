@@ -11,4 +11,4 @@ while getopts c option; do
   esac
 done
 
-npx prettier@3.3.3 --$op "./src/**/*.md" "./src/**/*.mdx"
+npx prettier@3.4.2 --$op "./src/**/*.md" "./src/**/*.mdx"

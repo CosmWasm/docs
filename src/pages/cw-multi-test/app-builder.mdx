@@ -4,18 +4,20 @@ tags: ["multitest", "AppBuilder"]
 
 import { Callout } from "nextra/components";
 
+[Api]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html
 [App]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html
 [AppBuilder]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html
+[build]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.build
 [Builder Pattern]: https://en.wikipedia.org/wiki/Builder_pattern
 [BlockInfo]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html
+[GovAcceptingModule]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovAcceptingModule.html
+[GovFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html
+[MockApi]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html
 [with_block]:
   https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_block
 [with_gov]:
   https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_gov
-[build]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.build
-[GovAcceptingModule]:
-  https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovAcceptingModule.html
-[GovFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html
 
 # `AppBuilder`
 
@@ -71,7 +73,84 @@ assert!(sender_addr.as_str().starts_with("cosmwasm1"));
 
 ## `with_api`
 
-(WIP)
+The default [`Api{:rust}`][Api] implementation used in [`AppBuilder{:rust}`][AppBuilder] is
+[`cosmwasm_std::testing::MockApi{:rust}`][MockApi].
+Besides other functionalities described in detail in the [API](api) chapter,
+the [`MockApi{:rust}`][MockApi] provides a function for generating user addresses in **Bech32**
+format with the `cosmwasm` prefix. The usage example is shown below.
+
+```rust showLineNumbers copy {7} /api()/ /addr_make/ /cosmwasm/
+use cw_multi_test::{no_init, AppBuilder};
+
+// Create the chain with default Api implementation.
+let app = AppBuilder::default().build(no_init);
+
+// Create the address using default Api.
+let sender_addr = app.api().addr_make("sender");
+
+// Default Api generates Bech32 addresses with prefix 'cosmwasm'.
+assert_eq!(
+    "cosmwasm1pgm8hyk0pvphmlvfjc8wsvk4daluz5tgrw6pu5mfpemk74uxnx9qlm3aqg",
+    sender_addr.as_str()
+);
+```
+
+```rust showLineNumbers copy {1,6} /with_api/ /osmo/
+use cosmwasm_std::testing::MockApi;
+use cw_multi_test::{no_init, AppBuilder};
+
+// Create the chain with customized default Api implementation.
+let app = AppBuilder::default()
+    .with_api(MockApi::default().with_prefix("osmo"))
+    .build(no_init);
+
+// Create the address using customized Api.
+let sender_addr = app.api().addr_make("sender");
+
+// This customized Api generates Bech32 addresses with prefix 'osmo'.
+assert_eq!(
+    "osmo1pgm8hyk0pvphmlvfjc8wsvk4daluz5tgrw6pu5mfpemk74uxnx9qcrt3u2",
+    sender_addr.as_str()
+);
+```
+
+```rust showLineNumbers copy {1,6} /with_api/ /juno/
+use cw_multi_test::MockApiBech32;
+use cw_multi_test::{no_init, AppBuilder};
+
+// Create the chain with Bech32 Api implementation.
+let app = AppBuilder::default()
+    .with_api(MockApiBech32::new("juno"))
+    .build(no_init);
+
+// Create the address using Bech32 Api.
+let sender_addr = app.api().addr_make("sender");
+
+// This Api generates Bech32 addresses with prefix 'juno'.
+assert_eq!(
+    "juno1pgm8hyk0pvphmlvfjc8wsvk4daluz5tgrw6pu5mfpemk74uxnx9qwm56ug",
+    sender_addr.as_str()
+);
+```
+
+```rust showLineNumbers copy {1,6} /with_api/ /juno/
+use cw_multi_test::MockApiBech32m;
+use cw_multi_test::{no_init, AppBuilder};
+
+// Create the chain with Bech32m Api implementation.
+let app = AppBuilder::default()
+    .with_api(MockApiBech32m::new("juno"))
+    .build(no_init);
+
+// Create the address using Bech32m Api.
+let sender_addr = app.api().addr_make("sender");
+
+// This Api generates Bech32m addresses with prefix 'juno'.
+assert_eq!(
+    "juno1pgm8hyk0pvphmlvfjc8wsvk4daluz5tgrw6pu5mfpemk74uxnx9qm8yke2",
+    sender_addr.as_str()
+);
+```
 
 ## `with_bank`
 

@@ -7,7 +7,7 @@ export default {
   contract: "Contract",
   "contract-wrapper": "ContractWrapper",
   blocks: "Blocks",
-  api: "API",
+  api: "Api",
   addresses: "Addresses",
   storage: "Storage",
   bank: "Bank",

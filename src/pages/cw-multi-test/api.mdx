@@ -1,19 +1,72 @@
 ---
-tags: ["multitest", "API"]
+tags: ["multitest", "Api"]
 ---
 
-# API
+[Api]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html
+[addr_canonicalize]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.addr_canonicalize
+[addr_humanize]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.addr_humanize
+[addr_validate]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.addr_validate
+[secp256k1_verify]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.secp256k1_verify
+[secp256k1_recover_pubkey]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.secp256k1_recover_pubkey
+[secp256r1_verify]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.secp256r1_verify
+[secp256r1_recover_pubkey]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.secp256r1_recover_pubkey
+[ed25519_verify]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.ed25519_verify
+[ed25519_batch_verify]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.ed25519_batch_verify
+[bls12_381_aggregate_g1]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.bls12_381_aggregate_g1
+[bls12_381_aggregate_g2]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.bls12_381_aggregate_g2
+[bls12_381_pairing_equality]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.bls12_381_pairing_equality
+[bls12_381_hash_to_g1]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.bls12_381_hash_to_g1
+[bls12_381_hash_to_g2]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#method.bls12_381_hash_to_g2
+[debug]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Api.html#tymethod.debug
+[MockApi]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html
+[MockApiBech32]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.MockApiBech32.html
+[MockApiBech32m]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.MockApiBech32m.html
 
-## Initialization with the default API
+# Api
 
-- `App::default(){:rust}`
-- `app.api(){:rust}`
-- `MockApi{:rust}`
-- `MockApiBech32{:rust}`
-- `MockApiBech32m{:rust}`
-- custom API example? - maybe in the next version
+**`MultiTest`** provides three implementations of the [Api][Api] trait:
 
-```rust copy showLineNumbers
-let app = App::default();
-app.api();
-```
+- [`cosmwasm_std::testing::MockApi{:rust}`][MockApi],
+- [`cw_multi_test::MockApiBech32{:rust}`][MockApiBech32],
+- [`cw_multi_test::MockApiBech32m{:rust}`][MockApiBech32m].
+
+Additionally, [`MockApi{:rust}`][MockApi], [`MockApiBech32{:rust}`][MockApiBech32] and [`MockApiBech32m{:rust}`][MockApiBech32m]
+implement `addr_make{:rust}` method, allowing for convenient creation of user addresses in tests.
+You can find multiple examples of `addr_make{:rust}` method usage in the [Addresses](addresses/user-address#app) chapter.
+Depending on your needs, you can use any implementation of the [Api][Api] trait in your tests by utilizing
+the [`AppBuilder::with_api{:rust}`](app-builder#with_api) method to create a chain simulator.
+
+## `Api` trait
+
+The table below summarizes all methods of the [Api][Api] trait with short descriptions:
+
+| Methods of [Api][Api] trait                                       | Description                                                                                                                                         |
+|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`addr_canonicalize{:rust}`][addr_canonicalize]                   | Converts a human-readable address into its canonical binary representation.                                                                         |
+| [`addr_humanize{:rust}`][addr_humanize]                           | Converts a canonical address into human-readable address.                                                                                           |
+| [`addr_validate{:rust}`][addr_validate]                           | Checks if the human-readable address is valid.                                                                                                      |
+| [`secp256k1_verify{:rust}`][secp256k1_verify]                     | Verifies a message hash against a signature, with the public key of the signer, using the **secp256k1** elliptic curve digital signature algorithm. |
+| [`secp256k1_recover_pubkey{:rust}`][secp256k1_recover_pubkey]     | Recovers a public key from a message hash and a signature in compressed form, which can be used in `secp256k1_verify` directly.                     |
+| [`secp256r1_verify{:rust}`][secp256r1_verify]                     | Verifies a message hash against a signature, with the public key of the signer, using the **secp256r1** elliptic curve digital signature algorithm. |
+| [`secp256r1_recover_pubkey{:rust}`][secp256r1_recover_pubkey]     | Recovers a public key from a message hash and a signature in compressed form, which can be used in `secp256r1_verify` directly.                     |
+| [`ed25519_verify{:rust}`][ed25519_verify]                         | Verifies message against a signature, with the public key of the signer, using the **ed25519** elliptic curve digital signature algorithm.          |
+| [`ed25519_batch_verify{:rust}`][ed25519_batch_verify]             | Performs batch **ed25519** signature verification.                                                                                                  |
+| [`bls12_381_aggregate_g1{:rust}`][bls12_381_aggregate_g1]         | Takes a list of points in G1 (48 bytes each) and aggregates them.                                                                                   |
+| [`bls12_381_aggregate_g2{:rust}`][bls12_381_aggregate_g2]         | Takes a list of points in G2 (96 bytes each) and aggregates them.                                                                                   |
+| [`bls12_381_pairing_equality{:rust}`][bls12_381_pairing_equality] | (description needed, see [\#2368](https://github.com/CosmWasm/cosmwasm/issues/2368))                                                                |
+| [`bls12_381_hash_to_g1{:rust}`][bls12_381_hash_to_g1]             | (description needed, see [\#2368](https://github.com/CosmWasm/cosmwasm/issues/2368))                                                                |
+| [`bls12_381_hash_to_g2{:rust}`][bls12_381_hash_to_g2]             | (description needed, see [\#2368](https://github.com/CosmWasm/cosmwasm/issues/2368))                                                                |
+| [`debug{:rust}`][debug]                                           | Emits a debugging message.                                                                                                                          |
+
+## `Api` trait implementations
+
+A concise comparison of different [Api][Api] trait implementations is shown in the table below:
+
+|                                           | MockApi    | MockApiBech32 | MockApiBech32m |
+|-------------------------------------------|:----------:|:-------------:|:--------------:|
+| Implements [Api][Api] trait               | Yes        | Yes           | Yes            |
+| Implements **`addr_make{:rust}`** function| Yes        | Yes           | Yes            |
+| Address format                            | Bech32     | Bech32        | Bech32m        |
+| Default prefix (HRP)                      | `cosmwasm` | No            | No             |
+| Supports custom prefixes                  | Yes        | Yes           | Yes            |
+

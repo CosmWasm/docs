@@ -78,10 +78,10 @@ assert!(sender_addr.as_str().starts_with("cosmwasm1"));
 ## `with_api`
 
 The default [`Api{:rust}`][Api] trait implementation used in [`AppBuilder{:rust}`][AppBuilder] is
-[`cosmwasm_std::testing::MockApi{:rust}`][MockApi] provided by CosmWasm library.
-Besides other functionalities described in detail in the [API](api) chapter,
-the [`MockApi{:rust}`][MockApi] provides a function for generating user addresses in **Bech32**
-format with the `cosmwasm` prefix. An example usage is shown below.
+[`cosmwasm_std::testing::MockApi{:rust}`][MockApi] provided by CosmWasm library. Besides other
+functionalities described in detail in the [API](api) chapter, the [`MockApi{:rust}`][MockApi]
+provides a function for generating user addresses in **Bech32** format with the `cosmwasm` prefix.
+An example usage is shown below.
 
 ```rust showLineNumbers copy {7} /api()/ /addr_make/ /cosmwasm/
 use cw_multi_test::{no_init, AppBuilder};
@@ -99,10 +99,10 @@ assert_eq!(
 );
 ```
 
-If you need to test contracts on your own chain that uses a specific Bech32 prefixes, you can
-easily customize the default [`MockApi{:rust}`][MockApi] behavior using the
-[`AppBuilder::with_api{:rust}`][with_api] method. An example of using `osmo` prefixes is shown
-in the following code snippet.
+If you need to test contracts on your own chain that uses a specific Bech32 prefixes, you can easily
+customize the default [`MockApi{:rust}`][MockApi] behavior using the
+[`AppBuilder::with_api{:rust}`][with_api] method. An example of using `osmo` prefixes is shown in
+the following code snippet.
 
 ```rust showLineNumbers copy {1,6} /with_api/ /osmo/
 use cosmwasm_std::testing::MockApi;
@@ -124,9 +124,8 @@ assert_eq!(
 ```
 
 **`MultiTest`** provides two additional implementations of the [`Api{:rust}`][Api] trait:
-[`MockApiBech32{:rust}`][MockApiBech32] and [`MockApiBech32m{:rust}`][MockApiBech32m].
-You can use them in your tests by providing their instances to [`AppBuilder::with_api{:rust}`][with_api] method.
-
+[`MockApiBech32{:rust}`][MockApiBech32] and [`MockApiBech32m{:rust}`][MockApiBech32m]. You can use
+them in your tests by providing their instances to [`AppBuilder::with_api{:rust}`][with_api] method.
 
 An example of using [`MockApiBech32{:rust}`][MockApiBech32] with custom prefix:
 

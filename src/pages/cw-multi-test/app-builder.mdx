@@ -74,10 +74,9 @@ assert!(sender_addr.as_str().starts_with("cosmwasm1"));
 ## `with_api`
 
 The default [`Api{:rust}`][Api] implementation used in [`AppBuilder{:rust}`][AppBuilder] is
-[`cosmwasm_std::testing::MockApi{:rust}`][MockApi].
-Besides other functionalities described in detail in the [API](api) chapter,
-the [`MockApi{:rust}`][MockApi] provides a function for generating user addresses in **Bech32**
-format with the `cosmwasm` prefix. The usage example is shown below.
+[`cosmwasm_std::testing::MockApi{:rust}`][MockApi]. Besides other functionalities described in
+detail in the [API](api) chapter, the [`MockApi{:rust}`][MockApi] provides a function for generating
+user addresses in **Bech32** format with the `cosmwasm` prefix. The usage example is shown below.
 
 ```rust showLineNumbers copy {7} /api()/ /addr_make/ /cosmwasm/
 use cw_multi_test::{no_init, AppBuilder};

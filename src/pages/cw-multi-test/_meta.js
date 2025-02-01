@@ -5,5 +5,6 @@ export default {
   app: "App",
   "app-builder": "AppBuilder",
   blocks: "Blocks",
+  api: "Api",
   addresses: "Addresses",
 };

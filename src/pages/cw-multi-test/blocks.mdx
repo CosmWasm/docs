@@ -218,7 +218,7 @@ assert_eq!("cosmos-testnet-14002", block.chain_id);
 In line 4, the default block is initialized during the chain start. Then in line 7, the
 [`update_block{:rust}`][update_block] method takes a custom closure as an argument. This closure
 increments the block height by **10000** and advances the block time by **6 days**. Similarly like
-in previous examples, the new block metadata is retrieved and the current properties are checked. The
-new block height should be `12345{:rust}` + `10000{:rust}` = `22345{:rust}`. The new block time
+in previous examples, the new block metadata is retrieved and the current properties are checked.
+The new block height should be `12345{:rust}` + `10000{:rust}` = `22345{:rust}`. The new block time
 should be `1572315819879305533{:rust}` -`1571797419879305533{:rust}` = `518400000000000{:rust}` =
 518400 seconds = 8640 minutes = 144 hours = **6 days**. The chain identifier remains unchanged.

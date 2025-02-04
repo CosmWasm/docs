@@ -327,7 +327,7 @@ You can also explicitly provide a [`MockStorage{:rust}`][MockStorage] instance t
 [`with_storage{:rust}`][with_storage] method of [`AppBuilder{:rust}`][AppBuilder]. The example below
 achieves the same result as the previous one.
 
-```rust showLineNumbers
+```rust showLineNumbers {1,6} /storage_mut()/ /storage()/
 use cosmwasm_std::testing::MockStorage;
 use cosmwasm_std::Storage;
 use cw_multi_test::{no_init, AppBuilder};
@@ -344,7 +344,14 @@ app.storage_mut().set(key, value);
 assert_eq!(value, app.storage().get(key).unwrap().as_slice());
 ```
 
-```rust showLineNumbers
+Initializing a chain with a [`MockStorage{:rust}`][MockStorage] instance using the
+[`with_storage{:rust}`][with_storage] method of [`AppBuilder{:rust}`][AppBuilder] allows for
+sophisticated storage initialization before the chain starts. A simplified example
+is shown below. In lines 8-9 the storage is created and initialized, then passed to
+`with_storage{:rust}` method in line 11. The initialization code in line 9 can of course be more
+complex in your test case.
+
+```rust showLineNumbers {8,9,11} /with_storage/
 use cosmwasm_std::testing::MockStorage;
 use cosmwasm_std::Storage;
 use cw_multi_test::{no_init, AppBuilder};
@@ -360,7 +367,11 @@ let app = AppBuilder::default().with_storage(storage).build(no_init);
 assert_eq!(value, app.storage().get(key).unwrap().as_slice());
 ```
 
-```rust
+It is worth noting that the same initialization can be implemented directly in a callback function
+passed to [`build{:rust}`][build] method of [`AppBuilder{:rust}`][AppBuilder] as shown in the
+following example:
+
+```rust showLineNumbers {11} /build/
 use cosmwasm_std::testing::MockStorage;
 use cosmwasm_std::Storage;
 use cw_multi_test::AppBuilder;
@@ -376,6 +387,15 @@ let app = AppBuilder::default()
 
 assert_eq!(value, app.storage().get(key).unwrap().as_slice());
 ```
+
+<Callout>
+  In the examples above, we accessed the storage directly to simplify them and focus on the chain
+  initialization part involving the `with_storage{:rust}` method of `AppBuilder{:rust}`.
+  Note that inside smart contract code, the storage used by the chain should be accessed through
+  libraries such as [Storey](/storey) and [StoragePlus](/cw-storage-plus).
+</Callout>
+
+You can find additional information about storage in [Storage](storage) chapter.
 
 ## `with_wasm`
 

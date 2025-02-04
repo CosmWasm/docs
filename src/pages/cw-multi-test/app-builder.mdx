@@ -305,9 +305,9 @@ data beyond the test execution. Any values stored in it during testing are lost 
 completes.
 
 To use the default storage, simply initialize a chain with the default settings, as shown in the
-following code snippet. After initialization, [`App{:rust}`][App] provides two methods to access
-the storage: [`storage{:rust}`][storage] and [`storage_mut{:rust}`][storage_mut]. The former is
-used for reading the storage, while the latter allows both reading and writing.
+following code snippet. After initialization, [`App{:rust}`][App] provides two methods to access the
+storage: [`storage{:rust}`][storage] and [`storage_mut{:rust}`][storage_mut]. The former is used for
+reading the storage, while the latter allows both reading and writing.
 
 ```rust showLineNumbers {4} /storage_mut()/ /storage()/
 use cosmwasm_std::Storage;
@@ -324,8 +324,8 @@ assert_eq!(value, app.storage().get(key).unwrap().as_slice());
 ```
 
 You can also explicitly provide a [`MockStorage{:rust}`][MockStorage] instance to the
-[`with_storage{:rust}`][with_storage] method of [`AppBuilder{:rust}`][AppBuilder].
-The example below achieves the same result as the previous one.
+[`with_storage{:rust}`][with_storage] method of [`AppBuilder{:rust}`][AppBuilder]. The example below
+achieves the same result as the previous one.
 
 ```rust showLineNumbers
 use cosmwasm_std::testing::MockStorage;

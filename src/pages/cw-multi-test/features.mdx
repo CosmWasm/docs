@@ -2,6 +2,8 @@
 tags: ["multitest", "features"]
 ---
 
+[MockStorage]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html
+
 # Features
 
 ## Features summary
@@ -19,7 +21,7 @@ in the column **Feature&nbsp;flag**.
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | :--------------: | ---------------------------------------------------- | -------------------------------------------------- |
 | [Blocks](blocks)             | [`mock_env().block{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/fn.mock_env.html)           |                  | [`with_block`](app-builder#with_block)               | Operations on blocks.                              |
 | [Api](api)                   | [`MockApi{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html)                 |                  | [`with_api`](app-builder#with_api)                   | Access to CosmWasm API.                            |
-| [Storage](storage)           | [`MockStorage{:rust}`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html)           |                  | [`with_storage`](app-builder#with_storage)           | Access to storage.                                 |
+| [Storage](storage)           | [`MockStorage{:rust}`][MockStorage]                                                                              |                  | [`with_storage`](app-builder#with_storage)           | Access to storage.                                 |
 | [Bank](bank)                 | [`BankKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html)                 |                  | [`with_bank`](app-builder#with_bank)                 | Interactions with **Bank** module.                 |
 | [Staking](staking)           | [`StakeKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StakeKeeper.html)               |    `staking`     | [`with_staking`](app-builder#with_staking)           | Interactions with **Staking** module.              |
 | [Distribution](distribution) | [`DistributionKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.DistributionKeeper.html) |    `staking`     | [`with_distribution`](app-builder#with_distribution) | Interactions with **Distribution** module.         |

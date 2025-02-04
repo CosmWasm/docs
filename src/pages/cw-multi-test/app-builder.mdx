@@ -24,6 +24,7 @@ import { Callout } from "nextra/components";
   https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_gov
 [addr_make]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html#method.addr_make
+[MockStorage]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html
 
 # `AppBuilder`
 
@@ -294,7 +295,55 @@ You can find more usage examples of the built-in governance modules in the
 
 ## `with_storage`
 
-(WIP)
+By default, **`MultiTest`** uses [`MockStorage{:rust}`][MockStorage], which is provided by the
+CosmWasm library. [`MockStorage{:rust}`][MockStorage] is an in-memory storage that does not persist
+data beyond the test execution. Any values stored in it during testing are lost once the test completes.
+
+To use the default storage you just initialize a chain with default settings
+
+```rust showLineNumbers
+use cosmwasm_std::Storage;
+use cw_multi_test::{no_init, AppBuilder};
+
+let mut app = AppBuilder::default().build(no_init);
+
+let key = &[1, 2, 3];
+
+app.storage_mut().set(key, &[10, 20, 30]);
+
+assert_eq!(&[10, 20, 30], app.storage().get(key).unwrap().as_slice());
+```
+
+```rust showLineNumbers
+use cosmwasm_std::testing::MockStorage;
+use cosmwasm_std::Storage;
+use cw_multi_test::{no_init, AppBuilder};
+
+let mut app = AppBuilder::default()
+    .with_storage(MockStorage::new())
+    .build(no_init);
+
+let key = &[1, 2, 3];
+
+app.storage_mut().set(key, &[10, 20, 30]);
+
+assert_eq!(&[10, 20, 30], app.storage().get(key).unwrap().as_slice());
+```
+
+```rust showLineNumbers
+use cosmwasm_std::testing::MockStorage;
+use cosmwasm_std::Storage;
+use cw_multi_test::{no_init, AppBuilder};
+
+let key = &[1, 2, 3];
+
+let mut storage = MockStorage::new();
+storage.set(key, &[10, 20, 30]);
+
+let app = AppBuilder::default().with_storage(storage).build(no_init);
+
+assert_eq!(&[10, 20, 30], app.storage().get(key).unwrap().as_slice());
+```
 
 ## `with_wasm`
 

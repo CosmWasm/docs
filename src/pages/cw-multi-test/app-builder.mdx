@@ -388,9 +388,9 @@ assert_eq!(value, app.storage().get(key).unwrap().as_slice());
 ```
 
 <Callout>
-  In the examples above, we accessed the storage directly to simplify them and focus on the chain
+  In the examples above, to keep the simple, we accessed the storage directly and focused on the chain
   initialization part involving the `with_storage{:rust}` method of `AppBuilder{:rust}`.
-  Note that inside smart contract code, the storage used by the chain should be accessed through
+  Please note, that inside smart contract code, the storage used by the chain should be accessed through
   libraries such as [Storey](/storey) and [StoragePlus](/cw-storage-plus).
 </Callout>
 

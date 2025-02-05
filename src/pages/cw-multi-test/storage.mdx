@@ -15,6 +15,14 @@ tags: ["multitest", "storage"]
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_values
 [with_storage]:
   https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_storage
+[app_storage]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.storage
+[app_storage_mut]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.storage_mut
+[app_contract_storage]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.contract_storage
+[app_contract_storage_mut]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.contract_storage_mut
+[app_prefixed_storage]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.prefixed_storage
+[app_prefixed_storage_mut]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.prefixed_storage_mut
+[app_prefixed_multilevel_storage]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.prefixed_multilevel_storage
+[app_prefixed_multilevel_storage_mut]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html#method.prefixed_multilevel_storage_mut
 
 # Storage
 
@@ -96,48 +104,110 @@ Smart contracts should access the storage used by the chain through libraries su
 [App] provides several methods to access and manipulate storage in tests, and the table below
 summarizes them all.
 
-| Method of [App]                 | Access |
-| ------------------------------- | :----: |
-| storage                         |   R    |
-| storage_mut                     |  R/W   |
-| contract_storage                |   R    |
-| contract_storage_mut            |  R/W   |
-| prefixed_storage                |   R    |
-| prefixed_storage_mut            |  R/W   |
-| prefixed_multilevel_storage     |   R    |
-| prefixed_multilevel_storage_mut |  R/W   |
+| Method of [App]                                                                 | Access | Purpose                                                                                      |
+| ------------------------------------------------------------------------------- | :----: | -------------------------------------------------------------------------------------------- |
+| [`storage{:rust}`][app_storage]                                                 |   R    | Read the value associated with any key.                                                      |
+| [`storage_mut{:rust}`][app_storage_mut]                                         |  R/W   | Read or write the value associated with any key.                                             |
+| [`contract_storage{:rust}`][app_contract_storage]                               |   R    | Read the value associated with any key but only for specified the contract address.          |
+| [`contract_storage_mut{:rust}`][app_contract_storage_mut]                       |  R/W   | Read or write the value associated with any key but only for specified the contract address. |
+| [`prefixed_storage{:rust}`][app_prefixed_storage]                               |   R    | Read the value associated with any key having a single prefix.                               |
+| [`prefixed_storage_mut{:rust}`][app_prefixed_storage_mut]                       |  R/W   | Read or write the value associated with any key having a single prefix.                      |
+| [`prefixed_multilevel_storage{:rust}`][app_prefixed_multilevel_storage]         |   R    | Read the value associated with any key having multiple prefixes.                             |
+| [`prefixed_multilevel_storage_mut{:rust}`][app_prefixed_multilevel_storage_mut] |  R/W   | Read or write the value associated with any key having a multiple prefixes.                  |
 
 - `R` - read-only
 - `R/W` - read/write
 
-### `App::storage`
+### `storage`
 
-(WIP)
+Using methods [`storage{:rust}`][app_storage] and [`storage_mut{:rust}`][app_storage_mut] you can
+access any value associated with a key, as long as you know the key (with or without a prefix).
+The following example firstly assigns value to a key in line 9, and then reads the value from
+storage in line 13. The key can be any binary.
 
-### `App::storage_mut`
+```rust showLineNumbers copy /storage_mut/ /storage/
+use cosmwasm_std::Storage;
+use cw_multi_test::App;
 
-(WIP)
+let mut app = App::default();
 
-### `App::contract_storage`
+let key = b"key";
+let value = b"value";
 
-(WIP)
+app.storage_mut().set(key, value);
 
-### `App::contract_storage_mut`
+assert_eq!(
+    Some(value.to_vec()),
+    app.storage().get(key)
+);
+```
 
-(WIP)
+### `contract_storage`
 
-### `App::prefixed_storage`
+[`contract_storage{:rust}`][app_contract_storage]
+[`contract_storage_mut{:rust}`][app_contract_storage_mut]
 
-(WIP)
+```rust showLineNumbers copy /contract_storage_mut/ /contract_storage/
+use cw_multi_test::App;
+use cw_multi_test::IntoAddr;
 
-### `App::prefixed_storage_mut`
+let mut app = App::default();
 
-(WIP)
+let key = b"key";
+let value = b"value";
 
-### `App::prefixed_multilevel_storage`
+let contract_addr = "contract".into_addr();
 
-(WIP)
+app.contract_storage_mut(&contract_addr).set(key, value);
 
-### `App::prefixed_multilevel_storage_mut`
+assert_eq!(
+    Some(value.to_vec()),
+    app.contract_storage(&contract_addr).get(key)
+);
+```
 
-(WIP)
+### `prefixed_storage`
+
+[`prefixed_storage{:rust}`][app_prefixed_storage]
+[`prefixed_storage_mut{:rust}`][app_prefixed_storage_mut]
+
+```rust showLineNumbers copy /prefixed_storage_mut/ /prefixed_storage/
+use cw_multi_test::App;
+
+let mut app = App::default();
+
+let key = b"key";
+let value = b"value";
+
+let namespace = b"bank";
+
+app.prefixed_storage_mut(namespace).set(key, value);
+
+assert_eq!(
+    Some(value.to_vec()),
+    app.prefixed_storage(namespace).get(key)
+);
+```
+
+### `prefixed_multilevel_storage`
+
+[`prefixed_multilevel_storage{:rust}`][app_prefixed_multilevel_storage]
+[`prefixed_multilevel_storage_mut{:rust}`][app_prefixed_multilevel_storage_mut]
+
+```rust showLineNumbers copy /prefixed_multilevel_storage_mut/ /prefixed_multilevel_storage/
+use cw_multi_test::App;
+
+let mut app = App::default();
+
+let key = b"key";
+let value = b"value";
+
+let namespaces = &[b"my-module".as_slice(), b"my-bank".as_slice()];
+
+app.prefixed_multilevel_storage_mut(namespaces).set(key, value);
+
+assert_eq!(
+    Some(value.to_vec()),
+    app.prefixed_multilevel_storage(namespaces).get(key)
+);
+```

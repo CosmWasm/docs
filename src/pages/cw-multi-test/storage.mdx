@@ -13,6 +13,8 @@ tags: ["multitest", "storage"]
 [range_keys]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_keys
 [range_values]:
   https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_values
+[with_storage]:
+  https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.AppBuilder.html#method.with_storage
 
 # Storage
 
@@ -80,11 +82,14 @@ impl Storage for CustomStorage {
 
 ## Initializing storage
 
-- `AppBuilder::with_storage{:rust}`
+To initialize the default storage or use a custom storage implementation in tests,
+use the [`AppBuilder::with_storage{:rust}`][with_storage] method when building the chain.
+For more details, see the [AppBuilder/with_storage](app-builder#with_storage) chapter.
 
 ## Accessing storage from smart contracts
 
-(WIP)
+Smart contracts should access the storage used by the chain through libraries
+such as [Storey](/storey) and [StoragePlus](/cw-storage-plus).
 
 ## Accessing storage in tests
 

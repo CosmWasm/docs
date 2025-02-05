@@ -151,8 +151,11 @@ assert_eq!(
 
 ### `contract_storage`
 
-[`contract_storage{:rust}`][app_contract_storage]
-[`contract_storage_mut{:rust}`][app_contract_storage_mut]
+If you know the address of a contract, you can access all keys and values stored by that contract
+using the [`contract_storage{:rust}`][app_contract_storage] and [`contract_storage_mut{:rust}`][app_contract_storage_mut]
+methods. The following example assigns a value to a key in a similar way to how the contract would (line 11)
+and then reads this value on line 15. These methods are giving easy and simple access to the
+storage of any contract.
 
 ```rust showLineNumbers copy /contract_storage_mut/ /contract_storage/
 use cw_multi_test::App;
@@ -175,8 +178,9 @@ assert_eq!(
 
 ### `prefixed_storage`
 
-[`prefixed_storage{:rust}`][app_prefixed_storage]
-[`prefixed_storage_mut{:rust}`][app_prefixed_storage_mut]
+Methods [`prefixed_storage{:rust}`][app_prefixed_storage] and [`prefixed_storage_mut{:rust}`][app_prefixed_storage_mut]
+simplify access to keys having the same single prefix. In the example below, the common prefix (namespace) is the bank.
+Value is set in line 10 and then retrieved in line 14.
 
 ```rust showLineNumbers copy /prefixed_storage_mut/ /prefixed_storage/
 use cw_multi_test::App;
@@ -198,8 +202,11 @@ assert_eq!(
 
 ### `prefixed_multilevel_storage`
 
-[`prefixed_multilevel_storage{:rust}`][app_prefixed_multilevel_storage]
-[`prefixed_multilevel_storage_mut{:rust}`][app_prefixed_multilevel_storage_mut]
+If there is a need to access keys having multiple namespaces (multilevel prefixes), then methods
+[`prefixed_multilevel_storage{:rust}`][app_prefixed_multilevel_storage] and
+[`prefixed_multilevel_storage_mut{:rust}`][app_prefixed_multilevel_storage_mut] should be used.
+The following example sets a value for a key having two levels of prefixes (line 10) and then
+the same value is read in line 14.
 
 ```rust showLineNumbers copy /prefixed_multilevel_storage_mut/ /prefixed_multilevel_storage/
 use cw_multi_test::App;

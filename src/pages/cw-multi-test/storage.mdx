@@ -3,20 +3,79 @@ tags: ["multitest", "storage"]
 ---
 
 [MockStorage]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html
+[MemoryStorage]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.MemoryStorage.html
+[Storage]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html
+[App]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.App.html
+[get]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#tymethod.get
+[set]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#tymethod.set
+[remove]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#tymethod.remove
+[range]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range
+[range_keys]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_keys
+[range_values]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_values
 
 # Storage
 
 ## Default storage
 
-- `App::default(){:rust}`
+By default, **`MultiTest`** relies on [`MockStorage{:rust}`][MockStorage], a storage implementation
+provided by the CosmWasm library. [`MockStorage{:rust}`][MockStorage] operates entirely in memory,
+meaning that any data written during testing is discarded once the test completes.
+Since it does not persist any data beyond the test execution, each test is executed in isolation
+without retaining any previous state.
+To use a default storage in your tests, just create the chain with default settings, as shown below:
 
 ```rust showLineNumbers
+// initialize your chain this way:
 let app = App::default();
+
+// or this way:
+let app = AppBuilder::default().build(no_init);
 ```
+
+The [`App{:rust}`][App] provides several methods to access and manipulate storage, all of which are
+covered in the [Accessing storage in tests](#accessing-storage-in-tests) section.
 
 ## Custom storage
 
-- `Storage` trait
+If the default storage does not fully meet your testing requirements, you can provide a custom
+storage by implementing the [Storage] trait. Only the `get{:rust}`, `set{:rust}`,`remove{:rust}`
+and `range{:rust}` methods are required, as the trait already provides a basic implementation
+for `range_keys{:rust}` and `range_values{:rust}`. The table below summarizes all these methods.
+
+| Methods of [Storage] trait            | Description                                                               |
+| --------------------------------------| ------------------------------------------------------------------------- |
+| [`get{:rust}`][get]                   | Returns a value associated with specified key.                            |
+| [`set{:rust}`][set]                   | Sets a new value for specified key.                                       |
+| [`remove{:rust}`][remove]             | Removes an entry with specified key.                                      |
+| [`range{:rust}`][range]               | Iterates over a set of **key/value** pairs, either forwards or backwards. |
+| [`range_keys{:rust}`][range_keys]     | Iterates over a set of **keys**, either forwards or backwards.            |
+| [`range_values{:rust}`][range_values] | Iterates over a set of **values**, either forwards or backwards.          |
+
+For inspiration on implementing custom storage, you can refer to [MemoryStorage] in the CosmWasm library.
+The following code stub could be a good starting point.
+
+```rust showLineNumbers copy
+#[derive(Default)]
+struct CustomStorage(/* use your persistent type here */);
+
+impl Storage for CustomStorage {
+    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
+        // return a value associated with the specified key
+    }
+
+    fn set(&mut self, key: &[u8], value: &[u8]) {
+        // associate value with specified key and persist them
+    }
+
+    fn remove(&mut self, key: &[u8]) {
+        // remove an entry with specified key from storage
+    }
+
+    fn range<'a>(&'a self, start: Option<&[u8]>, end: Option<&[u8]>, order: Order) -> Box<dyn Iterator<Item = Record> + 'a> {
+        // return an iterator over key/value pairs
+    }
+}
+```
 
 ## Initializing storage
 

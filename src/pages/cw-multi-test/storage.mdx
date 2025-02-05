@@ -82,14 +82,14 @@ impl Storage for CustomStorage {
 
 ## Initializing storage
 
-To initialize the default storage or use a custom storage implementation in tests,
-use the [`AppBuilder::with_storage{:rust}`][with_storage] method when building the chain.
-For more details, see the [AppBuilder/with_storage](app-builder#with_storage) chapter.
+To initialize the default storage or use a custom storage implementation in tests, use the
+[`AppBuilder::with_storage{:rust}`][with_storage] method when building the chain. For more details,
+see the [AppBuilder/with_storage](app-builder#with_storage) chapter.
 
 ## Accessing storage from smart contracts
 
-Smart contracts should access the storage used by the chain through libraries
-such as [Storey](/storey) and [StoragePlus](/cw-storage-plus).
+Smart contracts should access the storage used by the chain through libraries such as
+[Storey](/storey) and [StoragePlus](/cw-storage-plus).
 
 ## Accessing storage in tests
 

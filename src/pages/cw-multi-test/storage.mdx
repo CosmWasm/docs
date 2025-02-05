@@ -6,12 +6,56 @@ tags: ["multitest", "storage"]
 
 # Storage
 
-- `App::default(){:rust}`
-- `app.storage(){:rust}`
-- `app.storage_mut(){:rust}`
+## Default storage
 
-```rust
+- `App::default(){:rust}`
+
+```rust showLineNumbers
 let app = App::default();
-app.storage();
-app.storage_mut();
 ```
+
+## Custom storage
+
+- `Storage` trait
+
+## Initializing storage
+
+- `AppBuilder::with_storage{:rust}`
+
+## Accessing storage from smart contracts
+
+(WIP)
+
+## Accessing storage in tests
+
+### `App::storage`
+
+(WIP)
+
+### `App::storage_mut`
+
+(WIP)
+
+### `App::contract_storage`
+
+(WIP)
+
+### `App::contract_storage_mut`
+
+(WIP)
+
+### `App::prefixed_storage`
+
+(WIP)
+
+### `App::prefixed_storage_mut`
+
+(WIP)
+
+### `App::prefixed_multilevel_storage`
+
+(WIP)
+
+### `App::prefixed_multilevel_storage_mut`
+
+(WIP)

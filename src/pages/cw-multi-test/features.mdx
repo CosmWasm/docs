@@ -5,6 +5,14 @@ tags: ["multitest", "features"]
 [mock_env_block]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/fn.mock_env.html
 [MockApi]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/struct.MockApi.html
 [MockStorage]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/testing/type.MockStorage.html
+[BankKeeper]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html
+[StakeKeeper]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StakeKeeper.html
+[DistributionKeeper]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.DistributionKeeper.html
+[GovFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html
+[StargateFailing]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StargateFailing.html
+[WasmKeeper]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.WasmKeeper.html
+[FailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.FailingModule.html
+[IbcFailingModule]: https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html
 
 # Features
 
@@ -19,19 +27,19 @@ you can provide your own, using `AppBuilder`'s function listed in **AppBuilder&n
 column. Names of **`MultiTest`** feature flags required to enable specific functionality are shown
 in the column **Feature&nbsp;flag**.
 
-| Feature                      | Default<br/>implementation                                                                                       | Feature<br/>flag | AppBuilder<br/>constructor                           | Functionality                                      |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | :--------------: | ---------------------------------------------------- | -------------------------------------------------- |
-| [Blocks](blocks)             | [`mock_env().block{:rust}`][mock_env_block]                                                                      |                  | [`with_block`](app-builder#with_block)               | Operations on blocks.                              |
-| [Api](api)                   | [`MockApi{:rust}`][MockApi]                                                                                      |                  | [`with_api`](app-builder#with_api)                   | Access to CosmWasm API.                            |
-| [Storage](storage)           | [`MockStorage{:rust}`][MockStorage]                                                                              |                  | [`with_storage`](app-builder#with_storage)           | Access to storage.                                 |
-| [Bank](bank)                 | [`BankKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.BankKeeper.html)                 |                  | [`with_bank`](app-builder#with_bank)                 | Interactions with **Bank** module.                 |
-| [Staking](staking)           | [`StakeKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StakeKeeper.html)               |    `staking`     | [`with_staking`](app-builder#with_staking)           | Interactions with **Staking** module.              |
-| [Distribution](distribution) | [`DistributionKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.DistributionKeeper.html) |    `staking`     | [`with_distribution`](app-builder#with_distribution) | Interactions with **Distribution** module.         |
-| [Governance](governance)     | [`GovFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.GovFailingModule.html)       |                  | [`with_gov`](app-builder#with_gov)                   | Interactions with **Governance** module.           |
-| [Stargate](stargate)         | [`StargateFailing{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.StargateFailing.html)       |    `stargate`    | [`with_stargate`](app-builder#with_stargate)         | Operations using `Stargate` and/or `Any` messages. |
-| [Wasm](wasm)                 | [`WasmKeeper{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.WasmKeeper.html)                 |                  | [`with_wasm`](app-builder#with_wasm)                 | Interactions with **Wasm** module.                 |
-| [Custom](custom)             | [`FailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.FailingModule.html)           |                  | [`new_custom`](app-builder#new_custom)               | Operations using custom module.                    |
-| [IBC](ibc)                   | [`IbcFailingModule{:rust}`](https://docs.rs/cw-multi-test/latest/cw_multi_test/type.IbcFailingModule.html)       |    `stargate`    | [`with_ibc`](app-builder#with_ibc)                   | Inter-blockchain communication operations.         |
+| Feature                      | Default<br/>implementation                        | Feature<br/>flag | AppBuilder<br/>constructor                           | Functionality                                      |
+| ---------------------------- | ------------------------------------------------- | :--------------: | ---------------------------------------------------- | -------------------------------------------------- |
+| [Blocks](blocks)             | [`mock_env().block{:rust}`][mock_env_block]       |                  | [`with_block`](app-builder#with_block)               | Operations on blocks.                              |
+| [Api](api)                   | [`MockApi{:rust}`][MockApi]                       |                  | [`with_api`](app-builder#with_api)                   | Access to CosmWasm API.                            |
+| [Storage](storage)           | [`MockStorage{:rust}`][MockStorage]               |                  | [`with_storage`](app-builder#with_storage)           | Access to storage.                                 |
+| [Bank](bank)                 | [`BankKeeper{:rust}`][BankKeeper]                 |                  | [`with_bank`](app-builder#with_bank)                 | Interactions with **Bank** module.                 |
+| [Staking](staking)           | [`StakeKeeper{:rust}`][StakeKeeper]               |    `staking`     | [`with_staking`](app-builder#with_staking)           | Interactions with **Staking** module.              |
+| [Distribution](distribution) | [`DistributionKeeper{:rust}`][DistributionKeeper] |    `staking`     | [`with_distribution`](app-builder#with_distribution) | Interactions with **Distribution** module.         |
+| [Governance](governance)     | [`GovFailingModule{:rust}`][GovFailingModule]     |                  | [`with_gov`](app-builder#with_gov)                   | Interactions with **Governance** module.           |
+| [Stargate](stargate)         | [`StargateFailing{:rust}`][StargateFailing]       |    `stargate`    | [`with_stargate`](app-builder#with_stargate)         | Operations using `Stargate` and/or `Any` messages. |
+| [Wasm](wasm)                 | [`WasmKeeper{:rust}`][WasmKeeper]                 |                  | [`with_wasm`](app-builder#with_wasm)                 | Interactions with **Wasm** module.                 |
+| [Custom](custom)             | [`FailingModule{:rust}`][FailingModule]           |                  | [`new_custom`](app-builder#new_custom)               | Operations using custom module.                    |
+| [IBC](ibc)                   | [`IbcFailingModule{:rust}`][IbcFailingModule]     |    `stargate`    | [`with_ibc`](app-builder#with_ibc)                   | Inter-blockchain communication operations.         |
 
 ## Feature flags summary
 

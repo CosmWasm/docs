@@ -11,7 +11,8 @@ tags: ["multitest", "storage"]
 [remove]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#tymethod.remove
 [range]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range
 [range_keys]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_keys
-[range_values]: https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_values
+[range_values]:
+  https://docs.rs/cosmwasm-std/latest/cosmwasm_std/trait.Storage.html#method.range_values
 
 # Storage
 
@@ -19,10 +20,10 @@ tags: ["multitest", "storage"]
 
 By default, **`MultiTest`** relies on [`MockStorage{:rust}`][MockStorage], a storage implementation
 provided by the CosmWasm library. [`MockStorage{:rust}`][MockStorage] operates entirely in memory,
-meaning that any data written during testing is discarded once the test completes.
-Since it does not persist any data beyond the test execution, each test is executed in isolation
-without retaining any previous state.
-To use a default storage in your tests, just create the chain with default settings, as shown below:
+meaning that any data written during testing is discarded once the test completes. Since it does not
+persist any data beyond the test execution, each test is executed in isolation without retaining any
+previous state. To use a default storage in your tests, just create the chain with default settings,
+as shown below:
 
 ```rust showLineNumbers
 // initialize your chain this way:
@@ -38,12 +39,12 @@ covered in the [Accessing storage in tests](#accessing-storage-in-tests) section
 ## Custom storage
 
 If the default storage does not fully meet your testing requirements, you can provide a custom
-storage by implementing the [Storage] trait. Only the `get{:rust}`, `set{:rust}`,`remove{:rust}`
-and `range{:rust}` methods are required, as the trait already provides a basic implementation
-for `range_keys{:rust}` and `range_values{:rust}`. The table below summarizes all these methods.
+storage by implementing the [Storage] trait. Only the `get{:rust}`, `set{:rust}`,`remove{:rust}` and
+`range{:rust}` methods are required, as the trait already provides a basic implementation for
+`range_keys{:rust}` and `range_values{:rust}`. The table below summarizes all these methods.
 
 | Methods of [Storage] trait            | Description                                                               |
-| --------------------------------------| ------------------------------------------------------------------------- |
+| ------------------------------------- | ------------------------------------------------------------------------- |
 | [`get{:rust}`][get]                   | Returns a value associated with specified key.                            |
 | [`set{:rust}`][set]                   | Sets a new value for specified key.                                       |
 | [`remove{:rust}`][remove]             | Removes an entry with specified key.                                      |
@@ -51,8 +52,8 @@ for `range_keys{:rust}` and `range_values{:rust}`. The table below summarizes al
 | [`range_keys{:rust}`][range_keys]     | Iterates over a set of **keys**, either forwards or backwards.            |
 | [`range_values{:rust}`][range_values] | Iterates over a set of **values**, either forwards or backwards.          |
 
-For inspiration on implementing custom storage, you can refer to [MemoryStorage] in the CosmWasm library.
-The following code stub could be a good starting point.
+For inspiration on implementing custom storage, you can refer to [MemoryStorage] in the CosmWasm
+library. The following code stub could be a good starting point.
 
 ```rust showLineNumbers copy
 #[derive(Default)]

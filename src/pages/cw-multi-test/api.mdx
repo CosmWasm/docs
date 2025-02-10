@@ -66,11 +66,11 @@ The table below summarizes all methods of the [Api][Api] trait with short descri
 | [`secp256r1_recover_pubkey{:rust}`][secp256r1_recover_pubkey]     | Recovers a public key from a message hash and a signature in compressed form, which can be used in `secp256r1_verify` directly.                     |
 | [`ed25519_verify{:rust}`][ed25519_verify]                         | Verifies message against a signature, with the public key of the signer, using the **ed25519** elliptic curve digital signature algorithm.          |
 | [`ed25519_batch_verify{:rust}`][ed25519_batch_verify]             | Performs batch **ed25519** signature verification.                                                                                                  |
-| [`bls12_381_aggregate_g1{:rust}`][bls12_381_aggregate_g1]         | Takes a list of points in G1 (48 bytes each) and aggregates them.                                                                                   |
-| [`bls12_381_aggregate_g2{:rust}`][bls12_381_aggregate_g2]         | Takes a list of points in G2 (96 bytes each) and aggregates them.                                                                                   |
-| [`bls12_381_pairing_equality{:rust}`][bls12_381_pairing_equality] | (description needed, see [\#2368](https://github.com/CosmWasm/cosmwasm/issues/2368))                                                                |
-| [`bls12_381_hash_to_g1{:rust}`][bls12_381_hash_to_g1]             | (description needed, see [\#2368](https://github.com/CosmWasm/cosmwasm/issues/2368))                                                                |
-| [`bls12_381_hash_to_g2{:rust}`][bls12_381_hash_to_g2]             | (description needed, see [\#2368](https://github.com/CosmWasm/cosmwasm/issues/2368))                                                                |
+| [`bls12_381_aggregate_g1{:rust}`][bls12_381_aggregate_g1]         | Adds up points (48 bytes each) of the G1 subgroup on the BLS12-381 curve.                                                                           |
+| [`bls12_381_aggregate_g2{:rust}`][bls12_381_aggregate_g2]         | Adds up points (96 bytes each) of the G2 subgroup on the BLS12-381 curve.                                                                           |
+| [`bls12_381_pairing_equality{:rust}`][bls12_381_pairing_equality] | Checks the pairing equality of the BLS12-381 curve.                                                                                                 |
+| [`bls12_381_hash_to_g1{:rust}`][bls12_381_hash_to_g1]             | Takes some arbitrary data and hashes it to a point (48 bytes long) on the G1 subgroup of the BLS12-381 curve.                                       |
+| [`bls12_381_hash_to_g2{:rust}`][bls12_381_hash_to_g2]             | Takes some arbitrary data and hashes it to a point (96 bytes long) on the G2 subgroup of the BLS12-381 curve.                                       |
 | [`debug{:rust}`][debug]                                           | Emits a debugging message.                                                                                                                          |
 
 ## `Api` trait implementations

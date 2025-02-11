@@ -33,7 +33,7 @@ or
 fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
     let remote = self
         .remote
-        .access(&CwStorage(ctx.deps.storage))
+        .access(ctx.deps.storage)
         .get()?
         .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
     let msg = WasmMsg::Execute {
@@ -96,7 +96,7 @@ impl ReplyContract {
     #[sv::msg(instantiate)]
     fn instantiate(&self, ctx: InstantiateCtx, remote_addr: Addr) -> StdResult<Response> {
         self.remote
-            .access(&mut CwStorage(ctx.deps.storage))
+            .access(ctx.deps.storage)
             .set(&Remote::new(remote_addr))?;
         Ok(Response::new())
     }
@@ -105,7 +105,7 @@ impl ReplyContract {
     fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
         let sub_msg = self
             .remote
-            .access(&mut CwStorage(ctx.deps.storage))
+            .access(ctx.deps.storage)
             .get()?
             .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?
             .executor()
@@ -194,7 +194,7 @@ method. We can access the
 fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
     let remote = self
         .remote
-        .access(&CwStorage(ctx.deps.storage))
+        .access(ctx.deps.storage)
         .get()?
         .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
 

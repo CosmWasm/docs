@@ -24,26 +24,24 @@ caller can be matched against this address in execution endpoints.
 
 Here's how to store and manipulate an admin address, or any other simple data.
 
-```rust template="storage" showLineNumbers {5,9-12,14-16,19}
+```rust template="storage" showLineNumbers {5,7-10,12-14,17}
 use cw_storey::containers::Item;
-use cw_storey::CwStorage;
 
 const ADMIN_IX: u8 = 0;
 
 let admin: Item<String> = Item::new(ADMIN_IX);
-let mut cw_storage = CwStorage(&mut storage);
 
 assert_eq!(
-    admin.access(&cw_storage).get().unwrap(),
+    admin.access(&storage).get().unwrap(),
     None,
 );
 
-admin.access(&mut cw_storage)
+admin.access(&mut storage)
     .set(&String::from("some_address"))
     .unwrap();
 
 assert_eq!(
-    admin.access(&cw_storage).get().unwrap(),
+    admin.access(&storage).get().unwrap(),
     Some(String::from("some_address")),
 );
 ```
@@ -51,19 +49,18 @@ assert_eq!(
 - _line 5:_ Here we construct the `Item` facade. The constructor takes a key, which is the key the
   data will be stored at in the underlying storage backend. See also
   [_Containers - Namespace_](.#namespace).
-- _lines 9-12_: This assertion is just to show you the `Item` is empty (`Option::None`) before it's
+- _lines 7-10_: This assertion is just to show you the `Item` is empty (`Option::None`) before it's
   initialized.
-- _lines 14-16_: Here we commit a value to storage.
-- _line 19_: Here we retrieve the value from storage.
+- _lines 12-14_: Here we commit a value to storage.
+- _line 17_: Here we retrieve the value from storage.
 
 ### Maintaining a config structure
 
 It's also common to save a whole struct in an `Item`, with a variety of data. Often the struct
 represents a contract's "config".
 
-```rust template="storage" showLineNumbers {6}
+```rust template="storage" showLineNumbers {5}
 use cw_storey::containers::Item;
-use cw_storey::CwStorage;
 
 const CFG_IX: u8 = 0;
 
@@ -74,8 +71,7 @@ struct Config {
 }
 
 let item: Item<Config> = Item::new(CFG_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = item.access(&mut cw_storage);
+let mut access = item.access(&mut storage);
 
 let cfg = Config {
     admin: "some_address".to_string(),
@@ -95,15 +91,13 @@ using the `cosmwasm_schema::cw_serde` macro we provide.
 Sometimes you might like to read a value, but expect to receive a default if it's never been
 initialized. This is a common pattern for counters or other numeric values.
 
-```rust template="storage" showLineNumbers {10}
+```rust template="storage" showLineNumbers {8}
 use cw_storey::containers::Item;
-use cw_storey::CwStorage;
 
 const COUNTER_IX: u8 = 0;
 
 let counter: Item<u32> = Item::new(COUNTER_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = counter.access(&mut cw_storage);
+let mut access = counter.access(&mut storage);
 
 let mut total = access.get().unwrap().unwrap_or(0);
 

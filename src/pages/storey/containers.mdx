@@ -53,16 +53,15 @@ reference to a storage backend.
 
 ```rust template="storage"
 use cw_storey::containers::Item;
-use cw_storey::CwStorage;
 
 let item: Item<u32> = Item::new(0);
 
-item.access(&mut CwStorage(&mut storage))
+item.access(&mut storage)
     .set(&42)
     .unwrap();
 
 assert_eq!(
-    item.access(&CwStorage(&storage))
+    item.access(&storage)
         .get()
         .unwrap(),
     Some(42)
@@ -100,18 +99,17 @@ assert_eq!(
 
 ```rust template="storage"
 use cw_storey::containers::{Map, Item};
-use cw_storey::CwStorage;
 
 let map: Map<String, Map<String, Item<u32>>> = Map::new(0);
 
-map.access(&mut CwStorage(&mut storage))
+map.access(&mut storage)
     .entry_mut("foo")
     .entry_mut("bar")
     .set(&42)
     .unwrap();
 
 assert_eq!(
-    map.access(&CwStorage(&storage))
+    map.access(&storage)
         .entry("foo")
         .entry("bar")
         .get()

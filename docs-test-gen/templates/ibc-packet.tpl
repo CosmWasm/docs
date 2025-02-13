@@ -38,7 +38,7 @@ fn doctest() {
     {
         use cw_storey::{containers::Item, CwStorage};
         const CHANNEL: Item<ChannelInfo> = Item::new(0);
-        CHANNEL.access(&mut CwStorage(&mut deps.storage)).set(&channel_info).unwrap();
+        CHANNEL.access(&mut deps.storage).set(&channel_info).unwrap();
     }
 
 

@@ -40,7 +40,6 @@ Let's take a look at the behavior implementation.
 
 ```rust template="sylvia-empty"
 use cosmwasm_schema::cw_serde;
-use cw_storey::CwStorage;
 use cw_storey::containers::Item;
 use sylvia::contract;
 use sylvia::cw_std::{Response, StdError, StdResult};
@@ -67,15 +66,14 @@ impl CounterContract {
     #[sv::msg(instantiate)]
     fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
         self.count
-            .access(&mut CwStorage(ctx.deps.storage))
+            .access(ctx.deps.storage)
             .set(&0)?;
         Ok(Response::new())
     }
 
     #[sv::msg(exec)]
     fn increment(&self, ctx: ExecCtx) -> StdResult<Response> {
-        let mut storage = CwStorage(ctx.deps.storage);
-        let mut accessor = self.count.access(&mut storage);
+        let mut accessor = self.count.access(ctx.deps.storage);
         let count = accessor
             .get()?
             .ok_or_else(|| StdError::generic_err("Count not instantiated yet"))?;
@@ -88,7 +86,7 @@ impl CounterContract {
     fn count(&self, ctx: QueryCtx) -> StdResult<CountResponse> {
         let count = self
             .count
-            .access(&CwStorage(ctx.deps.storage))
+            .access(ctx.deps.storage)
             .get()?
             .ok_or_else(|| StdError::generic_err("Count not instantiated yet"))?;
         Ok(CountResponse { count })

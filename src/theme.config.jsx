@@ -35,13 +35,14 @@ export default {
   footer: {
     content: (
       <div>
-        <p>CosmWasm is proudly created and maintained by Confio.</p>
+        <p>CosmWasm is proudly created and maintained by Confio. CosmWasm is a registered trademark of Confio GmbH.</p>
         <p style={{ marginTop: "8px" }}>
-          CosmWasm is a registered trademark of Confio GmbH. Published by Confio GmbH (
-          <a href="https://confio.gmbh/impressum" target="_blank" style={{ textDecoration: "underline" }}>
-            Legal Information
+
+        This site is published by{" "}
+          <a href="https://www.skip.build/" target="_blank" style={{ textDecoration: "underline" }}>
+          Skip Protocol Inc. (dba Interchain Labs)
           </a>
-          ).
+        .
         </p>
       </div>
     ),

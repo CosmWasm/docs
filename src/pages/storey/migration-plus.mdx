@@ -53,7 +53,6 @@ assert_eq!(
 
 ```rust template="storage"
 use cw_storey::containers::{Item, Map};
-use cw_storey::CwStorage;
 
 type Address = String;
 type Token = String;
@@ -61,10 +60,9 @@ type Token = String;
 const BALANCES_IX: u8 = 1;
 
 let balances: Map<Address, Map<Token, Item<u128>>> = Map::new(BALANCES_IX);
-let mut cw_storage = CwStorage(&mut storage);
 
 balances
-    .access(&mut cw_storage)
+    .access(&mut storage)
     .entry_mut("alice")
     .entry_mut("uusd")
     .set(&100)
@@ -72,7 +70,7 @@ balances
 
 assert_eq!(
     balances
-        .access(&cw_storage)
+        .access(&storage)
         .entry("alice")
         .entry("uusd")
         .get()

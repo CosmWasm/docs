@@ -18,15 +18,14 @@ Most commonly, you will use a `Map` to store a list of items. For example, the s
 Let's say you want to keep track of the balances of each user. You can do this with a
 `Map<String, Item<Uint128>>`.
 
-```rust template="storage" showLineNumbers {6,8,10,12,14}
+```rust template="storage" showLineNumbers {6,7,9,11,13}
 use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
 
 const BALANCES_IX: u8 = 0;
 
 let balances: Map<String, Item<Uint128>> = Map::new(BALANCES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = balances.access(&mut cw_storage);
+let mut access = balances.access(&mut storage);
 
 assert_eq!(access.entry("alice").get().unwrap(), None);
 
@@ -37,12 +36,12 @@ assert_eq!(access.entry("alice").get().unwrap(), Some(Uint128::new(1000)));
 
 - _line 6:_ Here we construct the `Map` facade. The constructor takes a key, which is the prefix of
   the keys in the underlying storage backend.
-- _line 8:_ The [`access`] method returns a [`MapAccess`] entity, which allows manipulating the map.
-- _line 10:_ Here we try to access the balance of `alice`. Since she doesn't have one yet, it
-  returns `None`. The [`entry`] method returns an [`ItemAccess`] entity, which allows manipulating
-  the item stored under the key `alice`.
-- _line 12:_ Here we set Alice's balance to `1000`.
-- _line 14:_ We check that the balance is now `1000`.
+- _line 7:_ The [`access`] method returns a [`MapAccess`] entity, which allows manipulating the map.
+- _line 9:_ Here we try to access the balance of `alice`. Since she doesn't have one yet, it returns
+  `None`. The [`entry`] method returns an [`ItemAccess`] entity, which allows manipulating the item
+  stored under the key `alice`.
+- _line 11:_ Here we set Alice's balance to `1000`.
+- _line 13:_ We check that the balance is now `1000`.
 
 #### Iterating over the balances
 
@@ -63,7 +62,7 @@ Iterating over the balances is pretty straightforward. The [`keys`] method retur
 the keys, the [`values`] method returns an iterator over the values, and the [`pairs`] method
 returns an iterator over both.
 
-```rust template="storage" showLineNumbers {4, 17, 19}
+```rust template="storage" showLineNumbers {4, 16, 18}
 use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
 
@@ -72,8 +71,7 @@ use storey::containers::IterableAccessor as _;
 const BALANCES_IX: u8 = 1;
 
 let balances: Map<String, Item<Uint128>> = Map::new(BALANCES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = balances.access(&mut cw_storage);
+let mut access = balances.access(&mut storage);
 
 access.entry_mut("bob").set(&Uint128::new(500)).unwrap();
 access.entry_mut("carol").set(&Uint128::new(1500)).unwrap();
@@ -100,8 +98,8 @@ assert_eq!(
 ```
 
 - _line 4:_ Here we import the [`IterableAccessor`] trait. This trait provides unbounded iteration.
-- _line 17:_ The `pairs` method returns an iterator over the key-value pairs.
-- _line 19:_ Notice the key type is `(String, ())`. This is likely to become just `String` in the
+- _line 16:_ The `pairs` method returns an iterator over the key-value pairs.
+- _line 18:_ Notice the key type is `(String, ())`. This is likely to become just `String` in the
   future. For now, consider this a quirk of the design. This will make more sense once you get to
   composite maps.
 
@@ -109,24 +107,23 @@ assert_eq!(
 
 Bounded iteration is also supported in many cases.
 
-```rust template="storage" showLineNumbers {17}
-use cw_storey::containers::{Item, Map};
-use cw_storey::CwStorage;
+```rust template="storage" showLineNumbers {16}
+use std::ops::Bound;
 
+use cw_storey::containers::{Item, Map};
 use storey::containers::BoundedIterableAccessor as _;
 
 const BALANCES_IX: u8 = 1;
 
 let balances: Map<String, Item<Uint128>> = Map::new(BALANCES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = balances.access(&mut cw_storage);
+let mut access = balances.access(&mut storage);
 
 access.entry_mut("bob").set(&Uint128::new(500)).unwrap();
 access.entry_mut("carol").set(&Uint128::new(1500)).unwrap();
 access.entry_mut("dave").set(&Uint128::new(2000)).unwrap();
 
 assert_eq!(
-    access.bounded_pairs(Some("bob"), Some("dave")).collect::<Result<Vec<_>, _>>().unwrap(),
+    access.bounded_pairs(Bound::Included("bob"), Bound::Excluded("dave")).collect::<Result<Vec<_>, _>>().unwrap(),
     vec![(("bob".to_string(), ()), Uint128::new(500)), (("carol".to_string(), ()), Uint128::new(1500))]
 );
 ```
@@ -142,15 +139,14 @@ lower bound and exclusive on the upper bound. In a future release (soon!) this w
 Alright, let's say this time you'd also like to keep track of the balances of each user, but each
 can have multiple different tokens. This is where composition comes in.
 
-```rust template="storage" showLineNumbers {6, 10-14}
+```rust template="storage" showLineNumbers {6, 9-13}
 use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
 
 const BALANCES_IX: u8 = 0;
 
 let balances: Map<String, Map<String, Item<Uint128>>> = Map::new(BALANCES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = balances.access(&mut cw_storage);
+let mut access = balances.access(&mut storage);
 
 access.entry_mut("alice").entry_mut("USDT").set(&Uint128::new(1000)).unwrap();
 access.entry_mut("alice").entry_mut("OSMO").set(&Uint128::new(2000)).unwrap();
@@ -177,7 +173,7 @@ and the second one accesses a record in the inner map.
 
 Let's take a look at what iteration looks like with a composite map.
 
-```rust template="storage" showLineNumbers {18, 27}
+```rust template="storage" showLineNumbers {17, 26}
 use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
 use cosmwasm_std::Order;
@@ -187,8 +183,7 @@ use storey::containers::IterableAccessor as _;
 const BALANCES_IX: u8 = 1;
 
 let balances: Map<String, Map<String, Item<u64>>> = Map::new(BALANCES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = balances.access(&mut cw_storage);
+let mut access = balances.access(&mut storage);
 
 access.entry_mut("alice").entry_mut("USDT").set(&1000).unwrap();
 access.entry_mut("alice").entry_mut("OSMO").set(&2000).unwrap();
@@ -212,8 +207,8 @@ assert_eq!(
 Here we iterated twice, but each time we got a different view of the data. Each iteration was at a
 different level.
 
-- _line 18:_ We call `pairs` on the outer map, which gives us all the entries.
-- _line 27:_ We call `pairs` on the inner map under the key `alice`, which gives us all of Alice's
+- _line 17:_ We call `pairs` on the outer map, which gives us all the entries.
+- _line 26:_ We call `pairs` on the inner map under the key `alice`, which gives us all of Alice's
   balances.
 
 We can of course do the same with the `keys` and `values` methods.

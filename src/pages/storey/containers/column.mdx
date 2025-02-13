@@ -24,43 +24,39 @@ This change will also break existing contracts that rely on the current `Column`
 
 Let's say you want to store a log of messages. You can do this with a `Column<String>`.
 
-```rust template="storage" showLineNumbers {6,8,10,12}
+```rust template="storage" showLineNumbers {5,6,8,10}
 use cw_storey::containers::Column;
-use cw_storey::CwStorage;
 
 const MESSAGES_IX: u8 = 1;
 
 let messages: Column<String> = Column::new(MESSAGES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = messages.access(&mut cw_storage);
+let mut access = messages.access(&mut storage);
 
 access.push(&"Hello, world!".to_string()).unwrap();
 
-assert_eq!(access.get(0).unwrap(), Some("Hello, world!".to_string()));
+assert_eq!(access.get(1).unwrap(), Some("Hello, world!".to_string()));
 ```
 
-- _line 6:_ Here we construct the `Column` facade. The constructor takes a key, which is the prefix
+- _line 5:_ Here we construct the `Column` facade. The constructor takes a key, which is the prefix
   of the keys in the underlying storage backend.
-- _line 8:_ The [`access`] method returns a [`ColumnAccess`] entity, which allows manipulating the
+- _line 6:_ The [`access`] method returns a [`ColumnAccess`] entity, which allows manipulating the
   column.
-- _line 10:_ Here we push a message to the column.
-- _line 12:_ We check that the message is stored correctly.
+- _line 8:_ Here we push a message to the column.
+- _line 10:_ We check that the message is stored correctly.
 
 #### Iterating over the messages
 
 As with [`Map`], we can iterate over all messages.
 
-```rust template="storage" showLineNumbers {4, 17}
+```rust template="storage" showLineNumbers {3, 15}
 use cw_storey::containers::{Column, Item};
-use cw_storey::CwStorage;
 
 use storey::containers::IterableAccessor as _;
 
 const MESSAGES_IX: u8 = 1;
 
 let messages: Column<String> = Column::new(MESSAGES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = messages.access(&mut cw_storage);
+let mut access = messages.access(&mut storage);
 
 // populate the column
 access.push(&"Hello, world!".to_string()).unwrap();
@@ -70,14 +66,14 @@ access.push(&"Hell is empty and all the devils are here.".to_string()).unwrap();
 let messages: Vec<_> = access.pairs().collect::<Result<_, _>>().unwrap();
 
 assert_eq!(messages, vec![
-    (0, "Hello, world!".to_string()),
-    (1, "My name is Bob.".to_string()),
-    (2, "Hell is empty and all the devils are here.".to_string()),
+    (1, "Hello, world!".to_string()),
+    (2, "My name is Bob.".to_string()),
+    (3, "Hell is empty and all the devils are here.".to_string()),
 ]);
 ```
 
-- _line 4:_ We import the `IterableAccessor` trait to use iteration methods.
-- _line 17:_ The `pairs` method produces an iterator over tuples of `(index, value)`. In this case,
+- _line 3:_ We import the `IterableAccessor` trait to use iteration methods.
+- _line 15:_ The `pairs` method produces an iterator over tuples of `(index, value)`. In this case,
   we collect the iterator into a `Vec` for ease of making our assertion later.
 
 Similarly to [`Map`], you can use the [`keys`], [`values`], and [`pairs`] methods to iterate over
@@ -89,7 +85,7 @@ If you want to perform bounded iteration, it is possible. This time you need the
 [`BoundedIterableAccessor`] trait, and the relevant methods are [`bounded_pairs`], [`bounded_keys`],
 and [`bounded_values`].
 
-The following example is the same as the previous one except for the bounds found in line 17, and
+The following example is the same as the previous one except for the bounds found in line 16, and
 the limited results.
 
 <Callout>
@@ -100,28 +96,27 @@ bounds as suits you.
 
 </Callout>
 
-```rust template="storage" showLineNumbers {4, 17}
-use cw_storey::containers::{Column, Item};
-use cw_storey::CwStorage;
+```rust template="storage" showLineNumbers {4, 16}
+use std::ops::Bound;
 
+use cw_storey::containers::{Column, Item};
 use storey::containers::BoundedIterableAccessor as _;
 
 const MESSAGES_IX: u8 = 1;
 
 let messages: Column<String> = Column::new(MESSAGES_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = messages.access(&mut cw_storage);
+let mut access = messages.access(&mut storage);
 
 // populate the column
 access.push(&"Hello, world!".to_string()).unwrap();
 access.push(&"My name is Bob.".to_string()).unwrap();
 access.push(&"Hell is empty and all the devils are here.".to_string()).unwrap();
 
-let messages: Vec<_> = access.bounded_pairs(Some(0), Some(2)).collect::<Result<_, _>>().unwrap();
+let messages: Vec<_> = access.bounded_pairs(Bound::Included(1), Bound::Excluded(3)).collect::<Result<_, _>>().unwrap();
 
 assert_eq!(messages, vec![
-    (0, "Hello, world!".to_string()),
-    (1, "My name is Bob.".to_string()),
+    (1, "Hello, world!".to_string()),
+    (2, "My name is Bob.".to_string()),
 ]);
 ```
 

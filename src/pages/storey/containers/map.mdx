@@ -37,9 +37,9 @@ assert_eq!(access.entry("alice").get().unwrap(), Some(Uint128::new(1000)));
 - _line 6:_ Here we construct the `Map` facade. The constructor takes a key, which is the prefix of
   the keys in the underlying storage backend.
 - _line 7:_ The [`access`] method returns a [`MapAccess`] entity, which allows manipulating the map.
-- _line 9:_ Here we try to access the balance of `alice`. Since she doesn't have one yet, it
-  returns `None`. The [`entry`] method returns an [`ItemAccess`] entity, which allows manipulating
-  the item stored under the key `alice`.
+- _line 9:_ Here we try to access the balance of `alice`. Since she doesn't have one yet, it returns
+  `None`. The [`entry`] method returns an [`ItemAccess`] entity, which allows manipulating the item
+  stored under the key `alice`.
 - _line 11:_ Here we set Alice's balance to `1000`.
 - _line 13:_ We check that the balance is now `1000`.
 

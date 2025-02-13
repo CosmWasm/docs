@@ -24,7 +24,8 @@ enum Denom {
 
 We can implement the `Key` trait for this enum to make it usable as a key in a map:
 
-```rust template="storage" {1, 8-14}
+```rust template="storage" {1-2, 9-15}
+use cw_storey::containers::CwKeySet;
 use storey::containers::map::{key::DynamicKey, Key};
 
 enum Denom {
@@ -32,7 +33,7 @@ enum Denom {
     CW20(String),
 }
 
-impl Key for Denom {
+impl Key<CwKeySet> for Denom {
     type Kind = DynamicKey;
 
     fn encode(&self) -> Vec<u8> {
@@ -56,7 +57,8 @@ bytes to eat - a more performant solution.
 
 The [`encode`] method is used to serialize the key into a byte vector. Let's implement it now!
 
-```rust template="storage" {12-21}
+```rust template="storage" {13-22}
+use cw_storey::containers::CwKeySet;
 use storey::containers::map::{key::DynamicKey, Key};
 
 enum Denom {
@@ -64,7 +66,7 @@ enum Denom {
     CW20(String),
 }
 
-impl Key for Denom {
+impl Key<CwKeySet> for Denom {
     type Kind = DynamicKey;
 
     fn encode(&self) -> Vec<u8> {
@@ -89,7 +91,8 @@ CW20 token.
 One little improvement we can go for is to avoid hardcoding the discriminant. We'll want to reuse
 these values in the decoding logic, so let's define them as constants:
 
-```rust template="storage" {8-11, 18-19}
+```rust template="storage" {9-12, 19-20}
+use cw_storey::containers::CwKeySet;
 use storey::containers::map::{key::DynamicKey, Key};
 
 enum Denom {
@@ -102,7 +105,7 @@ impl Denom {
     const CW20_DISCRIMINANT: u8 = 1;
 }
 
-impl Key for Denom {
+impl Key<CwKeySet> for Denom {
     type Kind = DynamicKey;
 
     fn encode(&self) -> Vec<u8> {
@@ -127,7 +130,8 @@ need a way to decode the key back into the enum. This is used for example in ite
 
 Let's now implement the [`OwnedKey`] trait.
 
-```rust template="storage" {30-43}
+```rust template="storage" {31-44}
+use cw_storey::containers::CwKeySet;
 use storey::containers::map::{key::DynamicKey, Key, OwnedKey};
 
 enum Denom {
@@ -140,7 +144,7 @@ impl Denom {
     const CW20_DISCRIMINANT: u8 = 1;
 }
 
-impl Key for Denom {
+impl Key<CwKeySet> for Denom {
     type Kind = DynamicKey;
 
     fn encode(&self) -> Vec<u8> {
@@ -157,7 +161,7 @@ impl Key for Denom {
     }
 }
 
-impl OwnedKey for Denom {
+impl OwnedKey<CwKeySet> for Denom {
     type Error = ();
 
     fn from_bytes(bytes: &[u8]) -> Result<Self, Self::Error> {
@@ -191,9 +195,8 @@ invalid. Here it does the following:
 
 Now that we have our key type implemented, we can use it in a map:
 
-```rust template="storage" {1-3, 49-64}
-use cw_storey::CwStorage;
-use cw_storey::containers::{Item, Map};
+```rust template="storage" showLineNumbers {1-3, 48-57}
+use cw_storey::containers::{Item, Map, CwKeySet};
 use storey::containers::IterableAccessor;
 use storey::containers::map::{key::DynamicKey, Key, OwnedKey};
 
@@ -208,7 +211,7 @@ impl Denom {
     const CW20_DISCRIMINANT: u8 = 1;
 }
 
-impl Key for Denom {
+impl Key<CwKeySet> for Denom {
     type Kind = DynamicKey;
 
     fn encode(&self) -> Vec<u8> {
@@ -225,7 +228,7 @@ impl Key for Denom {
     }
 }
 
-impl OwnedKey for Denom {
+impl OwnedKey<CwKeySet> for Denom {
     type Error = ();
 
     fn from_bytes(bytes: &[u8]) -> Result<Self, Self::Error> {
@@ -243,8 +246,7 @@ impl OwnedKey for Denom {
 const MAP_IX: u8 = 1;
 
 let map: Map<Denom, Item<u64>> = Map::new(MAP_IX);
-let mut cw_storage = CwStorage(&mut storage);
-let mut access = map.access(&mut cw_storage);
+let mut access = map.access(&mut storage);
 
 access.entry_mut(&Denom::Native("USDT".into())).set(&1000).unwrap();
 access.entry_mut(&Denom::CW20("some_addr_3824792".into())).set(&2000).unwrap();

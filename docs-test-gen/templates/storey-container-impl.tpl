@@ -7,8 +7,8 @@
 )]
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::*;
-use storey::containers::{NonTerminal, Storable};
-use storey::storage::StorageBranch;
+use storey::containers::{IterableStorable, NonTerminal, Storable};
+use storey::storage::{IntoStorage, StorageBranch};
 
 mod users {
     use super::*;
@@ -75,7 +75,6 @@ struct MyMap<V> {
 impl<V> MyMap<V>
 where
     V: Storable,
-    <V as Storable>::KeyDecodeError: std::fmt::Display,
 {
     pub const fn new(prefix: u8) -> Self {
         Self {
@@ -84,7 +83,11 @@ where
         }
     }
 
-    pub fn access<S>(&self, storage: S) -> MyMapAccess<V, StorageBranch<S>> {
+    pub fn access<F, S>(&self, storage: F) -> MyMapAccess<V, StorageBranch<S>>
+    where
+        (F,): IntoStorage<S>,
+    {
+        let storage = (storage,).into_storage();
         Self::access_impl(StorageBranch::new(storage, vec![self.prefix]))
     }
 }
@@ -97,14 +100,9 @@ pub struct MyMapAccess<V, S> {
 impl<V> Storable for MyMap<V>
 where
     V: Storable,
-    <V as Storable>::KeyDecodeError: std::fmt::Display,
 {
     type Kind = NonTerminal;
     type Accessor<S> = MyMapAccess<V, S>;
-    type Key = (u32, V::Key);
-    type KeyDecodeError = ();
-    type Value = V::Value;
-    type ValueDecodeError = V::ValueDecodeError;
 
     fn access_impl<S>(storage: S) -> MyMapAccess<V, S> {
         MyMapAccess {
@@ -112,6 +110,17 @@ where
             phantom: std::marker::PhantomData,
         }
     }
+}
+
+impl<V> IterableStorable for MyMap<V>
+where
+    V: IterableStorable,
+    <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
+{
+    type Key = (u32, V::Key);
+    type KeyDecodeError = ();
+    type Value = V::Value;
+    type ValueDecodeError = V::ValueDecodeError;
 
     fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
         todo!()

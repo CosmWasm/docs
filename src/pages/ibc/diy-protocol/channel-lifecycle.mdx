@@ -131,7 +131,7 @@ pub fn ibc_channel_open(
     // in this example, we only allow a single channel per contract instance
     // you can do more complex checks here
     ensure!(
-        CHANNEL.access(&mut *deps.storage).get()?.is_none(),
+        CHANNEL.access(&*deps.storage).get()?.is_none(),
         StdError::generic_err("channel already exists")
     );
 
@@ -373,7 +373,7 @@ pub fn ibc_channel_connect(
     // in this example, we only allow a single channel per contract instance
     // you can do more complex checks here
     let mut channel_info = CHANNEL
-        .access(&mut *deps.storage)
+        .access(&*deps.storage)
         .get()?
         .ok_or_else(|| StdError::generic_err("channel not found"))?;
     ensure!(

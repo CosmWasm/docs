@@ -98,14 +98,16 @@ The `MyMapAccess` struct is our accessor. It's a facade that's used to actually 
 the collection given a `Storage` instance - this is usually a subspace of the "root" storage
 backend.
 
-The [`Storable`] trait is the main trait a container must implement. The associated types tell the framework:
+The [`Storable`] trait is the main trait a container must implement. The associated types tell the
+framework:
 
-| Associated type | Details |
-|-------------------|-------------------------------------------------------------------------|
-| `Kind` | We put `NonTerminal` here to signify our container creates subkeys rather than just saving data at the root. |
-| `Accessor` | The accessor type. `MyMapAccess` in our case. |
+| Associated type | Details                                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `Kind`          | We put `NonTerminal` here to signify our container creates subkeys rather than just saving data at the root. |
+| `Accessor`      | The accessor type. `MyMapAccess` in our case.                                                                |
 
-The method `access_impl` produces an accessor given a storage abstraction (usually representing a "slice" of the underlying storage.)
+The method `access_impl` produces an accessor given a storage abstraction (usually representing a
+"slice" of the underlying storage.)
 
 `MyMap::access` is an access method in cases where you're using the container as a top-level
 container.
@@ -205,17 +207,17 @@ assert_eq!(access.entry(2).get().unwrap(), Some(200));
 
 To be continued...
 
-| Associated type | Details |
-|-------------------|-------------------------------------------------------------------------|
-| `Key` | The key type to be returned by iterators. Here a tuple of `u32` and the key type of the inner container. |
-| `KeyDecodeError` | The error to be returned on invalid key data. Here we don't care, so we use `()`. In production, use a proper error type. |
-| `Value` | The value type to be returned by iterators. Here it's delegated to the inner container. |
-| `ValueDecodeError`| The error type for invalid value data. Delegated to the inner container. |
+| Associated type    | Details                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `Key`              | The key type to be returned by iterators. Here a tuple of `u32` and the key type of the inner container.                  |
+| `KeyDecodeError`   | The error to be returned on invalid key data. Here we don't care, so we use `()`. In production, use a proper error type. |
+| `Value`            | The value type to be returned by iterators. Here it's delegated to the inner container.                                   |
+| `ValueDecodeError` | The error type for invalid value data. Delegated to the inner container.                                                  |
 
-The methods:
-| Method | Function |
-|----------------|-----------------------------------------------------------------------------|
-| `decode_value` | Used for iteration. This is how the framework knows how to decode values given raw data. |
+The methods: | Method | Function |
+|----------------|-----------------------------------------------------------------------------| |
+`decode_value` | Used for iteration. This is how the framework knows how to decode values given raw
+data. |
 
 ```
 impl<V> IterableStorable for MyMap<V>

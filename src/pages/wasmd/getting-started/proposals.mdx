@@ -56,7 +56,7 @@ wasmd tx wasm submit-proposal pin-codes $CODE_ID \
 You can pin multiple codes by providing a list of code IDs instead of just a single `code_id`. The
 `title` flag specifies the title of the proposal, which should be descriptive and concise, while the
 `summary` flag provides a brief explanation of what the proposal aims to achieve. The `deposit` flag
-indicates the amount of tokens required to submit the proposal, avoiding spam proposals submissions.
+indicates the number of tokens required to submit the proposal, avoiding spam proposals submissions.
 
 To check the details of a submitted proposal, you can query the transaction using the `txhash`
 provided in the command output. This allows you to inspect the emitted events and retrieve the

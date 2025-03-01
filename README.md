@@ -30,7 +30,7 @@ npm run build
 npm run start
 ```
 
-You will now be able visit the locally served website at
+You will now be able to visit the locally served website at
 [http://localhost:3000](http://localhost:3000)
 
 ## How can I contribute?

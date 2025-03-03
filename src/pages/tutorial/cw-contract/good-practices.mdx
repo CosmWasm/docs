@@ -6,8 +6,8 @@ All the relevant basics are covered. Now let's talk about some good practices.
 
 Due to Rust style, all our message variants are spelled in a
 [camel-case](https://en.wikipedia.org/wiki/CamelCase). It is standard practice, but it has a
-drawback - all messages are serialized and deserialized by serde using those variant names. The
-problem is that it is more common to use [snake cases](https://en.wikipedia.org/wiki/Snake_case) for
+drawback - all messages are serialized and deserialized by serde using these variant names. The
+problem is that it is more common to use [snake case](https://en.wikipedia.org/wiki/Snake_case) for
 field names in the JSON world. Fortunately, there is an effortless way to tell serde to change the
 casing for serialization purposes. Let's update our messages with a `#[serde]` attribute:
 

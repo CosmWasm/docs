@@ -39,7 +39,7 @@ crate-type = ["cdylib"]
 cosmwasm-std = { version = "2.1.4", features = ["staking"] }
 ```
 
-As you can see, I added a `crate-type` field for the library section. Generating the `cdylib` is
+As you can see, I added a `crate-type` field in the library section. Generating the `cdylib` is
 required to create a proper web assembly binary. The downside of this is that such a library cannot
 be used as a dependency for other Rust crates - for now, it is not needed, but later we will show
 how to approach reusing contracts as dependencies.

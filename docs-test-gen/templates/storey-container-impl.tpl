@@ -112,25 +112,6 @@ where
     }
 }
 
-impl<V> IterableStorable for MyMap<V>
-where
-    V: IterableStorable,
-    <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
-{
-    type Key = (u32, V::Key);
-    type KeyDecodeError = ();
-    type Value = V::Value;
-    type ValueDecodeError = V::ValueDecodeError;
-
-    fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
-        todo!()
-    }
-
-    fn decode_value(value: &[u8]) -> Result<Self::Value, Self::ValueDecodeError> {
-        V::decode_value(value)
-    }
-}
-
 impl<V, S> MyMapAccess<V, S>
 where
     V: Storable,

@@ -129,6 +129,50 @@ where
     }
 }
 
+use storey::containers::IterableAccessor;
+use storey::storage::IterableStorage;
+
+impl<V> IterableStorable for MyMap<V>
+where
+    V: IterableStorable,
+    <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
+{
+    type Key = (u32, V::Key);
+    type KeyDecodeError = ();
+    type Value = V::Value;
+    type ValueDecodeError = V::ValueDecodeError;
+
+    fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
+        if key.len() < 4 {
+            return Err(());
+        }
+
+        let key_arr = key[0..4].try_into().map_err(|_| ())?;
+        let this_key = u32::from_le_bytes(key_arr);
+
+        let rest = V::decode_key(&key[4..]).map_err(|_| ())?;
+
+        Ok((this_key, rest))
+    }
+
+    fn decode_value(value: &[u8]) -> Result<Self::Value, Self::ValueDecodeError> {
+        V::decode_value(value)
+    }
+}
+
+impl<V, S> IterableAccessor for MyMapAccess<V, S>
+where
+    V: IterableStorable,
+    S: IterableStorage,
+{
+    type Storable = MyMap<V>;
+    type Storage = S;
+
+    fn storage(&self) -> &Self::Storage {
+        &self.storage
+    }
+}
+
 #[test]
 fn doctest() {
     #[allow(unused_variables, unused_mut)]

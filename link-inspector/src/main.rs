@@ -10,7 +10,7 @@ static EXCLUDED_HOSTS: phf::Set<&'static str> = phf::phf_set! {
 fn check_link(link: &str) -> anyhow::Result<()> {
     let url = Url::parse(link)?;
     if EXCLUDED_HOSTS.contains(url.host_str().unwrap_or_default()) {
-        println!("⚠️ Skipping link to excluded host: {link}");
+        println!("⚠️ Skipping link to excluded host: {}", link);
         return Ok(());
     }
 
@@ -18,7 +18,8 @@ fn check_link(link: &str) -> anyhow::Result<()> {
 
     if !(200..=299).contains(&response.status()) {
         bail!(
-            "❌ Link \"{link}\" is broken (status code: {})",
+            "❌ Link \"{}\" is broken (status code: {})",
+            link,
             response.status()
         );
     }

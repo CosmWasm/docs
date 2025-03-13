@@ -57,7 +57,7 @@ use counter::msg::{CounterExecMsg, CounterInitMsg, CounterQueryMsg, CounterRespo
 use cw_multi_test::{App, Contract, ContractWrapper, Executor, IntoAddr};
 ```
 
-## Wrapping the contact
+## Wrapping the contract
 
 ```rust copy showLineNumbers{5} filename="test_counter.rs"
 fn counter_contract() -> Box<dyn Contract<Empty>> {

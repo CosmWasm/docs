@@ -108,7 +108,7 @@ assert_eq!(
 
 If you need to test contracts on your own chain that uses a specific Bech32 prefixes, you can easily
 customize the default [`MockApi{:rust}`][MockApi] behavior using the
-[`AppBuilder::with_api{:rust}`][with_api] method. An example of using `osmo` prefixes is shown in
+[`AppBuilder::with_api{:rust}`][with_api] method. An example of using `osmo` prefix is shown in
 the following code snippet.
 
 ```rust showLineNumbers copy {1,6} /with_api/ /osmo/
@@ -394,7 +394,7 @@ assert_eq!(value, app.storage().get(key).unwrap().as_slice());
   libraries such as [Storey](/storey) and [StoragePlus](/cw-storage-plus).
 </Callout>
 
-You can find additional information about storage in [Storage](storage) chapter.
+You can find additional information about storage in the [Storage](storage) chapter.
 
 ## `with_wasm`
 

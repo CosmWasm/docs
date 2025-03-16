@@ -48,8 +48,8 @@ The simplest way to create a chain using [`AppBuilder{:rust}`][AppBuilder] is by
 `default{:rust}` method. Since [`AppBuilder{:rust}`][AppBuilder] follows the principles of the
 builder pattern, you need to finalize the building process by calling the [`build{:rust}`][build]
 method with a chain initialization callback function. When no specific chain initialization is
-required you can just use the provided [`no_init`](app#no_init) callback. In the following code example,
-the chain is created with default settings as described in
+required you can just use the provided [`no_init`](app#no_init) callback. In the following code
+example, the chain is created with default settings as described in
 [Features summary](features#features-summary).
 
 ```rust showLineNumbers {3} copy /default/ /build/
@@ -108,8 +108,8 @@ assert_eq!(
 
 If you need to test contracts on your own chain that uses a specific Bech32 prefixes, you can easily
 customize the default [`MockApi{:rust}`][MockApi] behavior using the
-[`AppBuilder::with_api{:rust}`][with_api] method. An example of using `osmo` prefix is shown in
-the following code snippet.
+[`AppBuilder::with_api{:rust}`][with_api] method. An example of using `osmo` prefix is shown in the
+following code snippet.
 
 ```rust showLineNumbers copy {1,6} /with_api/ /osmo/
 use cosmwasm_std::testing::MockApi;

@@ -205,7 +205,9 @@ assert_eq!(access.entry(2).get().unwrap(), Some(200));
 
 # Iteration
 
-While we have a functional collection by now, we can't perform iteration yet. Instead of trying to implement iteration on our own, there are benefits to using abstractions `storey` provides. This means implementing `IterableStorable` for `MyMap`.
+While we have a functional collection by now, we can't perform iteration yet. Instead of trying to
+implement iteration on our own, there are benefits to using abstractions `storey` provides. This
+means implementing `IterableStorable` for `MyMap`.
 
 ```rust template="storey-container-impl"
 impl<V> IterableStorable for MyMap<V>
@@ -246,9 +248,9 @@ Alright. Let's dive into the trait items!
 | `Value`            | The value type to be returned by iterators. Here it's delegated to the inner container.                                   |
 | `ValueDecodeError` | The error type for invalid value data. Delegated to the inner container.                                                  |
 
-| Method | Function |
-|----------------|-----------------------------------------------------------------------------|
-| `decode_key` | This is how the framework knows how to decode keys given raw bytes. |
+| Method         | Function                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `decode_key`   | This is how the framework knows how to decode keys given raw bytes.                                                      |
 | `decode_value` | This is how the framework knows how to decode values given raw bytes. In this case, we delegate to the inner collection. |
 
 We still need to implement a trait for the accessor.
@@ -345,14 +347,16 @@ assert_eq!(result.unwrap(), vec![
 ]);
 ```
 
-We can iterate over everything. Note we didn't have to write any special logic for this nesting in our custom container's implementation.
-It's well integrated with Storey simply by implementing a few traits.
+We can iterate over everything. Note we didn't have to write any special logic for this nesting in
+our custom container's implementation. It's well integrated with Storey simply by implementing a few
+traits.
 
 <Callout>
     We know the parenthesized, nested keys are ugly. We'll eventually try to make this
     prettier.
 
     For now, remember this ugliness allows unlimited depth of nested keys, which is pretty cool! Recursion rocks. Sometimes.
+
 </Callout>
 
 [`Item`]: /storey/containers/item

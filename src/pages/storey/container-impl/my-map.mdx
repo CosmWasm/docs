@@ -211,22 +211,22 @@ While we have a functional collection by now, we can't perform iteration yet. In
 impl<V> IterableStorable for MyMap<V>
 where
     V: IterableStorable,
-    <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
+    V::KeyDecodeError: std::fmt::Display,
 {
     type Key = (u32, V::Key);
-    type KeyDecodeError = ();
+    type KeyDecodeError = String;
     type Value = V::Value;
     type ValueDecodeError = V::ValueDecodeError;
 
-    fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
+    fn decode_key(key: &[u8]) -> Result<Self::Key, String> {
         if key.len() < 4 {
-            return Err(());
+            return Err(String::from("Key too short"));
         }
 
-        let key_arr = key[0..4].try_into().map_err(|_| ())?;
-        let this_key = u32::from_le_bytes(key_arr);
+        let key_arr = key[0..4].try_into().map_err(|e| format!("Invalid key: {}", e))?;
+        let this_key = u32::from_be_bytes(key_arr);
 
-        let rest = V::decode_key(&key[4..]).map_err(|_| ())?;
+        let rest = V::decode_key(&key[4..]).map_err(|e| e.to_string())?;
 
         Ok((this_key, rest))
     }
@@ -260,22 +260,22 @@ use storey::storage::IterableStorage;
 impl<V> IterableStorable for MyMap<V>
 where
     V: IterableStorable,
-    <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
+    V::KeyDecodeError: std::fmt::Display,
 {
     type Key = (u32, V::Key);
-    type KeyDecodeError = ();
+    type KeyDecodeError = String;
     type Value = V::Value;
     type ValueDecodeError = V::ValueDecodeError;
 
-    fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
+    fn decode_key(key: &[u8]) -> Result<Self::Key, String> {
         if key.len() < 4 {
-            return Err(());
+            return Err(String::from("Key too short"));
         }
 
-        let key_arr = key[0..4].try_into().map_err(|_| ())?;
-        let this_key = u32::from_le_bytes(key_arr);
+        let key_arr = key[0..4].try_into().map_err(|e| format!("Invalid key: {}", e))?;
+        let this_key = u32::from_be_bytes(key_arr);
 
-        let rest = V::decode_key(&key[4..]).map_err(|_| ())?;
+        let rest = V::decode_key(&key[4..]).map_err(|e| e.to_string())?;
 
         Ok((this_key, rest))
     }
@@ -317,6 +317,43 @@ access.entry_mut(3).set(&300).unwrap();
 let result: Result<Vec<_>, _> = access.values().collect();
 assert_eq!(result.unwrap(), vec![100, 200, 300]);
 ```
+
+This isn't all. What we've also enabled is the ability to iterate over outer containers.
+
+Let's create a regular `Map`, nest our `MyMap` inside it, and see what we can do!
+
+```rust template="storey-container-impl-iter"
+use cw_storey::containers::{Item, Map};
+use storey::containers::IterableAccessor as _;
+
+const MAP_IX: u8 = 1;
+
+let map: Map<String, MyMap<Item<u32>>> = Map::new(MAP_IX);
+let mut access = map.access(&mut storage);
+
+access.entry_mut("alice").entry_mut(1).set(&100).unwrap();
+access.entry_mut("alice").entry_mut(2).set(&200).unwrap();
+access.entry_mut("bob").entry_mut(1).set(&1100).unwrap();
+access.entry_mut("bob").entry_mut(3).set(&1300).unwrap();
+
+let result: Result<Vec<_>, _> = access.pairs().collect();
+assert_eq!(result.unwrap(), vec![
+    (("bob".to_string(), (1, ())), 1100),
+    (("bob".to_string(), (3, ())), 1300),
+    (("alice".to_string(), (1, ())), 100),
+    (("alice".to_string(), (2, ())), 200)
+]);
+```
+
+We can iterate over everything. Note we didn't have to write any special logic for this nesting in our custom container's implementation.
+It's well integrated with Storey simply by implementing a few traits.
+
+<Callout>
+    We know the parenthesized, nested keys are ugly. We'll eventually try to make this
+    prettier.
+
+    For now, remember this ugliness allows unlimited depth of nested keys, which is pretty cool! Recursion rocks. Sometimes.
+</Callout>
 
 [`Item`]: /storey/containers/item
 [`Map`]: /storey/containers/map

@@ -3,7 +3,7 @@
     dead_code,
     unused_variables,
     unused_imports,
-    clippy::new_without_default
+    clippy::new_without_default,
 )]
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::*;
@@ -138,19 +138,19 @@ where
     <V as IterableStorable>::KeyDecodeError: std::fmt::Display,
 {
     type Key = (u32, V::Key);
-    type KeyDecodeError = ();
+    type KeyDecodeError = String;
     type Value = V::Value;
     type ValueDecodeError = V::ValueDecodeError;
 
-    fn decode_key(key: &[u8]) -> Result<Self::Key, ()> {
+    fn decode_key(key: &[u8]) -> Result<Self::Key, String> {
         if key.len() < 4 {
-            return Err(());
+            return Err(String::from("Key too short"));
         }
 
-        let key_arr = key[0..4].try_into().map_err(|_| ())?;
-        let this_key = u32::from_le_bytes(key_arr);
+        let key_arr = key[0..4].try_into().map_err(|e| format!("Invalid key: {}", e))?;
+        let this_key = u32::from_be_bytes(key_arr);
 
-        let rest = V::decode_key(&key[4..]).map_err(|_| ())?;
+        let rest = V::decode_key(&key[4..]).map_err(|e| e.to_string())?;
 
         Ok((this_key, rest))
     }

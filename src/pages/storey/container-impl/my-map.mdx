@@ -320,7 +320,8 @@ let result: Result<Vec<_>, _> = access.values().collect();
 assert_eq!(result.unwrap(), vec![100, 200, 300]);
 ```
 
-This isn't all. What we've also enabled is the ability to iterate over any containers that nest `MyMap` inside.
+This isn't all. What we've also enabled is the ability to iterate over any containers that nest
+`MyMap` inside.
 
 Let's create a regular `Map`, nest our `MyMap` inside it, and see what we can do!
 

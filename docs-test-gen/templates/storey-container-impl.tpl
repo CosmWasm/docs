@@ -67,6 +67,94 @@ fn advance_height(env: &mut Env, blocks: u64) {
     env.block.height += blocks;
 }
 
+use cw_storey::CwEncoding;
+use storey::encoding::{EncodableWith, DecodableWith};
+use storey::storage::{Storage, StorageMut};
+
+pub struct TupleItem<L, R> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> TupleItem<L, R> {
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+
+    pub fn access<F, S>(&self, storage: F) -> TupleItemAccess<L, R, StorageBranch<S>>
+    where
+        (F,): IntoStorage<S>,
+    {
+        let storage = (storage,).into_storage();
+        Self::access_impl(StorageBranch::new(storage, vec![self.prefix]))
+    }
+}
+
+pub struct TupleItemAccess<L, R, S> {
+    storage: S,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> Storable for TupleItem<L, R>
+{
+    type Kind = NonTerminal;
+    type Accessor<S> = TupleItemAccess<L, R, S>;
+
+    fn access_impl<S>(storage: S) -> TupleItemAccess<L, R, S> {
+        TupleItemAccess {
+            storage,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<L, R, S> TupleItemAccess<L, R, S>
+where
+    L: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    R: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    S: Storage,
+{
+    pub fn get_left(&self) -> Result<Option<L>, StdError> {
+        self.storage
+            .get(&[0])
+            .map(|bytes| L::decode(&bytes))
+            .transpose()
+    }
+
+    pub fn get_right(&self) -> Result<Option<R>, StdError> {
+        self.storage
+            .get(&[1])
+            .map(|bytes| R::decode(&bytes))
+            .transpose()
+    }
+}
+
+impl<L, R, S> TupleItemAccess<L, R, S>
+where
+    L: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    R: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    S: Storage + StorageMut,
+{
+    pub fn set_left(&mut self, value: &L) -> Result<(), StdError> {
+        let bytes = value.encode()?;
+
+        self.storage.set(&[0], &bytes);
+
+        Ok(())
+    }
+
+    pub fn set_right(&mut self, value: &R) -> Result<(), StdError> {
+        let bytes = value.encode()?;
+
+        self.storage.set(&[1], &bytes);
+
+        Ok(())
+    }
+}
+
 #[test]
 fn doctest() {
     pub struct MyMap<V> {

@@ -1,0 +1,280 @@
+---
+tags: ["storey"]
+---
+
+import { Callout } from "nextra/components";
+
+# TupleItem
+
+Let's imagine a container like [`Item`], but able to store exactly two items of different types.
+
+We could simply use something like `Item<(u32, String)>`, but that approach serializes the entire tuple and then saves it under a single address in the storage backend.
+
+Instead, our new container will store each item separately under different addresses.
+
+Let's assume we instantiate either of the containers with the `0` address. Here's how they're going to handle data:
+
+Container | Method | Address | type
+---------|--------|---------|-----
+`Item<(u32, String)>` | `get` | `0` | `(u32, String)`
+`TupleItem<(u32, String)>` | `get_left` | `00` | `u32`
+`TupleItem<(u32, String)>`  | `get_right` | `01` | `String`
+
+<Callout type="info">
+
+The choice between `Item` and `TupleItem` is going to have performance implications.
+- With `Item<(...)>`, you'll need to deserialize the entire tuple when fetching data from storage, which can be subpar if only one of its components is needed.
+- On the other hand, with `TupleItem<(...)>`, each component gets its own address. The resulting addresses are one byte longer. Longer addresses tend to impact storage performance, so we generally try to keep them shorter when possible.
+
+How to choose? That's hard to tell. In a lot of cases it probably doesn't matter. If you're in a situation where your contract is heavily used and performance is becoming important, benchmarking is going to be your best friend.
+
+</Callout>
+
+## Implementation
+
+Alright. Let's build the basic facade.
+
+```rust template="storage"
+pub struct TupleItem<L, R> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> TupleItem<L, R> {
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+```
+
+No magic here. The `prefix` field is used when this collection is a top-level collection - it's a
+single-byte key that creates a subspace for this collection's internal data.
+
+The `phantom` field allows us to use the type parameters `L` and `R` without actually storing any values of
+that type.
+
+The constructor is simple - it just initializes the fields.
+
+Next, let's set up an accessor for this collection.
+
+```rust template="storage" {17-23, 26-42}
+use storey::containers::{NonTerminal, Storable};
+use storey::storage::{IntoStorage, StorageBranch};
+
+pub struct TupleItem<L, R> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> TupleItem<L, R> {
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+
+    pub fn access<F, S>(&self, storage: F) -> TupleItemAccess<L, R, StorageBranch<S>>
+    where
+        (F,): IntoStorage<S>,
+    {
+        let storage = (storage,).into_storage();
+        Self::access_impl(StorageBranch::new(storage, vec![self.prefix]))
+    }
+}
+
+pub struct TupleItemAccess<L, R, S> {
+    storage: S,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> Storable for TupleItem<L, R>
+{
+    type Kind = NonTerminal;
+    type Accessor<S> = TupleItemAccess<L, R, S>;
+
+    fn access_impl<S>(storage: S) -> TupleItemAccess<L, R, S> {
+        TupleItemAccess {
+            storage,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+```
+
+The `TupleItemAccess` struct is our accessor. It's a facade that's used to actually access the data in
+the collection given a `Storage` instance - this is usually a subspace of the "root" storage
+backend.
+
+The [`Storable`] trait is the main trait a container must implement. The associated types tell the
+framework:
+
+| Associated type | Details                                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `Kind`          | We put `NonTerminal` here to signify our container creates subkeys rather than just saving data at the root. |
+| `Accessor`      | The accessor type. `MyMapAccess` in our case. 
+
+The method `access_impl` produces an accessor given a storage abstraction (usually representing a
+"slice" of the underlying storage.)
+
+`TupleItem::access` is an access method in cases where you're using the container as a top-level
+container.
+
+There's one thing we're missing for this to actually by useful. We need some methods for the
+accessor.
+
+```rust template="storage" {46-88}
+use cw_storey::CwEncoding;
+use storey::containers::{NonTerminal, Storable};
+use storey::encoding::{EncodableWith, DecodableWith};
+use storey::storage::{IntoStorage, Storage, StorageBranch, StorageMut};
+
+pub struct TupleItem<L, R> {
+    prefix: u8,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> TupleItem<L, R> {
+    pub const fn new(prefix: u8) -> Self {
+        Self {
+            prefix,
+            phantom: std::marker::PhantomData,
+        }
+    }
+
+    pub fn access<F, S>(&self, storage: F) -> TupleItemAccess<L, R, StorageBranch<S>>
+    where
+        (F,): IntoStorage<S>,
+    {
+        let storage = (storage,).into_storage();
+        Self::access_impl(StorageBranch::new(storage, vec![self.prefix]))
+    }
+}
+
+pub struct TupleItemAccess<L, R, S> {
+    storage: S,
+    phantom: std::marker::PhantomData<(L, R)>,
+}
+
+impl<L, R> Storable for TupleItem<L, R>
+{
+    type Kind = NonTerminal;
+    type Accessor<S> = TupleItemAccess<L, R, S>;
+
+    fn access_impl<S>(storage: S) -> TupleItemAccess<L, R, S> {
+        TupleItemAccess {
+            storage,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<L, R, S> TupleItemAccess<L, R, S>
+where
+    L: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    R: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    S: Storage,
+{
+    pub fn get_left(&self) -> Result<Option<L>, StdError> {
+        self.storage
+            .get(&[0])
+            .map(|bytes| L::decode(&bytes))
+            .transpose()
+    }
+
+    pub fn get_right(&self) -> Result<Option<R>, StdError> {
+        self.storage
+            .get(&[1])
+            .map(|bytes| R::decode(&bytes))
+            .transpose()
+    }
+}
+
+impl<L, R, S> TupleItemAccess<L, R, S>
+where
+    L: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    R: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    S: Storage + StorageMut,
+{
+    pub fn set_left(&mut self, value: &L) -> Result<(), StdError> {
+        let bytes = value.encode()?;
+
+        self.storage.set(&[0], &bytes);
+
+        Ok(())
+    }
+
+    pub fn set_right(&mut self, value: &R) -> Result<(), StdError> {
+        let bytes = value.encode()?;
+
+        self.storage.set(&[1], &bytes);
+
+        Ok(())
+    }
+}
+```
+
+Alright! Nothing here should be too surprising. 
+
+```rust template="storey-container-impl"
+const TI_IX: u8 = 1;
+
+let ti: TupleItem<u32, String> = TupleItem::new(TI_IX);
+
+ti.access(&mut storage).set_left(&5).unwrap();
+assert_eq!(ti.access(&storage).get_left().unwrap(), Some(5));
+assert_eq!(ti.access(&storage).get_right().unwrap(), None);
+
+ti.access(&mut storage).set_right(&"hello".to_string()).unwrap();
+assert_eq!(ti.access(&storage).get_left().unwrap(), Some(5));
+assert_eq!(ti.access(&storage).get_right().unwrap(), Some("hello".to_string()));
+```
+
+Great. It works as a root container. What if we nest it inside a map?
+
+```rust template="storey-container-impl"
+use storey::containers::Map;
+
+const MAP_IX: u8 = 1;
+
+let map: Map<String, TupleItem<String, u32>> = Map::new(MAP_IX);
+
+map.access(&mut storage).entry_mut("alice").set_left(&"for dinner".to_string()).unwrap();
+map.access(&mut storage).entry_mut("alice").set_right(&5).unwrap();
+map.access(&mut storage).entry_mut("bob").set_left(&"cinema ticket".to_string()).unwrap();
+
+assert_eq!(map.access(&storage).entry("alice").get_left().unwrap(), Some("for dinner".to_string()));
+assert_eq!(map.access(&storage).entry("alice").get_right().unwrap(), Some(5));
+assert_eq!(map.access(&storage).entry("bob").get_left().unwrap(), Some("cinema ticket".to_string()));
+assert_eq!(map.access(&storage).entry("bob").get_right().unwrap(), None);
+```
+
+Okay! We can build more complex data structures by composing built-in containers and our custom ones.
+Pretty cool, right?
+
+<Callout type="info">
+  There's one thing that's worth modifying in the implementation of `TupleItem`. Instead of these trait bounds:
+  ```rust
+    L: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+    R: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
+  ```
+
+  we can use a more generic encoding:
+
+  ```rust
+    E: Encoding,
+    L: EncodableWith<E> + DecodableWith<E>,
+    R: EncodableWith<E> + DecodableWith<E>,
+  ```
+
+  Why? This lets people use the container with encodings other than `CwEncoding`.
+  If you're planning to publish your abstractions somewhere, this is **definitely** a good idea.
+  We didn't do it in the examples to try and keep complexity down.
+</Callout>
+
+This is it. Happy hacking!
+
+[`Item`]: /storey/containers/item

@@ -8,25 +8,33 @@ import { Callout } from "nextra/components";
 
 Let's imagine a container like [`Item`], but able to store exactly two items of different types.
 
-We could simply use something like `Item<(u32, String)>`, but that approach serializes the entire tuple and then saves it under a single address in the storage backend.
+We could simply use something like `Item<(u32, String)>`, but that approach serializes the entire
+tuple and then saves it under a single address in the storage backend.
 
 Instead, our new container will store each item separately under different addresses.
 
-Let's assume we instantiate either of the containers with the `0` address. Here's how they're going to handle data:
+Let's assume we instantiate either of the containers with the `0` address. Here's how they're going
+to handle data:
 
-Container | Method | Address | type
----------|--------|---------|-----
-`Item<(u32, String)>` | `get` | `0` | `(u32, String)`
-`TupleItem<(u32, String)>` | `get_left` | `00` | `u32`
-`TupleItem<(u32, String)>`  | `get_right` | `01` | `String`
+| Container                  | Method      | Address | type            |
+| -------------------------- | ----------- | ------- | --------------- |
+| `Item<(u32, String)>`      | `get`       | `0`     | `(u32, String)` |
+| `TupleItem<(u32, String)>` | `get_left`  | `00`    | `u32`           |
+| `TupleItem<(u32, String)>` | `get_right` | `01`    | `String`        |
 
 <Callout type="info">
 
 The choice between `Item` and `TupleItem` is going to have performance implications.
-- With `Item<(...)>`, you'll need to deserialize the entire tuple when fetching data from storage, which can be subpar if only one of its components is needed.
-- On the other hand, with `TupleItem<(...)>`, each component gets its own address. The resulting addresses are one byte longer. Longer addresses tend to impact storage performance, so we generally try to keep them shorter when possible.
 
-How to choose? That's hard to tell. In a lot of cases it probably doesn't matter. If you're in a situation where your contract is heavily used and performance is becoming important, benchmarking is going to be your best friend.
+- With `Item<(...)>`, you'll need to deserialize the entire tuple when fetching data from storage,
+  which can be subpar if only one of its components is needed.
+- On the other hand, with `TupleItem<(...)>`, each component gets its own address. The resulting
+  addresses are one byte longer. Longer addresses tend to impact storage performance, so we
+  generally try to keep them shorter when possible.
+
+How to choose? That's hard to tell. In a lot of cases it probably doesn't matter. If you're in a
+situation where your contract is heavily used and performance is becoming important, benchmarking is
+going to be your best friend.
 
 </Callout>
 
@@ -53,8 +61,8 @@ impl<L, R> TupleItem<L, R> {
 No magic here. The `prefix` field is used when this collection is a top-level collection - it's a
 single-byte key that creates a subspace for this collection's internal data.
 
-The `phantom` field allows us to use the type parameters `L` and `R` without actually storing any values of
-that type.
+The `phantom` field allows us to use the type parameters `L` and `R` without actually storing any
+values of that type.
 
 The constructor is simple - it just initializes the fields.
 
@@ -105,8 +113,8 @@ impl<L, R> Storable for TupleItem<L, R>
 }
 ```
 
-The `TupleItemAccess` struct is our accessor. It's a facade that's used to actually access the data in
-the collection given a `Storage` instance - this is usually a subspace of the "root" storage
+The `TupleItemAccess` struct is our accessor. It's a facade that's used to actually access the data
+in the collection given a `Storage` instance - this is usually a subspace of the "root" storage
 backend.
 
 The [`Storable`] trait is the main trait a container must implement. The associated types tell the
@@ -115,7 +123,7 @@ framework:
 | Associated type | Details                                                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------------ |
 | `Kind`          | We put `NonTerminal` here to signify our container creates subkeys rather than just saving data at the root. |
-| `Accessor`      | The accessor type. `MyMapAccess` in our case. 
+| `Accessor`      | The accessor type. `MyMapAccess` in our case.                                                                |
 
 The method `access_impl` produces an accessor given a storage abstraction (usually representing a
 "slice" of the underlying storage.)
@@ -217,7 +225,7 @@ where
 }
 ```
 
-Alright! Nothing here should be too surprising. 
+Alright! Nothing here should be too surprising.
 
 ```rust template="storey-container-impl"
 const TI_IX: u8 = 1;
@@ -252,8 +260,8 @@ assert_eq!(map.access(&storage).entry("bob").get_left().unwrap(), Some("cinema t
 assert_eq!(map.access(&storage).entry("bob").get_right().unwrap(), None);
 ```
 
-Okay! We can build more complex data structures by composing built-in containers and our custom ones.
-Pretty cool, right?
+Okay! We can build more complex data structures by composing built-in containers and our custom
+ones. Pretty cool, right?
 
 <Callout type="info">
   There's one thing that's worth modifying in the implementation of `TupleItem`. Instead of these trait bounds:
@@ -262,17 +270,18 @@ Pretty cool, right?
     R: EncodableWith<CwEncoding> + DecodableWith<CwEncoding>,
   ```
 
-  we can use a more generic encoding:
+we can use a more generic encoding:
 
-  ```rust
-    E: Encoding,
-    L: EncodableWith<E> + DecodableWith<E>,
-    R: EncodableWith<E> + DecodableWith<E>,
-  ```
+```rust
+  E: Encoding,
+  L: EncodableWith<E> + DecodableWith<E>,
+  R: EncodableWith<E> + DecodableWith<E>,
+```
 
-  Why? This lets people use the container with encodings other than `CwEncoding`.
-  If you're planning to publish your abstractions somewhere, this is **definitely** a good idea.
-  We didn't do it in the examples to try and keep complexity down.
+Why? This lets people use the container with encodings other than `CwEncoding`. If you're planning
+to publish your abstractions somewhere, this is **definitely** a good idea. We didn't do it in the
+examples to try and keep complexity down.
+
 </Callout>
 
 This is it. Happy hacking!

@@ -20,8 +20,8 @@ to create composite keys.
 
 <Callout>
   Unlike values, keys do **not** need to implement anything like `serde::Serialize` or
-  `serde::Deserialize`. Key encoding is handled by the `PrimaryKey` trait.
-  Please see the [Advanced](#advanced) section below for details.
+  `serde::Deserialize`. Key encoding is handled by the `PrimaryKey` trait. Please see the
+  [Advanced](#advanced) section below for details.
 </Callout>
 
 ## Values
@@ -168,11 +168,11 @@ component.
 ### Using custom types as a Key in a Map storage
 
 The current section provides an example of an implementation for
-[`PrimaryKey`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.PrimaryKey.html)
-(and `KeyDeserialize`) traits.
+[`PrimaryKey`](https://docs.rs/cw-storage-plus/latest/cw_storage_plus/trait.PrimaryKey.html) (and
+`KeyDeserialize`) traits.
 
-Let's imagine that we would like to use `Denom` as a key in a map like `Map<Denom, Uint64>`.
-Denom is a widely used enum that represents either a CW20 token or a Native token.
+Let's imagine that we would like to use `Denom` as a key in a map like `Map<Denom, Uint64>`. Denom
+is a widely used enum that represents either a CW20 token or a Native token.
 
 Here is a complete implementation.
 
@@ -277,8 +277,8 @@ mod test {
 
 The idea is to store the Denom in the storage as a composite key with 2 elements:
 
-1. The prefix which is either `NATIVE_PREFIX` or `CW20_PREFIX` to differentiate between the
-two types on a raw bytes level.
+1. The prefix which is either `NATIVE_PREFIX` or `CW20_PREFIX` to differentiate between the two
+   types on a raw bytes level.
 2. The value which is either the native token name or the cw20 token address
 
 <Callout>
@@ -287,14 +287,12 @@ two types on a raw bytes level.
 
 #### Choosing between single element key and composite key
 
-The composite key approach in our example was chosen for demonstration purpose
-rather than a common logic.
-Because such a prefix with only 2 unique values doesn't give much profit in terms of
-index lookup performance vs full-collection lookup.
-Also, Denom's type and its value are logically coupled with each other so there is not much need
-to split them into prefixes and suffixes.
+The composite key approach in our example was chosen for demonstration purpose rather than a common
+logic. Because such a prefix with only 2 unique values doesn't give much profit in terms of index
+lookup performance vs full-collection lookup. Also, Denom's type and its value are logically coupled
+with each other so there is not much need to split them into prefixes and suffixes.
 
 Another example is a User entity with `first_name` and `last_name` fields where such a separation
-for prefixes and suffixes would be natural.
-In this case, if you define `first_name` as a prefix and `last_name` as a suffix you will be able to
-have indexed search to query all John's; and have to fetch all keys to find all Doe's.
+for prefixes and suffixes would be natural. In this case, if you define `first_name` as a prefix and
+`last_name` as a suffix you will be able to have indexed search to query all John's; and have to
+fetch all keys to find all Doe's.

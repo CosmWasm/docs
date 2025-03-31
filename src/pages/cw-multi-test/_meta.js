@@ -4,6 +4,8 @@ export default {
   "getting-started": "Getting started",
   app: "App",
   "app-builder": "AppBuilder",
+  contract: "Contract",
+  "contract-wrapper": "ContractWrapper",
   blocks: "Blocks",
   api: "Api",
   addresses: "Addresses",

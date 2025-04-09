@@ -202,7 +202,8 @@ This is how you can implement the `ibc_destination_callback` entrypoint:
 </Callout>
 
 ```rust template="core"
-use ibc::apps::transfer::types::packet::PacketData as TransferPacketData;
+use ibc::apps::transfer::types::proto::transfer::v2::FungibleTokenPacketData;
+use std::str::FromStr;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_destination_callback(
@@ -224,7 +225,7 @@ pub fn ibc_destination_callback(
     // but not to whom it is going, how much and what denom.
 
     // Parse the packet data to get that information:
-    let packet_data: TransferPacketData = from_json(&msg.packet.data)?;
+    let packet_data: FungibleTokenPacketData = from_json(&msg.packet.data)?;
 
     // The receiver should be a valid address on this chain.
     // Remember, we are on the destination chain.
@@ -236,17 +237,20 @@ pub fn ibc_destination_callback(
     );
 
     // We only care about this chain's native token in this example.
-    // The `packet_data.token.denom` is formatted as `{port id}/{channel id}/{denom}`,
+    // The `packet_data.denom` is formatted as `{port id}/{channel id}/{denom}`,
     // where the port id and channel id are the source chain's identifiers.
-    // Assuming we are running this on Neutron and only want to handle NTRN tokens,
-    // the denom should look like this:
-    let ntrn_denom = format!(
+    // Please note that the denom is not formatted like that when you transfer untrn
+    // from Neutron to some other chain. In that case, the denom is just the native
+    // token of the source chain (untrn).
+    // That being said, assuming we are running this on Neutron and only want to
+    // handle NTRN tokens, the denom should look like this:
+    let ntrn_denom_on_source_chain = format!(
         "{}/{}/untrn",
         msg.packet.src.port_id, msg.packet.src.channel_id
     );
     ensure_eq!(
-        packet_data.token.denom.to_string(),
-        ntrn_denom,
+        packet_data.denom,
+        ntrn_denom_on_source_chain,
         StdError::generic_err("only want to handle NTRN tokens")
     );
 
@@ -255,7 +259,7 @@ pub fn ibc_destination_callback(
     let msg = BankMsg::Send {
         to_address: "neutron155exr8rqjrknusllpzxdfvezxr8ddpqehj9g9d".to_string(),
         // this panics if the amount is too large
-        amount: coins(packet_data.token.amount.as_ref().as_u128(), "untrn"),
+        amount: coins(u128::from_str(&packet_data.amount).unwrap(), "untrn"),
     };
 
     Ok(IbcBasicResponse::new()

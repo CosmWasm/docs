@@ -249,7 +249,7 @@ pub fn ibc_destination_callback(
         msg.packet.src.port_id, msg.packet.src.channel_id
     );
     ensure_eq!(
-        packet_data.denom.to_string(),
+        packet_data.denom,
         ntrn_denom_on_source_chain,
         StdError::generic_err("only want to handle NTRN tokens")
     );

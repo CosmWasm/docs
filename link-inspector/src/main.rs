@@ -29,7 +29,7 @@ fn check_link(link: &str) -> anyhow::Result<()> {
 }
 
 fn main() -> anyhow::Result<()> {
-    println!("🔎 Go Go Gadget Linkifier");
+    println!("🔎 Go Gadget Linkifier");
 
     let arena = Arena::new();
     let comrak_options = comrak::ComrakOptions::default();

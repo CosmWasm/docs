@@ -1,0 +1,121 @@
+---
+tags: ["ibc"]
+---
+
+# Message passing
+
+Smart contracts can send IBCv2 (Inter-Blockchain Communication version 2) messages from all entry
+points **except** `query`. This allows for interoperability between different blockchains through
+structured message-passing mechanisms.
+
+## Send IBCv2 messages
+
+This section demonstrates how a smart contract can send IBCv2 messages by including them in the
+response of an entry point (such as `execute`). It creates an `Ibc2Msg::SendPacket` message
+containing a payload, which includes custom data serialized into JSON. The payload also defines
+source and destination ports and client identifiers. The message is then returned in the contract's
+`Response` to initiate the cross-chain communication.
+
+```rust template="core"
+#[cosmwasm_schema::cw_serde]
+pub struct MyIbcMsg {
+    pub msg: String
+}
+
+#[cosmwasm_schema::cw_serde]
+pub struct ExecuteMsg;
+
+#[entry_point]
+pub fn execute(
+    _deps: DepsMut,
+    env: Env,
+    _info: MessageInfo,
+    _msg: ExecuteMsg,
+) -> StdResult<Response> {
+    let msg = MyIbcMsg {
+        msg: "Hello world!".to_owned()
+    };
+
+    let source_port = format!("wasm2{}", env.contract.address);
+    let destination_port = "wasm2cosmos1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrs2zhgh2".to_owned();
+    let new_payload = Ibc2Payload::new(
+        source_port,
+        destination_port,
+        "V1".to_owned(),
+        "application/json".to_owned(),
+        Binary::new(to_json_vec(&msg)?),
+    );
+
+    let new_msg = Ibc2Msg::SendPacket {
+        source_client: "blockchains_source_client".to_owned(),
+        payloads: vec![new_payload],
+        timeout: env.block.time.plus_minutes(5_u64),
+    };
+
+    Ok(Response::default()
+        .add_message(new_msg))
+}
+```
+
+## Verify Messages Sent On Behalf Of The Contract
+
+This section introduces a security check to ensure only the contract itself can send IBCv2 messages
+using its assigned port ID. It shows the implementation of the `ibc2_packet_send` entry point, which
+validates that the message signer matches the contract address. If not, the function returns an
+error, preventing unauthorized IBCv2 message emissions.
+
+```rust template="core"
+#[entry_point]
+pub fn ibc2_packet_send(
+    deps: DepsMut,
+    _env: Env,
+    msg: Ibc2PacketSendMsg,
+) -> StdResult<IbcBasicResponse> {
+    if msg.signer != _env.contract.address {
+        return Err(StdError::generic_err("Only this contract can send messages from it's IBCv2 port ID"));
+    }
+    Ok(IbcBasicResponse::default())
+}
+```
+
+**Note:** It is possible to design a contract in such a way that other contracts can send IBCv2
+messages using its port ID.
+
+## Asynchronous Acknowledgements
+
+To send a synchronous acknowledgement, devs can use the response of
+[the receive entry point](entrypoints#receive-entry-point). This section explains how to handle
+asynchronous acknowledgements for IBCv2 messages. In some scenarios, it may not be possible to
+acknowledge a message immediately after processing it. In such cases, contracts can send
+acknowledgements asynchronously by responding with an `Ibc2Msg::WriteAcknowledgement` message. The
+provided example demonstrates how to write a success acknowledgement using the received packet
+sequence. This mechanism ensures that both the sender and receiver are properly informed about the
+successful processing of an IBCv2 message.
+
+```rust template="core"
+#[cosmwasm_schema::cw_serde]
+pub struct MyIbcMsg {
+    pub msg: String,
+}
+
+#[cosmwasm_schema::cw_serde]
+pub struct ExecuteMsg {
+    pub packet_sequence_to_ack: u64,
+}
+
+#[entry_point]
+pub fn execute(
+    _deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: ExecuteMsg,
+) -> StdResult<Response> {
+    Ok(
+        Response::default().add_message(cosmwasm_std::Ibc2Msg::WriteAcknowledgement {
+            source_client: "blockchains_source_client".to_owned(),
+            packet_sequence: msg.packet_sequence_to_ack,
+            ack: IbcAcknowledgement::new(StdAck::success(b"Success")),
+        }),
+    )
+}
+```

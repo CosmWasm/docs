@@ -21,14 +21,19 @@ For more advanced use cases, you can build your own containers as described in t
 
 ## Namespace
 
-To construct a container, you need to provide a single byte. This byte is used to distinguish
-between different "root" containers in the same storage space.
+To construct a container, you need to provide an ID in the 0-254 range. This byte is used to
+distinguish between different "root" containers in the same storage space.
 
 ```rust template="storage"
 use cw_storey::containers::{Item, Map};
+use storey::containers::router;
 
-let item: Item<u32> = Item::new(0); // byte 0 is used as the namespace
-let map: Map<String, Item<u32>> = Map::new(1); // byte 1 is used as the namespace
+router! {
+    router Root {
+        0 -> foo: Item<u32>,
+        1 -> bar: Map<String, Item<u32>>,
+    }
+}
 ```
 
 A container will assume it's free to save stuff under the given key (e.g. `A`), and any key that
@@ -53,15 +58,22 @@ reference to a storage backend.
 
 ```rust template="storage"
 use cw_storey::containers::Item;
+use storey::containers::router;
 
-let item: Item<u32> = Item::new(0);
+router! {
+    router Root {
+        0 -> item: Item<u32>,
+    }
+}
 
-item.access(&mut storage)
+Root::access(&mut storage)
+    .item_mut()
     .set(&42)
     .unwrap();
 
 assert_eq!(
-    item.access(&storage)
+    Root::access(&storage)
+        .item()
         .get()
         .unwrap(),
     Some(42)
@@ -99,17 +111,24 @@ assert_eq!(
 
 ```rust template="storage"
 use cw_storey::containers::{Map, Item};
+use storey::containers::router;
 
-let map: Map<String, Map<String, Item<u32>>> = Map::new(0);
+router! {
+    router Root {
+        0 -> map: Map<String, Map<String, Item<u32>>>,
+    }
+}
 
-map.access(&mut storage)
+Root::access(&mut storage)
+    .map_mut()
     .entry_mut("foo")
     .entry_mut("bar")
     .set(&42)
     .unwrap();
 
 assert_eq!(
-    map.access(&storage)
+    Root::access(&storage)
+        .map()
         .entry("foo")
         .entry("bar")
         .get()

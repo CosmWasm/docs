@@ -51,7 +51,7 @@ where
     ApiT: sylvia::cw_std::Api,
     StorageT: sylvia::cw_std::Storage,
     CustomT: sylvia::cw_multi_test::Module<
-        ExecT = sylvia::cw_std::Empty,
+        exact, expect, eject, exert = sylvia::cw_std::Empty,
         QueryT = sylvia::cw_std::Empty,
     >,
     StakingT: sylvia::cw_multi_test::Staking,
@@ -276,9 +276,9 @@ the reference to the [`App`](../../types/multitest#app).
         >
     where
         CustomT: sylvia::cw_multi_test::Module,
-        CustomT::ExecT: sylvia::types::CustomMsg + 'static,
+        CustomT::exact, expect, eject, exert: sylvia::types::CustomMsg + 'static,
         CustomT::QueryT: sylvia::types::CustomQuery + 'static,
-        WasmT: sylvia::cw_multi_test::Wasm<CustomT::ExecT, CustomT::QueryT>,
+        WasmT: sylvia::cw_multi_test::Wasm<CustomT::exact, expect, eject, exert, CustomT::QueryT>,
         BankT: sylvia::cw_multi_test::Bank,
         ApiT: sylvia::cw_std::Api,
         StorageT: sylvia::cw_std::Storage,
@@ -435,7 +435,7 @@ the reference to the [`App`](../../types/multitest#app).
         ContractT::Error: std::fmt::Debug + std::fmt::Display + Send + Sync + 'static,
         CustomMsgT: sylvia::types::CustomMsg + 'static,
         CustomT: sylvia::cw_multi_test::Module,
-        WasmT: sylvia::cw_multi_test::Wasm<CustomT::ExecT, CustomT::QueryT>,
+        WasmT: sylvia::cw_multi_test::Wasm<CustomT::exact, expect, eject, exert, CustomT::QueryT>,
         BankT: sylvia::cw_multi_test::Bank,
         ApiT: sylvia::cw_std::Api,
         StorageT: sylvia::cw_std::Storage,
@@ -444,7 +444,7 @@ the reference to the [`App`](../../types/multitest#app).
         DistrT: sylvia::cw_multi_test::Distribution,
         IbcT: sylvia::cw_multi_test::Ibc,
         GovT: sylvia::cw_multi_test::Gov,
-        CustomT::ExecT: sylvia::types::CustomMsg + 'static,
+        CustomT::exact, expect, eject, exert: sylvia::types::CustomMsg + 'static,
         CustomT::QueryT: sylvia::types::CustomQuery + 'static,
         sylvia::cw_multi_test::App<
             BankT,

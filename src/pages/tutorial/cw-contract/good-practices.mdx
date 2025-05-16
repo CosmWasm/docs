@@ -295,8 +295,8 @@ so that one can generate schema calling simply `cargo schema`.
 
 ## Disabling entry points for libraries
 
-Since we added the "rlib" target to the contract, it is now, as previously mentioned,
-usable as a dependency. The problem is that the contract dependent on ours would have Wasm entry points
+Since we added the "rlib" target to the contract, it is now, as previously mentioned, usable as a
+dependency. The problem is that the contract dependent on ours would have Wasm entry points
 generated twice - once in the dependency and once in the final contract. We can work this around by
 disabling generating Wasm entry points for the contract if the crate is used as a dependency. We
 would use [feature flags](https://doc.rust-lang.org/cargo/reference/features.html) for that.

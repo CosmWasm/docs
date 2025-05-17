@@ -1,0 +1,21 @@
+---
+tags: ["ibc"]
+---
+
+import { Callout } from "nextra/components";
+
+# Getting started
+
+CosmWasm module uses [ibc-go](https://ibc.cosmos.network/main/) implementation to interact with other blockchains via IBC protocol.
+Along with ibc-go version 10 a new protocol version was announced - [IBCv2](https://ibcprotocol.dev/blog/ibc-v2-announcement).
+The new version allows interaction between Cosmos and non-Cosmos blockchains. To achieve this goal,
+the protocol team decided to simplify the flow and reduce number of entry points.
+Thanks to this update, now it's feasible to implement appropriate endpoints on chains like for e.g. Ethereum.
+Side effect for the contract developers is the fact, that there are only few entry points to implement in smart contracts
+in order to take full advantage of the blockchain interconnections.
+
+<Callout>
+This section of a documentation provides a basic information on how to set up contracts to use IBCv2 entry points and how
+to communicate with services and contracts on different chains. To learn more about the IBC architecture we recommend
+to visit the [official ibc-go documentation page](https://ibc.cosmos.network/main/).
+</Callout>

@@ -1,0 +1,66 @@
+---
+tags: ["ibc"]
+---
+
+# Entry points in IBCv2
+
+There are 4 entry points specified in the IBCv2 protocol.
+
+## Receive entry point
+```rust template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc2_packet_receive(
+    deps: DepsMut,
+    env: Env,
+    msg: Ibc2PacketReceiveMsg,
+) -> StdResult<IbcReceiveResponse> {
+    // [...]
+}
+```
+
+ * TODO tkulik: Describe `Ibc2PacketReceiveMsg`
+
+## Time out entry point
+
+```rust template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc2_packet_timeout(
+    deps: DepsMut,
+    env: Env,
+    msg: Ibc2PacketTimeoutMsg,
+) -> StdResult<IbcBasicResponse> {
+    // [...]
+```
+
+* TODO tkulik: Describe `Ibc2PacketTimeoutMsg`
+
+## Acknowledgement receive entry point
+
+```rust template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc2_acknowledge_receive(
+    deps: DepsMut,
+    env: Env,
+    msg: Ibc2AcknowledgeMsg,
+) -> StdResult<IbcBasicResponse> {
+    // [...]
+}
+```
+
+* TODO tkulik: Describe `Ibc2AcknowledgeMsg`
+
+
+## Sent entry point
+
+```rust template="core"
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc2_packet_sent(
+    deps: DepsMut,
+    env: Env,
+    msg: Ibc2PacketSentMsg,
+) -> StdResult<IbcBasicResponse> {
+    // [...]
+}
+```
+
+* TODO tkulik: Describe `Ibc2SentMsg`

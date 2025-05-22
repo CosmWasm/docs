@@ -28,5 +28,5 @@ ibc = "0.54.0" # Used in IBC code
 serde = "*"
 schemars = "0.8.21" # Used in entrypoint example
 thiserror = "1.0.65"
-cw-storey = { git = "https://github.com/CosmWasm/storey", rev = "5e520bd" }
-storey = { git = "https://github.com/CosmWasm/storey", rev = "5e520bd" }
+cw-storey = "0.6"
+storey = "0.5"

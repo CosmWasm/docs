@@ -1,0 +1,38 @@
+---
+tags: ["storey", "containers"]
+---
+
+import { Callout } from "nextra/components";
+
+# Routers
+A router is a special type that allows you to divide your storage space into multiple containers, each living under a single-byte key.
+
+We expect your contracts will use a router as the "root" of your storage space basically always.
+
+## Usage
+
+The syntax for creating a router is somewhat similar to the syntax for defining a struct. The major differences are:
+- the router definition needs to be inside a `router!` macro invocation
+- the `router` keyword is used instead of `struct`
+- before a field, a one-byte key needs to be provided, followed by a `->`
+
+The one-byte keys need to be:
+- unique within the router
+- in the range of 0-254; the byte 255 is reserved for metadata
+
+```rust template="storage" showLineNumbers {4-9}
+use cw_storey::containers::Item;
+use storey::containers::router;
+
+router! {
+    router Root {
+        0 -> counter: Item<u32>,
+        1 -> another: Item<u32>,
+    }
+}
+
+assert_eq!(Root::access(&storage).admin().get().unwrap(), None);
+Root::access(&storage).admin_mut().set(&5).unwrap();
+```
+
+A router can also be contained within another container - such as another router or a [`Map`](map).

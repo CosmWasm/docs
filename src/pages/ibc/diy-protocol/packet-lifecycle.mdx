@@ -57,11 +57,16 @@ Ok(Response::new().add_message(msg))
 
 ```rust template="ibc-packet"
 use cw_storey::containers::Item;
+use storey::containers::router;
 
-const CHANNEL: Item<ChannelInfo> = Item::new(0);
+router! {
+    router Root {
+        0 -> channel: Item<ChannelInfo>,
+    }
+}
 
-let channel_id = CHANNEL
-    .access(deps.storage)
+let channel_id = Root::access(deps.storage)
+    .channel()
     .get()?
     .ok_or_else(|| StdError::generic_err("channel handshake hasn't started yet"))?
     .channel_id;
@@ -222,6 +227,13 @@ const ACK_LATER: Map<&(u64, String), String> = Map::new("ack_later");
 
 ```rust filename="ibc.rs" template="core"
 use cw_storey::containers::{Item, Map};
+use storey::containers::router;
+
+router! {
+    router Root {
+        0 -> ack_later: Map<u64, Map<String, Item<String>>>,
+    }
+}
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_receive(
@@ -232,7 +244,8 @@ pub fn ibc_packet_receive(
     // save the data we need for the async acknowledgement in contract state
     // note: we are just saving a String here, but you can save any information
     // you need for the acknowledgement later
-    ACK_LATER.access(deps.storage)
+    Root::access(deps.storage)
+        .ack_later_mut()
         .entry_mut(&msg.packet.sequence)
         .entry_mut(&msg.packet.dest.channel_id)
         .set(&"ack str".to_string())?;
@@ -250,7 +263,8 @@ pub fn async_ack(
     channel_id: String,
 ) -> StdResult<Response> {
     // load data from contract state
-    let ack_str = ACK_LATER.access(deps.storage)
+    let ack_str = Root::access(deps.storage)
+        .ack_later()
         .entry(&packet_sequence)
         .entry(&channel_id)
         .try_get()
@@ -263,9 +277,6 @@ pub fn async_ack(
         ack: IbcAcknowledgement::new(StdAck::success(ack_str.as_bytes())),
     }))
 }
-
-const ACK_LATER_IX: u8 = 0;
-const ACK_LATER: Map<u64, Map<String, Item<String>>> = Map::new(ACK_LATER_IX);
 ```
 
   </Tabs.Tab>

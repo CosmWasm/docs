@@ -632,8 +632,7 @@ dependencies = [
 [[package]]
 name = "cw-storey"
 version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75c95d01bc7739e7e3f2f65fb648b31041039be2ece15cc5df7d81385c1324b8"
+source = "git+https://github.com/CosmWasm/storey?rev=5e520bd#5e520bdf8e14bd23d6152dd959e70b49275d0654"
 dependencies = [
  "cosmwasm-std",
  "rmp-serde",
@@ -2488,8 +2487,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "storey"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d69bfceca30a3167bf143721e652cd07f18b210e1a1957015d63442fcf86c1a"
+source = "git+https://github.com/CosmWasm/storey?rev=5e520bd#5e520bdf8e14bd23d6152dd959e70b49275d0654"
 dependencies = [
  "storey-encoding",
  "storey-macros",
@@ -2500,14 +2498,12 @@ dependencies = [
 [[package]]
 name = "storey-encoding"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ae285b61b9c173377d1beabac74f6d81e5dd49392d3f8f242652ad851bfd9fb"
+source = "git+https://github.com/CosmWasm/storey?rev=5e520bd#5e520bdf8e14bd23d6152dd959e70b49275d0654"
 
 [[package]]
 name = "storey-macros"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5074cbcdcc77c9292212f31782e8dcd484762c20c32e7ab613cc5633473bd0d"
+source = "git+https://github.com/CosmWasm/storey?rev=5e520bd#5e520bdf8e14bd23d6152dd959e70b49275d0654"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -2518,8 +2514,7 @@ dependencies = [
 [[package]]
 name = "storey-storage"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5315a91944be4b81d330bb69ebf992f786d2defeec062586f4266a6325c648fa"
+source = "git+https://github.com/CosmWasm/storey?rev=5e520bd#5e520bdf8e14bd23d6152dd959e70b49275d0654"
 
 [[package]]
 name = "strsim"

@@ -21,17 +21,21 @@ Let's say you want to keep track of the balances of each user. You can do this w
 ```rust template="storage" showLineNumbers {6,7,9,11,13}
 use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
+use storey::containers::router;
 
-const BALANCES_IX: u8 = 0;
+router! {
+    router Root {
+        0 -> balances: Map<String, Item<Uint128>>,
+    }
+}
 
-let balances: Map<String, Item<Uint128>> = Map::new(BALANCES_IX);
-let mut access = balances.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
-assert_eq!(access.entry("alice").get().unwrap(), None);
+assert_eq!(access.balances().entry("alice").get().unwrap(), None);
 
-access.entry_mut("alice").set(&Uint128::new(1000)).unwrap();
+access.balances_mut().entry_mut("alice").set(&Uint128::new(1000)).unwrap();
 
-assert_eq!(access.entry("alice").get().unwrap(), Some(Uint128::new(1000)));
+assert_eq!(access.balances().entry("alice").get().unwrap(), Some(Uint128::new(1000)));
 ```
 
 - _line 6:_ Here we construct the `Map` facade. The constructor takes a key, which is the prefix of
@@ -67,18 +71,22 @@ use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
 
 use storey::containers::IterableAccessor as _;
+use storey::containers::router;
 
-const BALANCES_IX: u8 = 1;
+router! {
+    router Root {
+        1 -> balances: Map<String, Item<Uint128>>,
+    }
+}
 
-let balances: Map<String, Item<Uint128>> = Map::new(BALANCES_IX);
-let mut access = balances.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
-access.entry_mut("bob").set(&Uint128::new(500)).unwrap();
-access.entry_mut("carol").set(&Uint128::new(1500)).unwrap();
-access.entry_mut("dave").set(&Uint128::new(2000)).unwrap();
+access.balances_mut().entry_mut("bob").set(&Uint128::new(500)).unwrap();
+access.balances_mut().entry_mut("carol").set(&Uint128::new(1500)).unwrap();
+access.balances_mut().entry_mut("dave").set(&Uint128::new(2000)).unwrap();
 
 assert_eq!(
-    access.pairs().collect::<Result<Vec<_>, _>>().unwrap(),
+    access.balances().pairs().collect::<Result<Vec<_>, _>>().unwrap(),
     vec![
         (("bob".to_string(), ()), Uint128::new(500)),
         (("carol".to_string(), ()), Uint128::new(1500)),
@@ -87,12 +95,12 @@ assert_eq!(
 );
 
 assert_eq!(
-    access.keys().collect::<Result<Vec<_>, _>>().unwrap(),
+    access.balances().keys().collect::<Result<Vec<_>, _>>().unwrap(),
     vec![("bob".to_string(), ()), ("carol".to_string(), ()), ("dave".to_string(), ())]
 );
 
 assert_eq!(
-    access.values().collect::<Result<Vec<_>, _>>().unwrap(),
+    access.balances().values().collect::<Result<Vec<_>, _>>().unwrap(),
     vec![Uint128::new(500), Uint128::new(1500), Uint128::new(2000)]
 );
 ```
@@ -112,18 +120,22 @@ use std::ops::Bound;
 
 use cw_storey::containers::{Item, Map};
 use storey::containers::BoundedIterableAccessor as _;
+use storey::containers::router;
 
-const BALANCES_IX: u8 = 1;
+router! {
+    router Root {
+        0 -> balances: Map<String, Item<Uint128>>,
+    }
+}
 
-let balances: Map<String, Item<Uint128>> = Map::new(BALANCES_IX);
-let mut access = balances.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
-access.entry_mut("bob").set(&Uint128::new(500)).unwrap();
-access.entry_mut("carol").set(&Uint128::new(1500)).unwrap();
-access.entry_mut("dave").set(&Uint128::new(2000)).unwrap();
+access.balances_mut().entry_mut("bob").set(&Uint128::new(500)).unwrap();
+access.balances_mut().entry_mut("carol").set(&Uint128::new(1500)).unwrap();
+access.balances_mut().entry_mut("dave").set(&Uint128::new(2000)).unwrap();
 
 assert_eq!(
-    access.bounded_pairs(Bound::Included("bob"), Bound::Excluded("dave")).collect::<Result<Vec<_>, _>>().unwrap(),
+    access.balances().bounded_pairs(Bound::Included("bob"), Bound::Excluded("dave")).collect::<Result<Vec<_>, _>>().unwrap(),
     vec![(("bob".to_string(), ()), Uint128::new(500)), (("carol".to_string(), ()), Uint128::new(1500))]
 );
 ```
@@ -142,17 +154,21 @@ can have multiple different tokens. This is where composition comes in.
 ```rust template="storage" showLineNumbers {6, 9-13}
 use cw_storey::containers::{Item, Map};
 use cw_storey::CwStorage;
+use storey::containers::router;
 
-const BALANCES_IX: u8 = 0;
+router! {
+    router Root {
+        0 -> balances: Map<String, Map<String, Item<Uint128>>>,
+    }
+}
 
-let balances: Map<String, Map<String, Item<Uint128>>> = Map::new(BALANCES_IX);
-let mut access = balances.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
-access.entry_mut("alice").entry_mut("USDT").set(&Uint128::new(1000)).unwrap();
-access.entry_mut("alice").entry_mut("OSMO").set(&Uint128::new(2000)).unwrap();
+access.balances_mut().entry_mut("alice").entry_mut("USDT").set(&Uint128::new(1000)).unwrap();
+access.balances_mut().entry_mut("alice").entry_mut("OSMO").set(&Uint128::new(2000)).unwrap();
 
-assert_eq!(access.entry("alice").entry("USDT").get().unwrap(), Some(Uint128::new(1000)));
-assert_eq!(access.entry("alice").entry("OSMO").get().unwrap(), Some(Uint128::new(2000)));
+assert_eq!(access.balances().entry("alice").entry("USDT").get().unwrap(), Some(Uint128::new(1000)));
+assert_eq!(access.balances().entry("alice").entry("OSMO").get().unwrap(), Some(Uint128::new(2000)));
 ```
 
 This example is similar to the previous one, but this time we have an extra level of nesting.
@@ -179,18 +195,22 @@ use cw_storey::CwStorage;
 use cosmwasm_std::Order;
 
 use storey::containers::IterableAccessor as _;
+use storey::containers::router;
 
-const BALANCES_IX: u8 = 1;
+router! {
+    router Root {
+        1 -> balances: Map<String, Map<String, Item<u64>>>,
+    }
+}
 
-let balances: Map<String, Map<String, Item<u64>>> = Map::new(BALANCES_IX);
-let mut access = balances.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
-access.entry_mut("alice").entry_mut("USDT").set(&1000).unwrap();
-access.entry_mut("alice").entry_mut("OSMO").set(&2000).unwrap();
-access.entry_mut("bob").entry_mut("USDT").set(&1500).unwrap();
+access.balances_mut().entry_mut("alice").entry_mut("USDT").set(&1000).unwrap();
+access.balances_mut().entry_mut("alice").entry_mut("OSMO").set(&2000).unwrap();
+access.balances_mut().entry_mut("bob").entry_mut("USDT").set(&1500).unwrap();
 
 assert_eq!(
-    access.pairs().collect::<Result<Vec<_>, _>>().unwrap(),
+    access.balances().pairs().collect::<Result<Vec<_>, _>>().unwrap(),
     vec![
         (("bob".into(), ("USDT".into(), ())), 1500),
         (("alice".into(), ("OSMO".into(), ())), 2000),
@@ -199,7 +219,7 @@ assert_eq!(
 );
 
 assert_eq!(
-    access.entry("alice").pairs().collect::<Result<Vec<_>, _>>().unwrap(),
+    access.balances().entry("alice").pairs().collect::<Result<Vec<_>, _>>().unwrap(),
     vec![(("OSMO".into(), ()), 2000), (("USDT".into(), ()), 1000)]
 );
 ```

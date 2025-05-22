@@ -67,11 +67,14 @@ We also need to add a new state part, to keep the `donation_denom`:
 ```rust {5, 7} filename="src/state.rs" template="empty"
 use cosmwasm_std::Addr;
 use cw_storey::containers::Item;
+use storey::containers::router;
 
-const ADMIN_ID: u8 = 0;
-const DONATION_DENOM_ID: u8 = 1;
-pub const ADMINS: Item<Vec<Addr>> = Item::new(ADMIN_ID);
-pub const DONATION_DENOM: Item<String> = Item::new(DONATION_DENOM_ID);
+router! {
+    router Root {
+        0 -> admins: Item<Vec<Addr>>,
+        1 -> donation_denom: Item<String>,
+    }
+}
 ```
 
   </Tabs.Tab>

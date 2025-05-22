@@ -41,6 +41,7 @@ Let's take a look at the behavior implementation.
 ```rust template="sylvia-empty"
 use cosmwasm_schema::cw_serde;
 use cw_storey::containers::Item;
+use storey::containers::router;
 use sylvia::contract;
 use sylvia::cw_std::{Response, StdError, StdResult};
 use sylvia::ctx::{ExecCtx, InstantiateCtx, QueryCtx};
@@ -50,43 +51,45 @@ pub struct CountResponse {
     pub count: u64,
 }
 
-pub struct CounterContract {
-    pub count: Item<u64>,
+pub struct CounterContract;
+
+router! {
+    router Root {
+        0 -> count: Item<u64>,
+    }
 }
 
 #[cfg_attr(not(feature = "library"), sylvia::entry_points)]
 #[contract]
 impl CounterContract {
     pub const fn new() -> Self {
-        Self {
-            count: Item::new(0),
-        }
+        Self
     }
 
     #[sv::msg(instantiate)]
     fn instantiate(&self, ctx: InstantiateCtx) -> StdResult<Response> {
-        self.count
-            .access(ctx.deps.storage)
+        Root::access(ctx.deps.storage)
+            .count_mut()
             .set(&0)?;
         Ok(Response::new())
     }
 
     #[sv::msg(exec)]
     fn increment(&self, ctx: ExecCtx) -> StdResult<Response> {
-        let mut accessor = self.count.access(ctx.deps.storage);
+        let mut accessor = Root::access(ctx.deps.storage);
         let count = accessor
+            .count()
             .get()?
             .ok_or_else(|| StdError::generic_err("Count not instantiated yet"))?;
-        accessor.set(&(count + 1))?;
+        accessor.count_mut().set(&(count + 1))?;
 
         Ok(Response::new())
     }
 
     #[sv::msg(query)]
     fn count(&self, ctx: QueryCtx) -> StdResult<CountResponse> {
-        let count = self
-            .count
-            .access(ctx.deps.storage)
+        let count = Root::access(ctx.deps.storage)
+            .count()
             .get()?
             .ok_or_else(|| StdError::generic_err("Count not instantiated yet"))?;
         Ok(CountResponse { count })

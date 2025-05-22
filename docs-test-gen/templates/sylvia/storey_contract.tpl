@@ -8,6 +8,7 @@ use sylvia::cw_schema::cw_serde;
 use cw_utils::MsgInstantiateContractResponse;
 use cw_storey::CwStorage;
 use cw_storey::containers::Item;
+use storey::containers::router;
 use std::marker::PhantomData;
 
 pub mod external_contract {
@@ -47,16 +48,18 @@ fn doctest() {
     pub mod main_contract {
         use super::*;
 
-        pub struct Contract {
-            remote: Item<Remote<'static, external_contract::ExternalContract>>
+        router! {
+            router Root {
+                0 -> remote: Item<Remote<'static, external_contract::ExternalContract>>,
+            }
         }
+
+        pub struct Contract;
 
         #[contract]
         impl Contract {
             pub fn new() -> Self {
-                Self {
-                    remote: Item::new(0)
-                }
+                Self
             }
 
             #[sv::msg(instantiate)]

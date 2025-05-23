@@ -20,7 +20,7 @@ pub fn ibc2_packet_receive(
     msg: Ibc2PacketReceiveMsg,
 ) -> StdResult<IbcReceiveResponse> {
     // [...]
-    Ok(IbcReceiveResponse::default())
+    Ok(IbcReceiveResponse::new(StdAck::success(b"\x01")))
 }
 ```
 

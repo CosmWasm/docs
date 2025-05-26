@@ -36,8 +36,8 @@ router! {
     }
 }
 
-assert_eq!(Root::access(&storage).admin().get().unwrap(), None);
-Root::access(&storage).admin_mut().set(&5).unwrap();
+assert_eq!(Root::access(&storage).counter().get().unwrap(), None);
+Root::access(&mut storage).counter_mut().set(&5).unwrap();
 ```
 
 A router can also be contained within another container - such as another router or a [`Map`](map).

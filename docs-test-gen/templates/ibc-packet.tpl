@@ -37,8 +37,14 @@ fn doctest() {
     }
     {
         use cw_storey::{containers::Item, CwStorage};
-        const CHANNEL: Item<ChannelInfo> = Item::new(0);
-        CHANNEL.access(&mut deps.storage).set(&channel_info).unwrap();
+        use storey::containers::router;
+        router! {
+            router Root {
+                0 -> channel: Item<ChannelInfo>,
+            }
+        }
+
+        Root::access(&mut deps.storage).channel_mut().set(&channel_info).unwrap();
     }
 
 

@@ -31,9 +31,8 @@ or
 ```rust {3, 8, 13}, template="sylvia-storey-contract"
 #[sv::msg(exec)]
 fn external_increment(&self, ctx: ExecCtx) -> StdResult<Response> {
-    let remote = self
-        .remote
-        .access(ctx.deps.storage)
+    let remote = Root::access(ctx.deps.storage)
+        .remote()
         .get()?
         .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
     let msg = WasmMsg::Execute {
@@ -76,36 +75,38 @@ We can also use the generated
 ```rust {1, 4, 22-24, 30-38, 44-48}, template="sylvia-empty"
 use external_contract::sv::Executor;
 use cw_storey::containers::Item;
+use storey::containers::router;
 
 use sv::SubMsgMethods;
 
-pub struct ReplyContract {
-    remote: Item<Remote<'static, ExternalContract>>,
+router! {
+    router Root {
+        0 -> remote: Item<Remote<'static, ExternalContract>>,
+    }
 }
+
+pub struct ReplyContract;
 
 #[entry_points]
 #[contract]
 #[sv::features(replies)]
 impl ReplyContract {
     pub fn new() -> Self {
-        Self {
-            remote: Item::new(0),
-        }
+        Self
     }
 
     #[sv::msg(instantiate)]
     fn instantiate(&self, ctx: InstantiateCtx, remote_addr: Addr) -> StdResult<Response> {
-        self.remote
-            .access(ctx.deps.storage)
+        Root::access(ctx.deps.storage)
+            .remote_mut()
             .set(&Remote::new(remote_addr))?;
         Ok(Response::new())
     }
 
     #[sv::msg(exec)]
     fn exec(&self, ctx: ExecCtx) -> StdResult<Response> {
-        let sub_msg = self
-            .remote
-            .access(ctx.deps.storage)
+        let sub_msg = Root::access(ctx.deps.storage)
+            .remote()
             .get()?
             .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?
             .executor()
@@ -192,9 +193,8 @@ method. We can access the
 ```rust {9-11}, template="sylvia-storey-contract"
 #[sv::msg(query)]
 fn external_count(&self, ctx: QueryCtx) -> StdResult<ExternalResponse> {
-    let remote = self
-        .remote
-        .access(ctx.deps.storage)
+    let remote = Root::access(ctx.deps.storage)
+        .remote()
         .get()?
         .ok_or_else(|| StdError::generic_err("Remote not instantiated"))?;
 

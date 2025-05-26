@@ -26,15 +26,19 @@ Let's say you want to store a log of messages. You can do this with a `Column<St
 
 ```rust template="storage" showLineNumbers {5,6,8,10}
 use cw_storey::containers::Column;
+use storey::containers::router;
 
-const MESSAGES_IX: u8 = 1;
+router! {
+    router Root {
+        0 -> messages: Column<String>,
+    }
+}
 
-let messages: Column<String> = Column::new(MESSAGES_IX);
-let mut access = messages.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
-access.push(&"Hello, world!".to_string()).unwrap();
+access.messages_mut().push(&"Hello, world!".to_string()).unwrap();
 
-assert_eq!(access.get(1).unwrap(), Some("Hello, world!".to_string()));
+assert_eq!(access.messages().get(1).unwrap(), Some("Hello, world!".to_string()));
 ```
 
 - _line 5:_ Here we construct the `Column` facade. The constructor takes a key, which is the prefix
@@ -52,18 +56,22 @@ As with [`Map`], we can iterate over all messages.
 use cw_storey::containers::{Column, Item};
 
 use storey::containers::IterableAccessor as _;
+use storey::containers::router;
 
-const MESSAGES_IX: u8 = 1;
+router! {
+    router Root {
+        1 -> messages: Column<String>,
+    }
+}
 
-let messages: Column<String> = Column::new(MESSAGES_IX);
-let mut access = messages.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
 // populate the column
-access.push(&"Hello, world!".to_string()).unwrap();
-access.push(&"My name is Bob.".to_string()).unwrap();
-access.push(&"Hell is empty and all the devils are here.".to_string()).unwrap();
+access.messages_mut().push(&"Hello, world!".to_string()).unwrap();
+access.messages_mut().push(&"My name is Bob.".to_string()).unwrap();
+access.messages_mut().push(&"Hell is empty and all the devils are here.".to_string()).unwrap();
 
-let messages: Vec<_> = access.pairs().collect::<Result<_, _>>().unwrap();
+let messages: Vec<_> = access.messages().pairs().collect::<Result<_, _>>().unwrap();
 
 assert_eq!(messages, vec![
     (1, "Hello, world!".to_string()),
@@ -101,18 +109,22 @@ use std::ops::Bound;
 
 use cw_storey::containers::{Column, Item};
 use storey::containers::BoundedIterableAccessor as _;
+use storey::containers::router;
 
-const MESSAGES_IX: u8 = 1;
+router! {
+    router Root {
+        0 -> messages: Column<String>,
+    }
+}
 
-let messages: Column<String> = Column::new(MESSAGES_IX);
-let mut access = messages.access(&mut storage);
+let mut access = Root::access(&mut storage);
 
 // populate the column
-access.push(&"Hello, world!".to_string()).unwrap();
-access.push(&"My name is Bob.".to_string()).unwrap();
-access.push(&"Hell is empty and all the devils are here.".to_string()).unwrap();
+access.messages_mut().push(&"Hello, world!".to_string()).unwrap();
+access.messages_mut().push(&"My name is Bob.".to_string()).unwrap();
+access.messages_mut().push(&"Hell is empty and all the devils are here.".to_string()).unwrap();
 
-let messages: Vec<_> = access.bounded_pairs(Bound::Included(1), Bound::Excluded(3)).collect::<Result<_, _>>().unwrap();
+let messages: Vec<_> = access.messages().bounded_pairs(Bound::Included(1), Bound::Excluded(3)).collect::<Result<_, _>>().unwrap();
 
 assert_eq!(messages, vec![
     (1, "Hello, world!".to_string()),

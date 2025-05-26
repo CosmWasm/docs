@@ -53,24 +53,27 @@ assert_eq!(
 
 ```rust template="storage"
 use cw_storey::containers::{Item, Map};
+use storey::containers::router;
 
 type Address = String;
 type Token = String;
 
-const BALANCES_IX: u8 = 1;
+router! {
+    router Root {
+        0 -> balances: Map<Address, Map<Token, Item<u128>>>,
+    }
+}
 
-let balances: Map<Address, Map<Token, Item<u128>>> = Map::new(BALANCES_IX);
-
-balances
-    .access(&mut storage)
+Root::access(&mut storage)
+    .balances_mut()
     .entry_mut("alice")
     .entry_mut("uusd")
     .set(&100)
     .unwrap();
 
 assert_eq!(
-    balances
-        .access(&storage)
+    Root::access(&storage)
+        .balances()
         .entry("alice")
         .entry("uusd")
         .get()

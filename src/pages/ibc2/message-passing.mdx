@@ -25,7 +25,7 @@ pub struct MyIbcMsg {
 #[cosmwasm_schema::cw_serde]
 pub struct ExecuteMsg;
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     _deps: DepsMut,
     env: Env,
@@ -65,7 +65,7 @@ validates that the message signer matches the contract address. If not, the func
 error, preventing unauthorized IBCv2 message emissions.
 
 ```rust template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_send(
     deps: DepsMut,
     _env: Env,
@@ -103,7 +103,7 @@ pub struct ExecuteMsg {
     pub packet_sequence_to_ack: u64,
 }
 
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     _deps: DepsMut,
     _env: Env,

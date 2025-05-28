@@ -42,7 +42,7 @@ pub struct ExecuteMsg {
 /// - `_info`: Message sender information (unused).
 /// - `_msg`: Empty message.
 ///
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     _deps: DepsMut,
     _env: Env,
@@ -62,7 +62,7 @@ pub fn instantiate(
 ///
 /// # Returns
 /// - `StdResult<Response>`: Result containing a response with the IBCv2 packet to be sent.
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     deps: DepsMut,
     env: Env,
@@ -100,7 +100,7 @@ pub fn execute(
 ///
 /// # Returns
 /// - `StdResult<IbcBasicResponse>`: Default empty response.
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_ack(
     _deps: DepsMut,
     _env: Env,
@@ -121,7 +121,7 @@ pub fn ibc2_packet_ack(
 ///
 /// # Returns
 /// - `StdResult<IbcReceiveResponse>`: Response including a new IBC packet and a successful ack.
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_receive(
     _deps: DepsMut,
     env: Env,
@@ -160,7 +160,7 @@ pub fn ibc2_packet_receive(
 ///
 /// # Returns
 /// - `StdResult<IbcBasicResponse>`: Response with the resend attempt.
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_timeout(
     _deps: DepsMut,
     env: Env,
@@ -187,7 +187,7 @@ pub fn ibc2_packet_timeout(
 ///
 /// # Returns
 /// - `StdResult<IbcBasicResponse>`: Default response if sender is valid, error otherwise.
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_send(
     _deps: DepsMut,
     _env: Env,

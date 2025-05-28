@@ -13,7 +13,7 @@ IBCv2.
 ## Receive Entry Point
 
 ```rust template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_receive(
     deps: DepsMut,
     env: Env,
@@ -45,7 +45,7 @@ There are two options for sending acknowledgements:
 ## Timeout Entry Point
 
 ```rust template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_timeout(
     deps: DepsMut,
     env: Env,
@@ -68,7 +68,7 @@ The `Ibc2PacketTimeoutMsg` provides:
 ## Acknowledgement Entry Point
 
 ```rust template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_acknowledge_receive(
     deps: DepsMut,
     env: Env,
@@ -92,7 +92,7 @@ This allows the contract to confirm and act upon the acknowledgement of a sent m
 ## Send Entry Point
 
 ```rust template="core"
-#[entry_point]
+#[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc2_packet_send(
     deps: DepsMut,
     env: Env,

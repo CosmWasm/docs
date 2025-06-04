@@ -5,6 +5,7 @@ export default {
   core: "CosmWasm Core",
   wasmd: "Wasmd",
   ibc: "IBC",
+  ibc2: "IBCv2",
   sylvia: "Sylvia",
   storey: "Storey",
   "cw-storage-plus": "StoragePlus",

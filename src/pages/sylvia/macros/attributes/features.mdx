@@ -23,7 +23,6 @@ pub struct Contract;
 
 #[cfg_attr(feature = "library", sylvia::entry_points)]
 #[contract]
-#[sv::features(replies)]
 impl Contract {
     pub const fn new() -> Self {
         Self
@@ -46,10 +45,7 @@ impl Contract {
 }
 ```
 
-Parameters supported by the `sv::features`:
-
-- replies - enables better reply handling. This includes:
-  - Auto dispatching of replies to the correct handler,
-  - Deserialization of the `data` and `payload` fields,
-  - Reply id generation.
-  - [`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html) builder trait
+<Callout>
+  As of **Sylvia 2.0.0**, all features are stabilized, and currently there are no supported
+  `sv::features` parameters.
+</Callout>

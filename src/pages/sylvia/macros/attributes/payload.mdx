@@ -2,8 +2,6 @@
 tags: ["sylvia", "attributes"]
 ---
 
-import { Callout } from "nextra/components";
-
 # sv::payload attribute
 
 Use `sv::payload` to specify if the
@@ -11,11 +9,6 @@ Use `sv::payload` to specify if the
 forwarded as `Binary`. Exactly _ONE_ reply method parameter can be marked with the `sv::payload`
 attribute. If missing, Sylvia will deserialize the `payload` to types defined after the `sv::data`
 parameter.
-
-<Callout>
-  To use `sv::payload` attribute pre Sylvia `2.0.0`, you need to enable the `replies` feature using
-  the [`sv::features`](features).
-</Callout>
 
 ## Macros
 
@@ -37,7 +30,6 @@ pub struct Contract;
 
 #[cfg_attr(feature = "library", sylvia::entry_points)]
 #[contract]
-#[sv::features(replies)]
 impl Contract {
     pub const fn new() -> Self {
         Self

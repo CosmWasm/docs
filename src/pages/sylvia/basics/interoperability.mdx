@@ -89,7 +89,6 @@ pub struct ReplyContract;
 
 #[entry_points]
 #[contract]
-#[sv::features(replies)]
 impl ReplyContract {
     pub fn new() -> Self {
         Self
@@ -141,7 +140,6 @@ pub struct ReplyContract {
 
 #[entry_points]
 #[contract]
-#[sv::features(replies)]
 impl ReplyContract {
     pub fn new() -> Self {
         Self {

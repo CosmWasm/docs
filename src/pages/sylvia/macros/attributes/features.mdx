@@ -45,10 +45,6 @@ impl Contract {
 }
 ```
 
-Parameters supported by the `sv::features`:
-
-- replies - enables better reply handling. This includes:
-  - Auto dispatching of replies to the correct handler,
-  - Deserialization of the `data` and `payload` fields,
-  - Reply id generation.
-  - [`SubMsg`](https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.SubMsg.html) builder trait
+<Callout>
+  Please note that as of **Sylvia 2.0.0**, feature parameters are no longer supported.
+</Callout>

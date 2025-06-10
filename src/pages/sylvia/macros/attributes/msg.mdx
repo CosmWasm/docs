@@ -92,11 +92,6 @@ fn some_query(&self, ctx: QueryCtx) -> SomeResult {
 
 ## Handling replies
 
-<Callout>
-  To use attributes present in this paragraph pre-Sylvia `2.0.0`, you need to enable the `replies`
-  feature using the [`sv::features`](features) attribute.
-</Callout>
-
 You can use additional parameters `handlers` and `reply_on` in the `#[sv::msg(reply)]` attribute.
 
 ```rust {1} template="sylvia-cw-storage-contract"

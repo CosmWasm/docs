@@ -12,15 +12,16 @@ phf = { version = "0.11.2", features = ["macros"] }
 strum = { version = "0.26.3", features = ["derive"] }
 
 [dev-dependencies]
-sylvia = { version = "*", features = ["cosmwasm_2_0"] }
-cw2 = "*"
-cw-storage-plus = { version = "*", features = ["macro"] }
-cw-utils = "*"
-cosmwasm-schema = "*"
-cosmwasm-std = { version = "*", features = [
+sylvia = { version = "2.0.0-rc.1", features = ["cosmwasm_3_0"] }
+cw2 = "3.0.0-rc.0"
+cw-storage-plus = { version = "3.0.0-rc.2", features = ["macro"] }
+cw-utils = "3.0.0-rc.0"
+cosmwasm-schema = "3.0.0-rc.0"
+cosmwasm-std = { version = "3.0.0-rc.0", features = [
   "stargate",
   "staking",
-  "cosmwasm_2_2",
+  "cosmwasm_3_0",
+  "ibc2"
 ] }
 sha2 = "0.10.8"
 cosmos-sdk-proto = { version = "0.24.0", default-features = false } # Used in IBC code
@@ -28,5 +29,5 @@ ibc = "0.54.0" # Used in IBC code
 serde = "*"
 schemars = "0.8.21" # Used in entrypoint example
 thiserror = "1.0.65"
-cw-storey = "*"
-storey = "*"
+cw-storey = "0.7.0-rc.0"
+storey = "0.5.0"

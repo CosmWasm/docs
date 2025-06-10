@@ -12,12 +12,12 @@ types received in the contract entrypoints.
 
 Those types are:
 
-- [`InstantiateCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.InstantiateCtx.html)
-- [`ExecCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.ExecCtx.html)
-- [`QueryCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.QueryCtx.html)
-- [`MigrateCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.MigrateCtx.html)
-- [`ReplyCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.ReplyCtx.html)
-- [`SudoCtx`](https://docs.rs/sylvia/latest/sylvia/types/struct.SudoCtx.html)
+- [`InstantiateCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.InstantiateCtx.html)
+- [`ExecCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.ExecCtx.html)
+- [`QueryCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.QueryCtx.html)
+- [`MigrateCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.MigrateCtx.html)
+- [`ReplyCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.ReplyCtx.html)
+- [`SudoCtx`](https://docs.rs/sylvia/latest/sylvia/ctx/struct.SudoCtx.html)
 
 <Callout>Use the above context types in contract message methods.</Callout>
 
@@ -26,7 +26,7 @@ Those types are:
 Example instantiate method:
 
 ```rust
-use sylvia::types::InstantiateCtx;
+use sylvia::ctx::InstantiateCtx;
 
 #[sv::msg(instantiate)]
 fn instantiate(&self, ctx: InstantiateCtx, mutable: bool) -> StdResult<Response> {

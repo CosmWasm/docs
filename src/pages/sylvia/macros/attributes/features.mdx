@@ -23,7 +23,6 @@ pub struct Contract;
 
 #[cfg_attr(feature = "library", sylvia::entry_points)]
 #[contract]
-#[sv::features(replies)]
 impl Contract {
     pub const fn new() -> Self {
         Self

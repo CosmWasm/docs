@@ -70,7 +70,7 @@ impl Contract {
     }
 
     #[sv::msg(reply)]
-    fn some_reply(&self, ctx: ReplyCtx, reply: Reply) -> StdResult<Response> {
+    fn some_reply(&self, ctx: ReplyCtx, result: SubMsgResult, #[sv::payload(raw)] payload: Binary) -> StdResult<Response> {
         Ok(Response::new())
     }
 }

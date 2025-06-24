@@ -37,9 +37,8 @@ wasm = "build --target wasm32-unknown-unknown --release"
 wasm-debug = "build --target wasm32-unknown-unknown"
 ```
 
-Now, building your Wasm binary is as easy as executing `cargo wasm`. We also added the additional
-`wasm-debug` command for rare cases when we want to build the wasm binary, including debug
-information.
+Now, building your Wasm binary is as easy as executing `cargo wasm`. We also added the `wasm-debug`
+command for faster test builds and rare cases when we want to include debug information in the Wasm.
 
 ## Checking contract validity
 

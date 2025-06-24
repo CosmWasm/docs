@@ -280,13 +280,13 @@ I encourage you to go to the generated file to see what the schema looks like.
 
 The problem is that, unfortunately, creating this binary makes our project fail to compile on the
 Wasm target - which is, in the end, the most important one. Fortunately, we don't need to build the
-schema binary for the Wasm target - let's align the `.cargo/config` file:
+schema binary for the Wasm target - let's align the `.cargo/config.toml` file:
 
 ```toml
 [alias]
 wasm = "build --target wasm32-unknown-unknown --release --lib"
 wasm-debug = "build --target wasm32-unknown-unknown --lib"
-schema = "run schema"
+schema = "run --bin schema"
 ```
 
 The `--lib` flag added to `wasm` cargo aliases tells the toolchain to build only the library

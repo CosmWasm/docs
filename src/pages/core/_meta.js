@@ -6,4 +6,5 @@ export default {
   conventions: "Conventions",
   advanced: "Advanced",
   specification: "Specification",
+  schema: "Schema",
 };

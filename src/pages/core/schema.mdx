@@ -1,0 +1,126 @@
+---
+tags: ["core"]
+---
+
+# Schema
+
+In the context of CosmWasm, "schema" refers to the description of the interface between a contract
+and the client (aka. frontend). This interface is always JSON encoded and the schema describes the
+structure of that JSON. In terms of EVM equivalents, it is more or less what the Contract ABI does.
+
+For the execution of contracts the schema is not used. If the contract interface is simple enough
+you can write the JSON by hand in the client code. Then no schema needs to be created ever. However,
+this approach does not scale well and is just mentioned for better understanding.
+
+Sometimes you also see schema generation for storage types but this is usually not needed as long as
+only the contract itself reads and writes storage. There might be cases where a storage schema could
+be useful to allow indexers to better use state data, but that is far from well established
+practice. Also in contrast to the contract-client API, storage is not necessarily JSON encoded.
+These days MessagePack should be the encoding of choice for high efficient storage and the
+[Storey](/storey) library is one approach using that.
+
+There are two different types of schemas in CosmWasm:
+
+- **JSON Schema** (version 1): the original schema used since 2020 relying on the
+  [JSON Schema specification](https://json-schema.org/). In CosmWasm we use the `#[cw_serde]`
+  annotation, the `cosmwasm-schema` crate and the `cargo schema` scripts to generate a JSON Schema
+  from Rust message types.
+- **CosmWasm Schema** (version 2): taking the learnings from working with JSON Schema and seeing how
+  it is not meant to be a code generator, we developed a new type of schema. This aims to be more
+  compact and include more data relevant for generating clients in various programming languages.
+  See [this article][New schema format for CosmWasm] for a full explanation of the motivation and
+  differences.
+
+CosmWasm Schema is first shipped as part of CosmWasm 3 but for the foreseable future you are free to
+use any of the formats.
+
+## Generating the schema
+
+Both schemas are generated as follows:
+
+1. Annotate the relevant types with `#[cw_serde]`
+2. Have a `src/bin/schema.rs` that looks more or less like this:
+
+   ```rust
+   use cosmwasm_schema::write_api;
+
+   use hackatom::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg, SudoMsg};
+
+   fn main() {
+       write_api! {
+           instantiate: InstantiateMsg,
+           query: QueryMsg,
+           execute: ExecuteMsg,
+           // 👇 only add those entries if you use the sudo/migrate entry point
+           sudo: SudoMsg,
+           migrate: MigrateMsg,
+       }
+   }
+   ```
+
+3. In `.cargo/config.toml`, ensure you have this alias:
+
+   ```toml
+   [alias]
+   # ...
+   schema = "run --bin schema"
+   ```
+
+4. In your contract folder, run `cargo schema`.
+
+This generates a folder structure similar to this:
+
+```
+schema
+├── cw_schema
+│   ├── hackatom.json
+│   └── raw
+│       ├── execute.json
+│       ├── instantiate.json
+│       ├── migrate.json
+│       ├── query.json
+│       ├── response_to_get_int.json
+│       ├── response_to_recurse.json
+│       ├── response_to_verifier.json
+│       └── sudo.json
+├── hackatom.json
+└── raw
+    ├── execute.json
+    ├── instantiate.json
+    ├── migrate.json
+    ├── query.json
+    ├── response_to_get_int.json
+    ├── response_to_recurse.json
+    ├── response_to_verifier.json
+    └── sudo.json
+```
+
+Here the `cw_schema` folder contains the schema in the new format and `hackatom.json` plus `raw` is
+the JSON Schema. The raw folder hosts the original JSON Schema output, one file per struct. The
+`hackatom.json` (or more generally `<contract_name>.json`) combined those into a simple API file as
+documented in [CosmWasm IDL v1.0.0][idl].
+
+## Using the schema
+
+By parsing `<contract_name>.json` or `cw_schema/<contract_name>.json` you can generate client code
+to interact with the contract. One project implementing this is [ts-codegen]. You can also use the
+schema to dynamically generate UIs at runtime for developers and power users.
+
+The `raw` folder is only needed if the code generator cannot handle the container file
+`<contract_name>.json` and you want to get access to the plain JSON Schema.
+
+## Checking in schemas
+
+The files in the `./schema` folder are auto-generated from the source code. So they don't
+necessarily need to be added to your source repository. Other deployment methods like GitHub release
+artifacts could be used for dirstribution. But often it is just the simplest solution to check them
+in and track schema changes during development in pull requests. This ensures they are up-to-date
+and no interface is changed by accident.
+
+At the end of the day the contract developer and the users of the schema files have to agree on the
+best way to share the files.
+
+[New schema format for CosmWasm]:
+  https://medium.com/cosmwasm/new-schema-format-for-cosmwasm-02002193b638
+[idl]: https://github.com/CosmWasm/cosmwasm/blob/v3.0.0/docs/idl.md
+[ts-codegen]: https://github.com/hyperweb-io/ts-codegen

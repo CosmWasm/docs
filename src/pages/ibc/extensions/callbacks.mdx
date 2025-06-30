@@ -264,8 +264,8 @@ pub fn ibc_destination_callback(
     // For example, we could send them to some address:
     let msg = BankMsg::Send {
         to_address: "neutron155exr8rqjrknusllpzxdfvezxr8ddpqehj9g9d".to_string(),
-        // this panics if the amount is too large
-        amount: coins(u128::from_str(&packet_data.amount).unwrap(), "untrn"),
+        // Cosmos SDK currently only supports 256 bit amounts, so this should not panic.
+        amount: vec![Coin::new(Uint256::from_str(&packet_data.amount).unwrap(), "untrn")],
     };
 
     Ok(IbcBasicResponse::new()
@@ -318,7 +318,6 @@ pub fn ibc_destination_callback(
 
     let msg = BankMsg::Send {
         to_address: "neutron155exr8rqjrknusllpzxdfvezxr8ddpqehj9g9d".to_string(),
-        // this panics if the amount is too large
         amount: vec![Coin::new(amount, "untrn")],
     };
 

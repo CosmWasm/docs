@@ -193,7 +193,13 @@ immediately, update the contract state to reflect the new tokens or trigger othe
   receives the callbacks.
 </Callout>
 
-This is how you can implement the `ibc_destination_callback` entrypoint:
+The `IbcDestinationCallbackMsg` contains the packet data and the acknowledgement. Since CosmWasm
+3.0, it also has an additional `transfer` field. This field is only filled on 3.0+ chains when the
+packet is a successful transfer message. The following is an example of how to implement the
+`ibc_destination_callback` entrypoint using either the packet data or the new `transfer` field.
+
+<Tabs items={['Packet data', 'transfer field (CosmWasm 3.0+)']}>
+    <Tabs.Tab>
 
 <Callout>
   This example uses the `ibc` crate with the `serde` feature, which provides a data type for the
@@ -214,12 +220,12 @@ pub fn ibc_destination_callback(
     ensure_eq!(
         msg.packet.dest.port_id,
         "transfer", // transfer module uses this port by default
-        StdError::generic_err("only want to handle transfer packets")
+        StdError::msg("only want to handle transfer packets")
     );
     ensure_eq!(
         msg.ack.data,
         StdAck::success(b"\x01").to_binary(), // this is how a successful transfer ack looks
-        StdError::generic_err("only want to handle successful transfers")
+        StdError::msg("only want to handle successful transfers")
     );
     // At this point we know that this is a callback for a successful transfer,
     // but not to whom it is going, how much and what denom.
@@ -233,7 +239,7 @@ pub fn ibc_destination_callback(
     ensure_eq!(
         receiver,
         env.contract.address,
-        StdError::generic_err("only want to handle transfers to this contract")
+        StdError::msg("only want to handle transfers to this contract")
     );
 
     // We only care about this chain's native token in this example.
@@ -251,7 +257,7 @@ pub fn ibc_destination_callback(
     ensure_eq!(
         packet_data.denom,
         ntrn_denom_on_source_chain,
-        StdError::generic_err("only want to handle NTRN tokens")
+        StdError::msg("only want to handle NTRN tokens")
     );
 
     // Now, we can do something with our tokens.
@@ -274,6 +280,57 @@ pub fn ibc_destination_callback(
   format]. If you want to use this in production code, you should make sure to support both formats,
   such that a channel upgrade does not break your contract.
 </Callout>
+
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+
+<Callout>
+  While using the `transfer` field is much easier and more future proof, the packet data version
+  allows handling all kinds of IBC packets, not just ICS-20 transfers. The following code is
+  specific to ICS-20 transfers.
+</Callout>
+
+```rust template="core"
+use std::str::FromStr;
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn ibc_destination_callback(
+    deps: DepsMut,
+    env: Env,
+    msg: IbcDestinationCallbackMsg,
+) -> StdResult<IbcBasicResponse> {
+    let transfer = msg.transfer.ok_or_else(|| {
+        StdError::msg("Chain is running CosmWasm < 3.0 or transfer was unsuccessful")
+    })?;
+
+    ensure_eq!(
+        transfer.receiver,
+        env.contract.address,
+        StdError::msg("only want to handle transfers to this contract")
+    );
+
+    let amount = Coins::try_from(transfer.funds)?.amount_of("untrn");
+
+    if amount.is_zero() {
+        return Err(StdError::msg("Contract only accepts untrn transfers"));
+    }
+
+    let msg = BankMsg::Send {
+        to_address: "neutron155exr8rqjrknusllpzxdfvezxr8ddpqehj9g9d".to_string(),
+        // this panics if the amount is too large
+        amount: vec![Coin::new(amount, "untrn")],
+    };
+
+    Ok(IbcBasicResponse::new()
+        .add_message(msg)
+        .add_attribute("action", "ibc_destination_callback"))
+}
+```
+
+    </Tabs.Tab>
+
+</Tabs>
 
 As mentioned above, anyone can send you a destination callback for a packet. This means you need to
 make sure that the packet and acknowledgement are what you expect them to be. For example, for a

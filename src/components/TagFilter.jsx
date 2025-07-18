@@ -9,7 +9,7 @@ export default function TagFilter() {
   const urlTags = searchParams.getAll("tag");
 
   const routes = Object.entries(tagsObj.routes)
-    .filter(([, tags]) => !urlTags.length || urlTags.find((urlTag) => tags.includes(urlTag)))
+    .filter(([, tags]) => !urlTags.length || urlTags.some((urlTag) => tags.includes(urlTag)))
     .map(([route]) => route)
     .sort();
 

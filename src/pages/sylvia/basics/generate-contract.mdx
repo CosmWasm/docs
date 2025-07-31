@@ -91,8 +91,8 @@ way you want.
 - `src/multitest/` - module in which we define our tests. It's a good practice to separate the tests
   between files semantically.
 - `src/bin/schema.rs` - builds into a binary which generates the contract schema.
-- `.cargo/config` - exposes some aliases to make working with the project simpler.
+- `.cargo/config.toml` - exposes some aliases to make working with the project simpler.
   - `cargo wasm` - run `cargo build` with additional options to compile a proper _wasm_ binary.
-  - `cargo wasm-debug` - same as `cargo wasm`, but without `--release` profile to provide more
-    debugging symbols.
-  - `cargo schema` - builds and runs the `src/schema.rs` for simpler schema generation.
+  - `cargo wasm-debug` - same as `cargo wasm`, but without `--release` profile to speed up build
+    times a lot and provide debugging symbols.
+  - `cargo schema` - builds and runs the `src/bin/schema.rs` for simpler schema generation.

@@ -1,0 +1,27 @@
+---
+tags: ["multitest", "ContractWrapper"]
+---
+
+# `ContractWrapper`
+
+- new
+- new_with_empty
+- with_reply
+- with_reply_empty
+- with_migrate
+- with_migrate_empty
+- with_sudo
+- with_sudo_empty
+
+```rust
+fn counter_contract() -> Box<dyn Contract<Empty>> {
+    Box::new(ContractWrapper::new_with_empty(
+        counter::contract::execute,
+        counter::contract::instantiate,
+        counter::contract::query,
+    ))
+}
+```
+
+[`ContractWrapper`](https://docs.rs/cw-multi-test/latest/cw_multi_test/struct.ContractWrapper.html)
+in crate documentation
